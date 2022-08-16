@@ -1,12 +1,11 @@
 <template>
   <component
     :is="tagName"
-    :class="buttonClass"
+    :class="buttonClasses"
     :disabled="disabled"
     :href="href"
     :to="to"
     :type="type"
-    class="button"
     @click="emit('click')"
   >
     <NuxtIcon v-if="icon && !iconRight" :name="icon" />
@@ -30,10 +29,14 @@ const props = defineProps({
 
 const emit = defineEmits(['click'])
 
-const buttonClass = props.variant && `button-${props.variant}`
-
 let tagName = 'button'
 const NuxtLink = resolveComponent('NuxtLink')
 if (props.href) tagName = 'a'
 else if (props.to) tagName = NuxtLink
+
+let buttonClasses = ['button']
+if (props.block) buttonClasses.push('button-block')
+if (props.disabled) buttonClasses.push('button-disabled')
+if (props.size) buttonClasses.push(`button-${props.size}`)
+if (props.variant) buttonClasses.push(`button-${props.variant}`)
 </script>
