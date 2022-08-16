@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "lint": "eslint --ext .js,.ts --ignore-path .gitignore .",
+    "preview": "nuxt preview"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.18.9",
+    "@pinia/nuxt": "^0.3.1",
+    "eslint": "^8.20.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-nuxt": "^3.2.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "nuxt": "3.0.0-rc.6",
+    "nuxt-icons": "^2.0.1",
+    "prettier": "^2.7.1",
+    "sass": "^1.54.0"
+  }
+}
