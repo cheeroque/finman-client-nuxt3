@@ -8,16 +8,27 @@
     </div>
     <p></p>
     <div>
-      <UiFormGroup :state="true">
+      <UiFormGroup>
         <template #legend> Legend </template>
         <template #label> label </template>
         <UiInput v-model="text" />
       </UiFormGroup>
+      <UiFormGroup>
+        <UiSelect v-model="selected" :options="options" />
+      </UiFormGroup>
       <p>{{ text }}</p>
+      <p>{{ selected }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
 const text = ref(null)
+const selected = ref(null)
+const options = [
+  { value: null, text: 'Выберите значение', disabled: true },
+  { value: 1, text: 'Значение 1' },
+  { value: 2, text: 'Значение 2' },
+  { value: 99, text: 'Значение 99' },
+]
 </script>
