@@ -21,6 +21,20 @@
         <UiCheckbox v-model="checked" value="check 2">Check 2</UiCheckbox>
       </UiFormGroup>
       <UiCheckbox v-model="singleCheck">Single check</UiCheckbox>
+      <UiFormGroup legend="Input group">
+        <UiInputGroup append="×10 RUR" prepend="Price: ">
+          <UiInput v-model="price" type="number" />
+        </UiInputGroup>
+        <UiInputGroup>
+          <template #prepend>
+            <strong>Total:</strong>
+          </template>
+          <UiInput :value="price * 10" />
+          <template #append>
+            <strong>RUR</strong>
+          </template>
+        </UiInputGroup>
+      </UiFormGroup>
       <p>{{ text }}</p>
       <p>{{ selected }}</p>
       <p>{{ checked }}</p>
@@ -40,4 +54,5 @@ const options = [
 ]
 const checked = ref(['check 1'])
 const singleCheck = ref(true)
+const price = ref(null)
 </script>
