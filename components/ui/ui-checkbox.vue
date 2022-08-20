@@ -9,6 +9,7 @@
       :name="name"
       :required="required"
       :value="modelValue"
+      autocomplete="off"
       class="form-check-input"
       type="checkbox"
       @input="handleInput"
