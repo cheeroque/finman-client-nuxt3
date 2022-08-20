@@ -26,17 +26,13 @@ const props = defineProps({
   type: String,
   variant: String,
 })
-
 const emit = defineEmits(['click'])
 
-let tagName = 'button'
-const NuxtLink = resolveComponent('NuxtLink')
-if (props.href) tagName = 'a'
-else if (props.to) tagName = NuxtLink
+const tagName = props.href ? 'a' : props.to ? resolveComponent('NuxtLink') : 'button'
 
-let buttonClasses = ['button']
-if (props.block) buttonClasses.push('button-block')
-if (props.disabled) buttonClasses.push('button-disabled')
-if (props.size) buttonClasses.push(`button-${props.size}`)
-if (props.variant) buttonClasses.push(`button-${props.variant}`)
+let buttonClasses = ['btn']
+if (props.block) buttonClasses.push('btn-block')
+if (props.disabled) buttonClasses.push('btn-disabled')
+if (props.size) buttonClasses.push(`btn-${props.size}`)
+if (props.variant) buttonClasses.push(`btn-${props.variant}`)
 </script>
