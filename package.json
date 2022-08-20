@@ -18,5 +18,8 @@
     "nuxt-icons": "^2.0.1",
     "prettier": "^2.7.1",
     "sass": "^1.54.0"
+  },
+  "dependencies": {
+    "@shimyshack/uid": "^0.1.7"
   }
 }
