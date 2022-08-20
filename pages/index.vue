@@ -11,8 +11,13 @@
       <UiFormGroup :state="true">
         <template #legend> Legend </template>
         <template #label> label </template>
-        <input required />
+        <UiInput v-model="text" />
       </UiFormGroup>
+      <p>{{ text }}</p>
     </div>
   </div>
 </template>
+
+<script setup>
+const text = ref(null)
+</script>
