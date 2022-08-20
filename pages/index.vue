@@ -1,5 +1,14 @@
 <template>
   <div>
+    <UiButton @click="toggleCollapse"> toggle collapse </UiButton>
+    <UiCollapse v-model="collapseVisible">
+      <template #default="{ close }">
+        <div style="height: 500px; background-color: pink">
+          <UiButton @click="close"> close </UiButton>
+        </div>
+      </template>
+    </UiCollapse>
+    <p></p>
     <div>
       <UiButton class="test-button" icon="home-24" size="lg" block> test button </UiButton>
       <UiButton :to="{ path: '/' }" class="test-button" icon="home-24" variant="info" icon-right>
@@ -44,6 +53,7 @@
 </template>
 
 <script setup>
+const collapseVisible = ref(false)
 const text = ref(null)
 const selected = ref(null)
 const options = [
@@ -55,4 +65,8 @@ const options = [
 const checked = ref(['check 1'])
 const singleCheck = ref(true)
 const price = ref(null)
+
+function toggleCollapse() {
+  collapseVisible.value = !collapseVisible.value
+}
 </script>
