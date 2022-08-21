@@ -14,7 +14,7 @@
     :type="type"
     :value="modelValue"
     class="form-control"
-    @input="handleInput"
+    @input="onInput"
   />
 </template>
 
@@ -37,7 +37,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 
-function handleInput(event) {
+function onInput(event) {
   emit('update:modelValue', event?.target?.value)
 }
 </script>

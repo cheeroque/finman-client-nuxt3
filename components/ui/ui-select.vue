@@ -9,7 +9,7 @@
     :value="modelValue"
     autocomplete="off"
     class="form-control form-select"
-    @input="handleInput"
+    @input="onInput"
   >
     <option
       v-for="(option, index) in options"
@@ -38,7 +38,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const select = ref(null)
 
-function handleInput(event) {
+function onInput(event) {
   emit('update:modelValue', event?.target?.value)
 }
 </script>
