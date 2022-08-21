@@ -1,5 +1,9 @@
 <template>
   <div>
+    <UiDatepicker v-model="date" locale="ru">
+      <template #btn-prev-year> prev year </template>
+    </UiDatepicker>
+    <p>{{ date.toLocaleString({ dateStyle: 'short' }) }}</p>
     <p>
       <UiButton @click="toastVisible = true">Show toast</UiButton>
       <UiToast v-model="toastVisible" :autohide="false" message="Toast message here" title="Title">
@@ -73,6 +77,7 @@
 </template>
 
 <script setup>
+const date = ref(new Date())
 const toastVisible = ref(false)
 const collapseVisible = ref(false)
 const text = ref(null)
