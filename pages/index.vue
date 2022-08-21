@@ -1,5 +1,13 @@
 <template>
   <div>
+    <p>
+      <UiButton @click="toastVisible = true">Show toast</UiButton>
+      <UiToast v-model="toastVisible" :autohide="false" message="Toast message here" title="Title">
+        <template #default="{ close }">
+          <a href="#" @click.prevent="close"> Close from inside </a>
+        </template>
+      </UiToast>
+    </p>
     <UiTable :fields="tableFields" :items="tableItems">
       <template #head(total)="{ field, label }"> {{ field.key }} as {{ label }} </template>
       <template #cell(total)="{ detailsVisible, item, toggleDetails }">
@@ -65,6 +73,7 @@
 </template>
 
 <script setup>
+const toastVisible = ref(false)
 const collapseVisible = ref(false)
 const text = ref(null)
 const selected = ref(null)
