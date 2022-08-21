@@ -17,7 +17,9 @@
   <tr v-if="detailsVisible" class="row-details">
     <td :colspan="fields?.length">
       <UiCollapse v-model="collapseVisible" @hidden="onHidden">
-        <div style="height: 100px; font-size: 1.5rem; background-color: pink">details</div>
+        <div class="row-details-content">
+          <slot name="row-details" :index="rowIndex" :item="item" :toggle-details="toggleDetails" />
+        </div>
       </UiCollapse>
     </td>
   </tr>

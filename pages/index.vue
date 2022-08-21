@@ -6,6 +6,10 @@
         {{ item.col1 * item.col2 }}<br />
         <UiButton @click="toggleDetails"> details: {{ detailsVisible }} </UiButton>
       </template>
+      <template #row-details="{ index, item, toggleDetails }">
+        <p>item {{ item.col1 }} in row {{ index }}</p>
+        <UiButton @click="toggleDetails"> Close </UiButton>
+      </template>
     </UiTable>
     <p></p>
     <UiButton @click="toggleCollapse"> toggle collapse </UiButton>
