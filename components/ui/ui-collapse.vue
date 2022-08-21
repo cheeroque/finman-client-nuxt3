@@ -18,7 +18,7 @@
 const props = defineProps({
   modelValue: Boolean,
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'hidden'])
 
 function close() {
   emit('update:modelValue', false)
@@ -54,6 +54,7 @@ function onLeave(el) {
 
 function onAfterLeave(el) {
   el.style.height = null
+  emit('hidden')
 }
 </script>
 

@@ -1,5 +1,13 @@
 <template>
   <div>
+    <UiTable :fields="tableFields" :items="tableItems">
+      <template #head(total)="{ field, label }"> {{ field.key }} as {{ label }} </template>
+      <template #cell(total)="{ detailsVisible, item, toggleDetails }">
+        {{ item.col1 * item.col2 }}<br />
+        <UiButton @click="toggleDetails"> details: {{ detailsVisible }} </UiButton>
+      </template>
+    </UiTable>
+    <p></p>
     <UiButton @click="toggleCollapse"> toggle collapse </UiButton>
     <UiCollapse v-model="collapseVisible">
       <template #default="{ close }">
@@ -66,7 +74,32 @@ const checked = ref(['check 1'])
 const singleCheck = ref(true)
 const price = ref(null)
 
+const tableFields = [
+  { key: 'col1', label: 'Column 1' },
+  { key: 'col2', label: 'Column 2' },
+  { key: 'total', label: 'Column Total', thClass: 'bg-gray', tdClass: 'bg-yellow' },
+  { empty: 'empty' },
+  'string',
+]
+
+const tableItems = [
+  { col1: 10, col2: 20 },
+  { col1: 3, col2: 7 },
+  { col1: 14, col2: 233, string: 'hello world' },
+]
+
 function toggleCollapse() {
   collapseVisible.value = !collapseVisible.value
 }
 </script>
+
+<style lang="scss" scoped>
+:deep(.bg-gray) {
+  color: white;
+  background-color: gray;
+}
+
+:deep(.bg-yellow) {
+  background-color: yellow;
+}
+</style>
