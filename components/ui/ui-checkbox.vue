@@ -20,30 +20,43 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  disabled: Boolean,
-  form: String,
-  modelValue: [Array, Boolean, Number, String],
-  name: String,
-  required: Boolean,
-  size: String,
-  state: { type: Boolean, default: null },
-  uncheckedValue: { type: [Boolean, Number, String], default: false },
-  value: { type: [Boolean, Number, String], default: true },
-})
+<script lang="ts" setup>
+type CheckboxValue = number | string | boolean | null
+
+interface CheckboxInputEventTarget extends EventTarget {
+  checked: boolean
+}
+
+interface CheckboxInputEvent extends InputEvent {
+  target: CheckboxInputEventTarget
+}
+
+const props = defineProps<{
+  disabled?: boolean
+  form?: string
+  modelValue: CheckboxValue | CheckboxValue[]
+  name?: string
+  required?: boolean
+  size?: string
+  uncheckedValue?: CheckboxValue
+  valid?: boolean
+  validated?: boolean
+  value?: CheckboxValue
+}>()
 const emit = defineEmits(['update:modelValue'])
 
 const checkbox = ref(null)
+const defaultValue = ref(props.value || true)
 
 const controlId = computed(() => `${checkbox?.value?.id}-control`)
 const checked = computed(() =>
   Array.isArray(props.modelValue)
-    ? props.modelValue.includes(props.value)
-    : Boolean(props.value) === Boolean(props.modelValue)
+    ? props.modelValue.includes(defaultValue.value)
+    : Boolean(defaultValue.value) === Boolean(props.modelValue)
 )
+const state = computed(() => (props.validated ? props.valid : null))
 
-function addValue(value, array) {
+function addValue(value: CheckboxValue, array: CheckboxValue[]): CheckboxValue[] {
   if (array?.indexOf(value) < 0) {
     return array.concat([value])
   } else {
@@ -51,21 +64,21 @@ function addValue(value, array) {
   }
 }
 
-function removeValue(value, array) {
+function removeValue(value: CheckboxValue, array: CheckboxValue[]): CheckboxValue[] {
   return array?.filter((el) => el !== value)
 }
 
-function onInput(event) {
-  const checked = event?.target?.checked
+function onInput(event: CheckboxInputEvent): void {
+  const checked = event.target.checked
   let payload
   if (Array.isArray(props.modelValue)) {
     if (checked) {
-      payload = addValue(props.value, props.modelValue)
+      payload = addValue(defaultValue.value, props.modelValue)
     } else {
-      payload = removeValue(props.value, props.modelValue)
+      payload = removeValue(defaultValue.value, props.modelValue)
     }
   } else {
-    payload = checked ? props.value : props.uncheckedValue
+    payload = checked ? defaultValue.value : props.uncheckedValue
   }
   emit('update:modelValue', payload)
 }

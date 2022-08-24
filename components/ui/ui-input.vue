@@ -18,26 +18,38 @@
   />
 </template>
 
-<script setup>
-const props = defineProps({
-  autocomplete: String,
-  disabled: Boolean,
-  form: String,
-  max: [Number, String],
-  min: [Number, String],
-  modelValue: [Number, String],
-  name: String,
-  placeholder: String,
-  readonly: Boolean,
-  required: Boolean,
-  size: String,
-  state: { type: Boolean, default: null },
-  step: [Number, String],
-  type: { type: String, default: 'text' },
-})
+<script lang="ts" setup>
+interface InputInputEventTarget extends EventTarget {
+  value: string
+}
+
+interface InputInputEvent extends InputEvent {
+  target: InputInputEventTarget
+}
+
+const props = defineProps<{
+  autocomplete?: string
+  disabled?: boolean
+  form?: string
+  max?: number | string
+  min?: number | string
+  modelValue: number | string
+  name?: string
+  placeholder?: string
+  readonly?: boolean
+  required?: boolean
+  size?: string
+  step?: number | string
+  type?: string
+  valid?: boolean
+  validated?: boolean
+}>()
 const emit = defineEmits(['update:modelValue'])
 
-function onInput(event) {
-  emit('update:modelValue', event?.target?.value)
+const state = computed(() => (props.validated ? props.valid : null))
+const type = computed(() => props.type ?? 'text')
+
+function onInput(event: InputInputEvent): void {
+  emit('update:modelValue', event.target.value)
 }
 </script>

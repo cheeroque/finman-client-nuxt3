@@ -21,21 +21,22 @@
   </fieldset>
 </template>
 
-<script setup>
-const props = defineProps({
-  disabled: Boolean,
-  form: String,
-  label: String,
-  legend: String,
-  state: { type: Boolean, default: null },
-})
-const emit = defineEmits(['click'])
+<script lang="ts" setup>
+const props = defineProps<{
+  disabled?: boolean
+  form?: string
+  label?: string
+  legend?: string
+  valid?: boolean
+  validated?: boolean
+}>()
 const slots = useSlots()
 
 const fieldset = ref(null)
 
 const hasLegend = computed(() => Boolean(props.legend || slots.legend))
 const hasLabel = computed(() => Boolean(props.label || slots.label))
+const state = computed(() => (props.validated ? props.valid : null))
 
 const controlId = computed(() => `${fieldset?.value?.id}-control`)
 

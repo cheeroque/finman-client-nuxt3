@@ -25,12 +25,14 @@
   </tr>
 </template>
 
-<script setup>
-const props = defineProps({
-  fields: { type: Array, default: () => [] },
-  item: { type: Object, default: () => ({}) },
-  rowIndex: Number,
-})
+<script lang="ts" setup>
+import { TableField, TableItem } from '~/components/ui/ui-table.vue'
+
+const props = defineProps<{
+  fields: TableField[]
+  item: TableItem
+  rowIndex?: number
+}>()
 
 const detailsVisible = ref(false)
 const collapseVisible = ref(false)

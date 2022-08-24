@@ -14,47 +14,50 @@
   </Transition>
 </template>
 
-<script setup>
-const props = defineProps({
-  collapseClass: { type: String, default: 'collapse' },
-  modelValue: Boolean,
-  transition: { type: String, default: 'collapse' },
-})
+<script lang="ts" setup>
+const props = defineProps<{
+  collapseClass?: string
+  modelValue: boolean
+  transition?: string
+}>()
 const emit = defineEmits(['update:modelValue', 'hidden'])
 
-function close() {
+const collapseClass = props.collapseClass ?? 'collapse'
+const transition = props.transition ?? 'collapse'
+
+function close(): void {
   emit('update:modelValue', false)
 }
 
-function getContentHeight(el) {
+function getContentHeight(el: HTMLElement): number {
   let height = 0
-  for (let i = 0; i < el?.children?.length; i++) {
-    height += el?.children[i]?.offsetHeight
+  for (let i = 0; i < el.children.length; i++) {
+    height += (el.children[i] as HTMLElement).offsetHeight
   }
   return height
 }
 
-function onBeforeEnter(el) {
-  el.style.height = 0
+function onBeforeEnter(el: HTMLElement): void {
+  el.style.height = '0'
 }
 
-function onEnter(el) {
+function onEnter(el: HTMLElement): void {
   el.style.height = `${getContentHeight(el)}px`
 }
 
-function onAfterEnter(el) {
+function onAfterEnter(el: HTMLElement): void {
   el.style.height = null
 }
 
-function onBeforeLeave(el) {
+function onBeforeLeave(el: HTMLElement): void {
   el.style.height = `${getContentHeight(el)}px`
 }
 
-function onLeave(el) {
-  el.style.height = 0
+function onLeave(el: HTMLElement): void {
+  el.style.height = '0'
 }
 
-function onAfterLeave(el) {
+function onAfterLeave(el: HTMLElement): void {
   el.style.height = null
   emit('hidden')
 }

@@ -21,22 +21,40 @@
   </table>
 </template>
 
-<script setup>
-const props = defineProps({
-  fields: { type: Array, default: () => [] },
-  items: { type: Array, default: () => [] },
-  noHead: Boolean,
-})
-
-const normalizedFields = computed(() =>
-  props.fields?.map((field) => (typeof field === 'object' ? field : { key: field, label: field }))
-)
-
-function getFieldKey(field) {
-  return typeof field === 'object' ? field.key : field
+<script lang="ts" setup>
+export type TableField = {
+  key: string
+  label?: string
+  tdClass?: string
+  thClass?: string
 }
 
-function getFieldLabel(field) {
-  return typeof field === 'object' ? field.label : field
+export type TableItem = {
+  [key: string]: any
+}
+
+const props = defineProps<{
+  fields: TableField[] | string[]
+  items: TableItem[]
+  noHead?: boolean
+}>()
+
+const normalizedFields = computed(() =>
+  props.fields.map((field) => ({
+    key: getFieldKey(field),
+    label: getFieldLabel(field),
+    tdClass: field.tdClass,
+    thClass: field.thClass,
+  }))
+)
+
+function getFieldKey(field: string | TableField): string {
+  if (typeof field === 'string') return field
+  else return field.key
+}
+
+function getFieldLabel(field: string | TableField): string {
+  if (typeof field === 'string') return field
+  else return field.label ?? field.key
 }
 </script>

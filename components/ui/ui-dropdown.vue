@@ -27,29 +27,29 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  block: Boolean,
-  disabled: Boolean,
-  icon: String,
-  iconRight: Boolean,
-  modelValue: Boolean,
-  size: String,
-  text: String,
-  variant: String,
-})
+<script lang="ts" setup>
+const props = defineProps<{
+  block?: boolean
+  disabled?: boolean
+  icon?: string
+  iconRight?: boolean
+  modelValue: boolean
+  size?: string
+  text?: string
+  variant?: string
+}>()
 const emit = defineEmits(['update:modelValue', 'hidden'])
 
 const dropdown = ref(null)
 const visible = ref(props.modelValue ?? false)
 
-function handleClickOutside(event) {
+function handleClickOutside(event: InputEvent): void {
   if (!dropdown.value.contains(event.target)) {
     hide()
   }
 }
 
-function handleUpdate(event) {
+function handleUpdate(event: boolean): void {
   visible.value = event
   emit('update:modelValue', event)
   if (event) {

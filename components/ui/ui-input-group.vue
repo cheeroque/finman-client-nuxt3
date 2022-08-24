@@ -10,11 +10,11 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  append: [Number, String],
-  prepend: [Number, String],
-})
+<script lang="ts" setup>
+const props = defineProps<{
+  append: number | String
+  prepend: number | String
+}>()
 const slots = useSlots()
 
 const hasAppend = computed(() => Boolean(props.append || slots.append))

@@ -14,18 +14,20 @@
   </component>
 </template>
 
-<script setup>
-const props = defineProps({
-  block: Boolean,
-  disabled: Boolean,
-  href: String,
-  icon: String,
-  iconRight: Boolean,
-  size: String,
-  to: [Object, String],
-  type: String,
-  variant: String,
-})
+<script lang="ts" setup>
+import { RouteLocationRaw } from 'vue-router'
+
+const props = defineProps<{
+  block?: boolean
+  disabled?: boolean
+  href?: string | RouteLocationRaw
+  icon?: string
+  iconRight?: boolean
+  size?: string
+  to?: string | RouteLocationRaw
+  type?: String
+  variant?: String
+}>()
 const emit = defineEmits(['click'])
 
 const tagName = props.href ? 'a' : props.to ? resolveComponent('NuxtLink') : 'button'

@@ -20,28 +20,30 @@
   </Teleport>
 </template>
 
-<script setup>
-const props = defineProps({
-  autohide: { type: [Boolean, Number, String], default: 3000 },
-  message: String,
-  modelValue: Boolean,
-  title: String,
-  variant: String,
-})
+<script lang="ts" setup>
+const props = defineProps<{
+  autohide?: boolean | number | string
+  message?: string
+  modelValue: boolean
+  title?: string
+  variant?: string
+}>()
 const emit = defineEmits(['update:modelValue'])
 
-let timeout
+const autohide = computed(() => props.autohide || 3000)
+
+let timeout: NodeJS.Timeout
 
 watch(
   () => props.modelValue,
   (event) => {
-    if (event && props.autohide) {
-      timeout = setTimeout(() => close(), parseInt(props.autohide))
+    if (event && autohide.value) {
+      timeout = setTimeout(() => close(), Number(autohide.value))
     }
   }
 )
 
-function close() {
+function close(): void {
   clearTimeout(timeout)
   emit('update:modelValue', false)
 }
