@@ -1,6 +1,6 @@
 <template>
   <Transition
-    name="collapse"
+    :name="transition"
     @before-enter="onBeforeEnter"
     @enter="onEnter"
     @after-enter="onAfterEnter"
@@ -8,7 +8,7 @@
     @leave="onLeave"
     @after-leave="onAfterLeave"
   >
-    <div v-if="modelValue" class="collapse">
+    <div v-if="modelValue" :class="collapseClass">
       <slot :close="close"></slot>
     </div>
   </Transition>
@@ -16,7 +16,9 @@
 
 <script setup>
 const props = defineProps({
+  collapseClass: { type: String, default: 'collapse' },
   modelValue: Boolean,
+  transition: { type: String, default: 'collapse' },
 })
 const emit = defineEmits(['update:modelValue', 'hidden'])
 
@@ -60,7 +62,6 @@ function onAfterLeave(el) {
 
 <style lang="scss" scoped>
 .collapse {
-  transition: height 0.2s linear;
   overflow: hidden;
 }
 </style>
