@@ -56,7 +56,7 @@ import { DateTime, Info } from 'luxon'
 const props = defineProps<{
   locale?: string
   modelValue: Date
-  titleFormat?: string //{ type: String; default: 'LLLL y' }
+  titleFormat?: string
 }>()
 const emit = defineEmits(['click:day', 'update:modelValue'])
 
@@ -67,12 +67,11 @@ const weekdays = Info.weekdays('short', { locale })
 
 const modelValueDate = DateTime.fromJSDate(props.modelValue)
 
-/* luxon DateObjectUnits doesn't work here for some reason */
 const currentDate = ref(
   DateTime.fromObject({
     year: modelValueDate.year,
     month: modelValueDate.month,
-  } as any)
+  })
 )
 
 const currentMonth = computed(() => currentDate.value.month)
@@ -103,7 +102,7 @@ function setPrevYear() {
   currentDate.value = currentDate.value.minus({ years: 1 })
 }
 
-function setDate(date) {
+function setDate(date: DateTime) {
   emit('click:day')
   emit('update:modelValue', date.toJSDate())
 }
