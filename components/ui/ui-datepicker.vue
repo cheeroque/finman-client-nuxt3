@@ -50,26 +50,34 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { DateTime, Info } from 'luxon'
 
-const props = defineProps({
-  locale: String,
-  modelValue: { type: Object, default: new Date() },
-  titleFormat: { type: String, default: 'LLLL y' },
-})
+const props = defineProps<{
+  locale?: string
+  modelValue: Date
+  titleFormat?: string //{ type: String; default: 'LLLL y' }
+}>()
 const emit = defineEmits(['click:day', 'update:modelValue'])
 
-const { locale } = props
+const locale = props.locale
+const titleFormat = computed(() => props.titleFormat || 'LLLL y')
 
 const weekdays = Info.weekdays('short', { locale })
 
 const modelValueDate = DateTime.fromJSDate(props.modelValue)
-const currentDate = ref(DateTime.fromObject({ year: modelValueDate.year, month: modelValueDate.month }))
+
+/* luxon DateObjectUnits doesn't work here for some reason */
+const currentDate = ref(
+  DateTime.fromObject({
+    year: modelValueDate.year,
+    month: modelValueDate.month,
+  } as any)
+)
 
 const currentMonth = computed(() => currentDate.value.month)
 const currentYear = computed(() => currentDate.value.year)
-const title = computed(() => currentDate.value.toFormat(props.titleFormat, { locale }))
+const title = computed(() => currentDate.value.toFormat(titleFormat.value, { locale }))
 
 const monthdays = computed(() => {
   let days = []
