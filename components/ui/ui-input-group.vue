@@ -12,8 +12,8 @@
 
 <script lang="ts" setup>
 const props = defineProps<{
-  append: number | String
-  prepend: number | String
+  append?: number | String
+  prepend?: number | String
 }>()
 const slots = useSlots()
 
