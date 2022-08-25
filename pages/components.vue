@@ -14,20 +14,27 @@
   </div>
   <div class="container" style="--grid-color: rgba(0, 255, 0, 0.15); --grid-columns: 7">
     <div class="row-cols-7">
-      <div class="col-1">
-        <h1>column with overflowing text</h1>
+      <div class="col-lg-2">
+        <UiButton block> Test button </UiButton>
       </div>
-      <div class="col-7 col-lg-2">
-        <h1>col2</h1>
+      <div class="col-lg-2">
+        <UiButton variant="primary" block> Test button </UiButton>
       </div>
-      <div class="col-7 col-xxl-5">
-        <h1>col3</h1>
+      <div class="col-lg-2">
+        <UiButton variant="link"> Test link button </UiButton>
+      </div>
+      <div class="col-lg-2 col-start-lg-1">
+        <UiButton v-for="variant in variants" :key="variant" :variant="variant" block>
+          {{ variant }}
+        </UiButton>
       </div>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+const variants = ['primary', 'secondary', 'tertiary', 'neutral', 'neutral-variant', 'danger', 'success']
+</script>
 
 <style lang="scss" scoped>
 .container {

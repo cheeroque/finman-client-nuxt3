@@ -1,0 +1,143 @@
+/* Default theme -- light */
+
+@mixin theme-light() {
+  /* GLOBAL */
+
+  --background: #{$neutral-99};
+  --on-background: #{$neutral-10};
+
+  --primary: #{$primary-40};
+  --on-primary: #{$white};
+
+  --primary-container: #{$primary-90};
+  --on-primary-container: #{$primary-10};
+
+  --secondary: #{$secondary-40};
+  --on-secondary: #{$white};
+
+  --secondary-container: #{$secondary-90};
+  --on-secondary-container: #{$secondary-10};
+
+  --tertiary: #{$tertiary-40};
+  --on-tertiary: #{$white};
+
+  --neutral: #{$neutral-40};
+  --on-neutral: #{$white};
+
+  --neutral-variant: #{$neutral-variant-40};
+  --on-neutral-variant: #{$white};
+
+  --tertiary-container: #{$tertiary-90};
+  --on-tertiary-container: #{$tertiary-10};
+
+  --neutral-container: #{$neutral-90};
+  --on-neutral-container: #{$neutral-10};
+
+  --neutral-variant-container: #{$neutral-variant-90};
+  --on-neutral-variant-container: #{$neutral-variant-10};
+
+  --danger: #{$danger-40};
+  --on-danger: #{$white};
+
+  --danger-container: #{$danger-90};
+  --on-danger-container: #{$danger-10};
+
+  --success: #{$success-40};
+  --on-success: #{$white};
+
+  --success-container: #{$success-90};
+  --on-success-container: #{$success-10};
+
+  --surface: #{$primary-95};
+  --on-surface: #{$primary-10};
+
+  --surface-variant: #{$secondary-95};
+  --on-surface-variant: #{$secondary-10};
+
+  --disabled-container: #{$neutral-90};
+  --on-disabled-container: #{$neutral-50};
+
+  --outline: #{$neutral-50};
+}
+
+html,
+:root.theme-light {
+  @include theme-light();
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    @include theme-light();
+  }
+}
+
+/* Default theme -- dark */
+
+@mixin theme-dark() {
+  /* GLOBAL */
+  --background: #{$neutral-10};
+  --on-background: #{$neutral-90};
+
+  --primary: #{$primary-80};
+  --on-primary: #{$primary-20};
+
+  --primary-container: #{$primary-30};
+  --on-primary-container: #{$primary-90};
+
+  --secondary: #{$secondary-80};
+  --on-secondary: #{$secondary-20};
+
+  --secondary-container: #{$secondary-30};
+  --on-secondary-container: #{$secondary-90};
+
+  --tertiary: #{$tertiary-80};
+  --on-tertiary: #{$tertiary-20};
+
+  --neutral: #{$neutral-80};
+  --on-neutral: #{$neutral-20};
+
+  --neutral-variant: #{$neutral-variant-80};
+  --on-neutral-variant: #{$neutral-variant-20};
+
+  --tertiary-container: #{$tertiary-30};
+  --on-tertiary-container: #{$tertiary-90};
+
+  --neutral-container: #{$neutral-30};
+  --on-neutral-container: #{$neutral-90};
+
+  --neutral-variant-container: #{$neutral-variant-30};
+  --on-neutral-variant-container: #{$neutral-variant-90};
+
+  --danger: #{$danger-80};
+  --on-danger: #{$danger-20};
+
+  --danger-container: #{$danger-30};
+  --on-danger-container: #{$danger-90};
+
+  --success: #{$success-80};
+  --on-success: #{$success-20};
+
+  --success-container: #{$success-30};
+  --on-success-container: #{$success-90};
+
+  --surface: #{$primary-10};
+  --on-surface: #{$primary-90};
+
+  --surface-variant: #{$secondary-20};
+  --on-surface-variant: #{$secondary-95};
+
+  --disabled-container: #{$neutral-30};
+  --on-disabled-container: #{$neutral-70};
+
+  --outline: #{$neutral-60};
+}
+
+:root.theme-dark {
+  @include theme-dark();
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    @include theme-dark();
+  }
+}

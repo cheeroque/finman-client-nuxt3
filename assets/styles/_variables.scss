@@ -93,12 +93,13 @@ $success-99: #f7fcf7;
 
 /* Body colors */
 
-$body-bg: var(--primary-container);
-$body-color: var(--on-primary-container);
+$body-bg: var(--background);
+$body-color: var(--on-background);
 
 /* Misc global colors */
 
 $backdrop-color: rgba($black, 0.75);
+$link-color: var(--primary);
 $danger: var(--danger);
 $success: var(--success);
 
@@ -125,6 +126,16 @@ $h3-multiplier: 1.375;
 $h4-multiplier: 1.25;
 $h5-multiplier: 1.125;
 $h6-multiplier: 1;
+
+/**
+ ** BUTTONS & INPUTS
+ **/
+
+$control-padding-y: 0.5rem;
+$control-padding-x: 0.75rem;
+$control-border-radius: 0.25rem;
+
+$button-variants: ('primary', 'secondary', 'tertiary', 'neutral', 'neutral-variant', 'danger', 'success');
 
 /**
  ** GRID

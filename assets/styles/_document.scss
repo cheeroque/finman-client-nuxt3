@@ -1,0 +1,15 @@
+body {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  color: $body-color;
+  background-color: $body-bg;
+}
+
+hr {
+  width: 100%;
+  margin: 1rem auto;
+  border-width: 0 0 $border-width;
+  border-style: solid;
+  border-color: var(--outline);
+}
