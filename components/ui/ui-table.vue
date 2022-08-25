@@ -35,8 +35,8 @@ export type TableItem = {
 
 const props = defineProps<{
   fields: TableField[] | string[]
+  hideThead?: boolean
   items: TableItem[]
-  noHead?: boolean
 }>()
 
 const normalizedFields = computed(() =>
