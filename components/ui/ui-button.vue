@@ -27,8 +27,8 @@ const props = defineProps<{
   size?: string
   target?: string
   to?: string | RouteLocationRaw
-  type?: String
-  variant?: String
+  type?: string
+  variant?: string
 }>()
 const emit = defineEmits(['click'])
 
