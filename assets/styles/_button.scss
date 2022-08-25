@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   padding: $control-padding-y $control-padding-x;
-  font-family: $font-family-base;
+  font-family: $font-family-alternate;
   font-size: $font-size-base;
   font-weight: $font-weight-normal;
   line-height: $line-height-base;
@@ -14,7 +14,7 @@
   background-color: transparent;
   cursor: pointer;
   transition: $transition;
-  transition-property: color, border-color, background-color, box-shadow, opacity;
+  transition-property: border-color, background-color, box-shadow, color, filter, opacity;
 
   &:disabled,
   &.disabled {
@@ -28,6 +28,11 @@
   &:not(:disabled):not(.disabled):hover {
     color: $body-color;
     background-color: $body-bg;
+    filter: brightness(0.85);
+  }
+
+  &.btn-lg {
+    padding: $control-padding-y-lg $control-padding-x-lg;
   }
 }
 
@@ -63,13 +68,40 @@
 
 @each $variant in $button-variants {
   .btn-#{$variant} {
-    color: var(--on-#{$variant}-container) !important;
-    background-color: var(--#{$variant}-container) !important;
+    color: var(--on-#{$variant}) !important;
+    background-color: var(--#{$variant}) !important;
 
     &:not(:disabled):not(.disabled):focus,
     &:not(:disabled):not(.disabled):hover {
       color: var(--on-#{$variant}) !important;
       background-color: var(--#{$variant}) !important;
+      filter: brightness(0.85) saturate(1.5);
+    }
+  }
+
+  .btn-#{$variant}-outline {
+    color: var(--#{$variant}) !important;
+    border-color: var(--#{$variant}) !important;
+    background-color: transparent !important;
+
+    &:not(:disabled):not(.disabled):focus,
+    &:not(:disabled):not(.disabled):hover {
+      color: var(--on-#{$variant}) !important;
+      border-color: var(--#{$variant}) !important;
+      background-color: var(--#{$variant}) !important;
+      filter: none;
+    }
+  }
+
+  .btn-#{$variant}-muted {
+    color: var(--on-#{$variant}-container) !important;
+    background-color: var(--#{$variant}-container) !important;
+
+    &:not(:disabled):not(.disabled):focus,
+    &:not(:disabled):not(.disabled):hover {
+      color: var(--on-#{$variant}-container) !important;
+      background-color: var(--#{$variant}-container) !important;
+      filter: brightness(0.85) saturate(1.5);
     }
   }
 }

@@ -12,13 +12,13 @@
       </div>
     </div>
   </div>
-  <div class="container" style="--grid-color: rgba(0, 255, 0, 0.15); --grid-columns: 7">
+  <div class="container">
     <div class="row-cols-7">
       <div class="col-lg-2">
         <UiButton block> Test button </UiButton>
       </div>
       <div class="col-lg-2">
-        <UiButton variant="primary" block> Test button </UiButton>
+        <UiButton variant="primary" size="lg" block> Test LG button </UiButton>
       </div>
       <div class="col-lg-2">
         <UiButton variant="link"> Test link button </UiButton>
@@ -26,6 +26,16 @@
       <div class="col-lg-2 col-start-lg-1">
         <UiButton v-for="variant in variants" :key="variant" :variant="variant" block>
           {{ variant }}
+        </UiButton>
+      </div>
+      <div class="col-lg-2">
+        <UiButton v-for="variant in variants" :key="variant" :variant="`${variant}-muted`" block>
+          {{ variant }}-muted
+        </UiButton>
+      </div>
+      <div class="col-lg-2">
+        <UiButton v-for="variant in variants" :key="variant" :variant="`${variant}-outline`" block>
+          {{ variant }}-outline
         </UiButton>
       </div>
     </div>

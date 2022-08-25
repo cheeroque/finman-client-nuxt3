@@ -104,6 +104,24 @@ $danger: var(--danger);
 $success: var(--success);
 
 /**
+ ** OPTIONS
+ **/
+
+$border-width: 1px;
+$transition: all 0.2s ease-in-out;
+
+$displays: (
+  block: 'block',
+  inline: 'inline',
+  inline-block: 'inline-block',
+  flex: 'flex',
+  inline-flex: 'inline-flex',
+  grid: 'grid',
+  inline-grid: 'inline-grid',
+  none: 'none',
+);
+
+/**
  ** TYPOGRAPHY
  **/
 
@@ -131,8 +149,10 @@ $h6-multiplier: 1;
  ** BUTTONS & INPUTS
  **/
 
-$control-padding-y: 0.5rem;
-$control-padding-x: 0.75rem;
+$control-padding-y: 0.4375rem;
+$control-padding-y-lg: 0.9375rem;
+$control-padding-x: 0.6875rem;
+$control-padding-x-lg: 1.4375rem;
 $control-border-radius: 0.25rem;
 
 $button-variants: ('primary', 'secondary', 'tertiary', 'neutral', 'neutral-variant', 'danger', 'success');
@@ -170,24 +190,6 @@ $spacers: (
   16: 1rem,
   24: 1.5rem,
   auto: auto,
-);
-
-/**
- ** OPTIONS
- **/
-
-$border-width: 1px;
-$transition: all 0.2s ease-in-out;
-
-$displays: (
-  block: 'block',
-  inline: 'inline',
-  inline-block: 'inline-block',
-  flex: 'flex',
-  inline-flex: 'inline-flex',
-  grid: 'grid',
-  inline-grid: 'inline-grid',
-  none: 'none',
 );
 
 /**
