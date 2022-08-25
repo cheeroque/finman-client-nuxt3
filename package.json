@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@shimyshack/uid": "^0.1.7",
-    "luxon": "^3.0.1"
+    "luxon": "^3.0.1",
+    "normalize.css": "^8.0.1"
   }
 }
