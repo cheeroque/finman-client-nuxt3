@@ -1,6 +1,180 @@
-$white: #fff;
+/**
+ ** COLOR SYSTEM
+ **/
+
+/* Basic palette */
+
+$white: #ffffff;
 $black: #000;
 
-/* Z-index */
+$primary-10: #230e47;
+$primary-20: #372266;
+$primary-30: #4f378b;
+$primary-40: #6750a4;
+$primary-50: #7f67be;
+$primary-60: #9a82db;
+$primary-70: #b69df8;
+$primary-80: #d0bcff;
+$primary-90: #eaddff;
+$primary-95: #f6edff;
+$primary-99: #fffbfe;
 
+$secondary-10: #172539;
+$secondary-20: #263e5f;
+$secondary-30: #355684;
+$secondary-40: #4875b4;
+$secondary-50: #678fc7;
+$secondary-60: #94b0d7;
+$secondary-70: #aec4e1;
+$secondary-80: #c9d7eb;
+$secondary-90: #dbe5f2;
+$secondary-95: #edf2f8;
+$secondary-99: #f6f8fc;
+
+$tertiary-10: #401910;
+$tertiary-20: #5f2518;
+$tertiary-30: #943925;
+$tertiary-40: #c94e32;
+$tertiary-50: #da6c53;
+$tertiary-60: #e38f7c;
+$tertiary-70: #eaa99a;
+$tertiary-80: #f0c2b8;
+$tertiary-90: #f6dcd7;
+$tertiary-95: #fbeeeb;
+$tertiary-99: #fdf6f5;
+
+$neutral-10: #1c1b1f;
+$neutral-20: #313033;
+$neutral-30: #484649;
+$neutral-40: #605d62;
+$neutral-50: #787579;
+$neutral-60: #939094;
+$neutral-70: #aeaaae;
+$neutral-80: #c9c5ca;
+$neutral-90: #e6e1e5;
+$neutral-95: #f4eff4;
+$neutral-99: #fffbfe;
+
+$neutral-variant-10: #1d1a22;
+$neutral-variant-20: #322f37;
+$neutral-variant-30: #49454f;
+$neutral-variant-40: #605d66;
+$neutral-variant-50: #79747e;
+$neutral-variant-60: #938f99;
+$neutral-variant-70: #aea9b4;
+$neutral-variant-80: #cac4d0;
+$neutral-variant-90: #e7e0ec;
+$neutral-variant-95: #f5eefa;
+$neutral-variant-99: #fffbfe;
+
+$danger-10: #410e0b;
+$danger-20: #601410;
+$danger-30: #8c1d18;
+$danger-40: #b3261e;
+$danger-50: #dc362e;
+$danger-60: #e46962;
+$danger-70: #ec928e;
+$danger-80: #f2b8b5;
+$danger-90: #f9dedc;
+$danger-95: #fceeee;
+$danger-99: #fffbf9;
+
+$success-10: #123e16;
+$success-20: #1d6725;
+$success-30: #299033;
+$success-40: #31ac3d;
+$success-50: #52b95c;
+$success-60: #73c77b;
+$success-70: #94d49a;
+$success-80: #b5e1b9;
+$success-90: #d6eed8;
+$success-95: #e6f5e8;
+$success-99: #f7fcf7;
+
+/* Body colors */
+
+$body-bg: var(--primary-container);
+$body-color: var(--on-primary-container);
+
+/* Misc global colors */
+
+$backdrop-color: rgba($black, 0.75);
+$danger: var(--danger);
+$success: var(--success);
+
+/**
+ ** TYPOGRAPHY
+ **/
+
+$font-family-base: 'Roboto', sans-serif;
+$font-family-alternate: 'Rubik', sans-serif;
+
+$font-size-base: 1rem;
+
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 800;
+
+$line-height-base: 1.5;
+$line-height-heading: 1.2;
+
+$h1-multiplier: 2.25;
+$h2-multiplier: 1.625;
+$h3-multiplier: 1.375;
+$h4-multiplier: 1.25;
+$h5-multiplier: 1.125;
+$h6-multiplier: 1;
+
+/**
+ ** GRID
+ **/
+
+$breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+);
+
+$grid-gap: 1.5rem;
+
+$spacer: 1rem;
+$spacers: (
+  0: 0,
+  4: 0.25rem,
+  8: 0.5rem,
+  12: 0.75rem,
+  16: 1rem,
+  24: 1.5rem,
+  auto: auto,
+);
+
+/**
+ ** OPTIONS
+ **/
+
+$border-width: 1px;
+$transition: all 0.2s ease-in-out;
+
+$displays: (
+  block: 'block',
+  inline: 'inline',
+  inline-block: 'inline-block',
+  flex: 'flex',
+  inline-flex: 'inline-flex',
+  grid: 'grid',
+  inline-grid: 'inline-grid',
+  none: 'none',
+);
+
+/**
+ ** Z-INDICES
+ **/
+
+$zindex-dialog: 990;
+$zindex-drawer: 1010;
 $zindex-dropdown: 1000;
+$zindex-modal: 1020;
+$zindex-navbar: 1000;

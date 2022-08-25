@@ -1,10 +1,12 @@
-/* Normalize */
+/* Fonts imports */
 
-@import '../../node_modules/normalize.css/normalize.css';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;800&display=swap');
 
-@import '@/assets/styles/variables';
-@import '@/assets/styles/transitions';
+/* Custom style imports */
 
-body {
-  background-color: $white;
-}
+@import 'reset';
+@import 'variables';
+@import 'functions';
+@import 'mixins';
+@import 'transitions';

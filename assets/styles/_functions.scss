@@ -1,0 +1,17 @@
+/* Get contrasting color, stolen from Bootstrap */
+
+$threshold: 170;
+
+@function color-contrast($color, $dark: $body-color, $light: $body-bg) {
+  $r: red($color);
+  $g: green($color);
+  $b: blue($color);
+
+  $contrast: (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+
+  @if ($contrast >= $threshold) {
+    @return $dark;
+  } @else {
+    @return $light;
+  }
+}
