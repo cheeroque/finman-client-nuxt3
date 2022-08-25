@@ -24,7 +24,7 @@
 const props = defineProps<{
   autohide?: boolean | number | string
   message?: string
-  modelValue: boolean
+  modelValue?: boolean
   title?: string
   variant?: string
 }>()

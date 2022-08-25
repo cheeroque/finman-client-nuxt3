@@ -34,7 +34,7 @@ interface CheckboxInputEvent extends InputEvent {
 const props = defineProps<{
   disabled?: boolean
   form?: string
-  modelValue: CheckboxValue | CheckboxValue[]
+  modelValue?: CheckboxValue | CheckboxValue[]
   name?: string
   required?: boolean
   size?: string

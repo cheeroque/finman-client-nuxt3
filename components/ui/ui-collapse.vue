@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 const props = defineProps<{
   collapseClass?: string
-  modelValue: boolean
+  modelValue?: boolean
   transition?: string
 }>()
 const emit = defineEmits(['update:modelValue', 'hidden'])

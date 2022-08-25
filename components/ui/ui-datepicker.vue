@@ -55,7 +55,7 @@ import { DateTime, Info } from 'luxon'
 
 const props = defineProps<{
   locale?: string
-  modelValue: Date
+  modelValue?: Date
   titleFormat?: string
 }>()
 const emit = defineEmits(['click:day', 'update:modelValue'])

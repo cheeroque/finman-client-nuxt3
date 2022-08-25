@@ -33,7 +33,7 @@ const props = defineProps<{
   form?: string
   max?: number | string
   min?: number | string
-  modelValue: number | string
+  modelValue?: number | string
   name?: string
   placeholder?: string
   readonly?: boolean

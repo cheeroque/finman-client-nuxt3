@@ -43,7 +43,7 @@ interface SelectInputEvent extends InputEvent {
 const props = defineProps<{
   disabled?: boolean
   form?: string
-  modelValue: SelectValue | SelectValue[]
+  modelValue?: SelectValue | SelectValue[]
   name?: string
   options?: SelectOption[]
   required?: boolean
