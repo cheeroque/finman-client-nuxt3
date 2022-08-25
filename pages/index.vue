@@ -1,9 +1,11 @@
 <template>
   <div>
+    <UiTimepicker v-model="date" locale="ru" step-minutes="5" step-seconds="2" show-seconds />
+    <p></p>
     <UiDatepicker v-model="date" locale="ru">
       <template #btn-prev-year> prev year </template>
     </UiDatepicker>
-    <p>{{ date.toLocaleString({ dateStyle: 'short' }) }}</p>
+    <p>{{ date.toLocaleString('ru', { dateStyle: 'short', timeStyle: 'short' }) }}</p>
     <p>
       <UiButton @click="toastVisible = true">Show toast</UiButton>
       <UiToast v-model="toastVisible" :autohide="false" message="Toast message here" title="Title">
