@@ -6,7 +6,7 @@
           <slot name="header" :close="close">
             {{ title }}
             <UiButton class="btn-close" @click="close">
-              <NuxtIcon name="close-24" />
+              <UiIcon name="close-24" />
             </UiButton>
           </slot>
         </div>

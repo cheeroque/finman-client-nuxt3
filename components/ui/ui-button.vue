@@ -8,9 +8,9 @@
     :type="type"
     @click="emit('click')"
   >
-    <NuxtIcon v-if="icon && !iconRight" :name="icon" />
+    <UiIcon v-if="icon && !iconRight" :name="icon" :size="iconSize" />
     <slot></slot>
-    <NuxtIcon v-if="icon && iconRight" :name="icon" />
+    <UiIcon v-if="icon && iconRight" :name="icon" :size="iconSize" />
   </component>
 </template>
 
@@ -23,6 +23,7 @@ const props = defineProps<{
   href?: string
   icon?: string
   iconRight?: boolean
+  iconSize?: number | string
   rel?: string
   size?: string
   target?: string
