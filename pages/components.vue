@@ -1,17 +1,4 @@
 <template>
-  <div class="container" style="--grid-color: rgba(255, 0, 0, 0.15); --grid-columns: 12">
-    <div class="row">
-      <div class="col-12 col-md-6">
-        <h1>col1</h1>
-      </div>
-      <div class="col-12 col-md-3 col-start-md-9">
-        <h1>col2</h1>
-      </div>
-      <div class="col-12 col-md-8">
-        <h1>col3</h1>
-      </div>
-    </div>
-  </div>
   <div class="container">
     <div class="row-cols-7">
       <div class="col-lg-2">

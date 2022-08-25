@@ -99,7 +99,8 @@ $body-color: var(--on-background);
 /* Misc global colors */
 
 $backdrop-color: rgba($black, 0.75);
-$link-color: var(--primary);
+$link-active-color: var(--secondary);
+$link-hover-color: var(--primary);
 $danger: var(--danger);
 $success: var(--success);
 
@@ -138,12 +139,14 @@ $font-weight-bold: 800;
 $line-height-base: 1.5;
 $line-height-heading: 1.2;
 
-$h1-multiplier: 2.25;
-$h2-multiplier: 1.625;
-$h3-multiplier: 1.375;
-$h4-multiplier: 1.25;
-$h5-multiplier: 1.125;
-$h6-multiplier: 1;
+$heading-multipliers: (
+  1: 2.25,
+  2: 1.625,
+  3: 1.375,
+  4: 1.25,
+  5: 1.125,
+  6: 1,
+);
 
 /**
  ** BUTTONS & INPUTS

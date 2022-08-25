@@ -1,0 +1,47 @@
+@each $level, $multiplier in $heading-multipliers {
+  h#{$level},
+  .h#{$level} {
+    margin-top: 0;
+    margin-bottom: $spacer;
+    font-family: $font-family-alternate;
+    font-size: $font-size-base * $multiplier;
+    font-weight: $font-weight-normal;
+    line-height: $line-height-heading;
+  }
+}
+
+ol,
+ul {
+  margin-top: 0;
+  margin-bottom: $spacer;
+  padding-left: 1em;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: $spacer;
+}
+
+a {
+  transition: $transition;
+  transition-property: color;
+
+  &:link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  &:visited {
+    color: inherit;
+  }
+
+  &:active {
+    text-decoration: none;
+    color: $link-active-color;
+  }
+
+  &:hover {
+    text-decoration: underline;
+    color: $link-hover-color;
+  }
+}
