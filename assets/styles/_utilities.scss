@@ -1,0 +1,115 @@
+/**
+ ** DISPLAY MODES
+ **/
+
+@each $key, $value in $display-modes {
+  .d-#{$key} {
+    display: #{$value} !important;
+  }
+}
+
+@each $breakpoint, $width in map-remove($breakpoints, xs) {
+  @include media-min-width($breakpoint) {
+    @each $key, $value in $display-modes {
+      .d-#{$breakpoint}-#{$key} {
+        display: #{$value} !important;
+      }
+    }
+  }
+}
+
+/**
+ ** SPACING
+ **/
+
+@each $prop, $abbrev in (margin: m, padding: p) {
+  @for $multiplier from 0 through 24 {
+    .#{$abbrev}-#{$multiplier * 4} {
+      #{$prop}: $multiplier * 0.25rem !important;
+    }
+    .#{$abbrev}t-#{$multiplier * 4},
+    .#{$abbrev}y-#{$multiplier * 4} {
+      #{$prop}-top: $multiplier * 0.25rem !important;
+    }
+    .#{$abbrev}e-#{$multiplier * 4},
+    .#{$abbrev}x-#{$multiplier * 4} {
+      #{$prop}-right: $multiplier * 0.25rem !important;
+    }
+    .#{$abbrev}b-#{$multiplier * 4},
+    .#{$abbrev}y-#{$multiplier * 4} {
+      #{$prop}-bottom: $multiplier * 0.25rem !important;
+    }
+    .#{$abbrev}s-#{$multiplier * 4},
+    .#{$abbrev}x-#{$multiplier * 4} {
+      #{$prop}-left: $multiplier * 0.25rem !important;
+    }
+  }
+}
+
+.m-auto {
+  margin: auto !important;
+}
+.mt-auto,
+.mt-auto {
+  margin-top: auto !important;
+}
+.me-auto,
+.mx-auto {
+  margin-right: auto !important;
+}
+.mb-auto,
+.my-auto {
+  margin-bottom: auto !important;
+}
+.ms-auto,
+.mx-auto {
+  margin-left: auto !important;
+}
+
+@each $breakpoint, $width in map-remove($breakpoints, xs) {
+  @include media-min-width($breakpoint) {
+    @each $prop, $abbrev in (margin: m, padding: p) {
+      @for $multiplier from 0 through 24 {
+        .#{$abbrev}-#{$breakpoint}-#{$multiplier * 4} {
+          #{$prop}: $multiplier * 0.25rem !important;
+        }
+        .#{$abbrev}t-#{$breakpoint}-#{$multiplier * 4},
+        .#{$abbrev}y-#{$breakpoint}-#{$multiplier * 4} {
+          #{$prop}-top: $multiplier * 0.25rem !important;
+        }
+        .#{$abbrev}e-#{$breakpoint}-#{$multiplier * 4},
+        .#{$abbrev}x-#{$breakpoint}-#{$multiplier * 4} {
+          #{$prop}-right: $multiplier * 0.25rem !important;
+        }
+        .#{$abbrev}b-#{$breakpoint}-#{$multiplier * 4},
+        .#{$abbrev}y-#{$breakpoint}-#{$multiplier * 4} {
+          #{$prop}-bottom: $multiplier * 0.25rem !important;
+        }
+        .#{$abbrev}s-#{$breakpoint}-#{$multiplier * 4},
+        .#{$abbrev}x-#{$breakpoint}-#{$multiplier * 4} {
+          #{$prop}-left: $multiplier * 0.25rem !important;
+        }
+      }
+    }
+
+    .m-#{$breakpoint}-auto {
+      margin: auto !important;
+    }
+    .mt-#{$breakpoint}-auto,
+    .mt-#{$breakpoint}-auto {
+      margin-top: auto !important;
+    }
+    .me-#{$breakpoint}-auto,
+    .mx-#{$breakpoint}-auto {
+      margin-right: auto !important;
+    }
+    .mb-#{$breakpoint}-auto,
+    .my-#{$breakpoint}-auto {
+      margin-bottom: auto !important;
+    }
+    .ms-#{$breakpoint}-auto,
+    .mx-#{$breakpoint}-auto {
+      margin-left: auto !important;
+    }
+  }
+}

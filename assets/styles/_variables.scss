@@ -111,7 +111,7 @@ $success: var(--success);
 $border-width: 1px;
 $transition: all 0.2s ease-in-out;
 
-$displays: (
+$display-modes: (
   block: 'block',
   inline: 'inline',
   inline-block: 'inline-block',
@@ -185,15 +185,6 @@ $container-widths: (
 $grid-gap: 1.5rem;
 
 $spacer: 1rem;
-$spacers: (
-  0: 0,
-  4: 0.25rem,
-  8: 0.5rem,
-  12: 0.75rem,
-  16: 1rem,
-  24: 1.5rem,
-  auto: auto,
-);
 
 /**
  ** Z-INDICES
