@@ -65,41 +65,34 @@ const titleFormat = computed(() => props.titleFormat || 'LLLL y')
 
 const weekdays = Info.weekdays('short', { locale })
 
-const modelValueDate = DateTime.fromJSDate(props.modelValue)
+const luxonDate = ref(DateTime.fromJSDate(props.modelValue).set({ day: 1 }))
 
-const currentDate = ref(
-  DateTime.fromObject({
-    year: modelValueDate.year,
-    month: modelValueDate.month,
-  })
-)
-
-const currentMonth = computed(() => currentDate.value.month)
-const currentYear = computed(() => currentDate.value.year)
-const title = computed(() => currentDate.value.toFormat(titleFormat.value, { locale }))
+const currentMonth = computed(() => luxonDate.value.month)
+const currentYear = computed(() => luxonDate.value.year)
+const title = computed(() => luxonDate.value.toFormat(titleFormat.value, { locale }))
 
 const monthdays = computed(() => {
   let days = []
-  const leftPad = currentDate.value.weekday - 1
-  const rightPad = 7 - currentDate.value.plus({ months: 1 }).minus({ days: 1 }).weekday
-  const monthLength = currentDate.value.daysInMonth
+  const leftPad = luxonDate.value.weekday - 1
+  const rightPad = 7 - luxonDate.value.plus({ months: 1 }).minus({ days: 1 }).weekday
+  const monthLength = luxonDate.value.daysInMonth
   for (let i = -leftPad; i < monthLength + rightPad; i++) {
-    days.push(currentDate.value.plus({ days: i }))
+    days.push(luxonDate.value.plus({ days: i }))
   }
   return days
 })
 
 function setNextMonth() {
-  currentDate.value = currentDate.value.plus({ months: 1 })
+  luxonDate.value = luxonDate.value.plus({ months: 1 })
 }
 function setNextYear() {
-  currentDate.value = currentDate.value.plus({ years: 1 })
+  luxonDate.value = luxonDate.value.plus({ years: 1 })
 }
 function setPrevMonth() {
-  currentDate.value = currentDate.value.minus({ months: 1 })
+  luxonDate.value = luxonDate.value.minus({ months: 1 })
 }
 function setPrevYear() {
-  currentDate.value = currentDate.value.minus({ years: 1 })
+  luxonDate.value = luxonDate.value.minus({ years: 1 })
 }
 
 function setDate(date: DateTime) {

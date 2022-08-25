@@ -1,5 +1,7 @@
 <template>
   <div>
+    <UiDatepicker v-model="date" locale="ru" />
+    <p>{{ date }}</p>
     <UiDropdown v-model="dropdownVisible">
       <template #toggle="{ hide, show, toggle }">
         <UiButton @click="hide"> Hide dropdown </UiButton>
@@ -19,4 +21,6 @@
 
 <script setup>
 const dropdownVisible = ref(false)
+
+const date = ref(new Date(2022, 7, 25))
 </script>
