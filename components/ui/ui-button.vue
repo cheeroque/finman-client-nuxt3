@@ -20,10 +20,12 @@ import { RouteLocationRaw } from 'vue-router'
 const props = defineProps<{
   block?: boolean
   disabled?: boolean
-  href?: string | RouteLocationRaw
+  href?: string
   icon?: string
   iconRight?: boolean
+  rel?: string
   size?: string
+  target?: string
   to?: string | RouteLocationRaw
   type?: String
   variant?: String
