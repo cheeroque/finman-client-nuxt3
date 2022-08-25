@@ -1,6 +1,6 @@
 <template>
   <table class="table">
-    <thead v-if="!noHead">
+    <thead v-if="!hideThead">
       <tr>
         <th v-for="(field, index) in normalizedFields" :key="`th-${index}`" :class="field.thClass">
           <slot :name="`head(${field.key})`" :column="field.key" :field="field" :label="field.label">
@@ -24,8 +24,8 @@
 <script setup>
 const props = defineProps({
   fields: { type: Array, default: () => [] },
+  hideThead: Boolean,
   items: { type: Array, default: () => [] },
-  noHead: Boolean,
 })
 
 const normalizedFields = computed(() =>
