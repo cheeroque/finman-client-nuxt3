@@ -172,7 +172,7 @@
 
 @for $step from 4 through 32 {
   .fs-#{$step * 2} {
-    font-size: $step * 1rem * #{math.div(1rem, $font-size-base)} !important;
+    font-size: $step * 0.125rem * math.div($font-size-base, 1rem) !important;
   }
 }
 
@@ -180,7 +180,7 @@
   @include media-min-width($breakpoint) {
     @for $step from 4 through 32 {
       .fs-#{$breakpoint}-#{$step * 2} {
-        font-size: $step * 1rem * #{math.div(1rem, $font-size-base)} !important;
+        font-size: $step * 0.125rem * math.div($font-size-base, 1rem) !important;
       }
     }
   }
