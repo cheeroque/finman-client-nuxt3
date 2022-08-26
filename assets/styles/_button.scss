@@ -66,7 +66,7 @@
   width: 100%;
 }
 
-@each $variant in $button-variants {
+@each $variant in $theme-colors {
   .btn-#{$variant} {
     color: var(--on-#{$variant}) !important;
     background-color: var(--#{$variant}) !important;

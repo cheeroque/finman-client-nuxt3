@@ -91,6 +91,10 @@ $success-90: #d6eed8;
 $success-95: #e6f5e8;
 $success-99: #f7fcf7;
 
+/* Theme colors */
+
+$theme-colors: ('primary', 'secondary', 'tertiary', 'neutral', 'neutral-variant', 'danger', 'success');
+
 /* Body colors */
 
 $body-bg: var(--background);
@@ -157,8 +161,6 @@ $control-padding-y-lg: 0.9375rem;
 $control-padding-x: 0.6875rem;
 $control-padding-x-lg: 1.4375rem;
 $control-border-radius: 0.25rem;
-
-$button-variants: ('primary', 'secondary', 'tertiary', 'neutral', 'neutral-variant', 'danger', 'success');
 
 /**
  ** GRID

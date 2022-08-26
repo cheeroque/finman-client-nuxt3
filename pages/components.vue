@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="d-flex px-40 py-24">
-      <p class="mb-0 mx-lg-auto">spacing test 2</p>
+      <p class="bg-on-danger-container text-on-secondary mb-0 mx-lg-auto">spacing test 2</p>
     </div>
   </div>
 </template>

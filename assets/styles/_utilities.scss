@@ -113,3 +113,35 @@
     }
   }
 }
+
+/**
+ ** COLORS
+ **/
+
+@each $color in $theme-colors {
+  .bg-#{$color} {
+    background-color: var(--#{$color}) !important;
+  }
+  .bg-on-#{$color} {
+    background-color: var(--on-#{$color}) !important;
+  }
+  .bg-#{$color}-container {
+    background-color: var(--#{$color}-container) !important;
+  }
+  .bg-on-#{$color}-container {
+    background-color: var(--on-#{$color}-container) !important;
+  }
+
+  .text-#{$color} {
+    color: var(--#{$color}) !important;
+  }
+  .text-on-#{$color} {
+    color: var(--on-#{$color}) !important;
+  }
+  .text-#{$color}-container {
+    color: var(--#{$color}-container) !important;
+  }
+  .text-on-#{$color}-container {
+    color: var(--on-#{$color}-container) !important;
+  }
+}
