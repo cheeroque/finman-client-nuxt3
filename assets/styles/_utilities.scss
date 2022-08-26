@@ -115,6 +115,78 @@
 }
 
 /**
+ ** TYPOGRAPHY
+ **/
+
+.ff-base {
+  font-family: $font-family-base !important;
+}
+
+.ff-alt {
+  font-family: $font-family-alternate !important;
+}
+
+.fs-base {
+  font-size: $font-size-base !important;
+}
+
+.fw-light,
+.fw-300 {
+  font-weight: $font-weight-light !important;
+}
+
+.fw-normal,
+.fw-400 {
+  font-weight: $font-weight-normal !important;
+}
+
+.fw-medium,
+.fw-500 {
+  font-weight: $font-weight-medium !important;
+}
+
+.fw-bold,
+.fw-800 {
+  font-weight: $font-weight-bold !important;
+}
+
+.lh-base,
+.lh-150 {
+  line-height: $line-height-base !important;
+}
+
+.lh-heading,
+.lh-120 {
+  line-height: $line-height-heading !important;
+}
+
+.lh-100 {
+  line-height: 1 !important;
+}
+
+.lh-140 {
+  line-height: 1.4 !important;
+}
+
+/* Responsive font sizes */
+
+@for $step from 4 through 32 {
+  .fs-#{$step * 2} {
+    font-size: $step * 1rem * #{math.div(1rem, $font-size-base)} !important;
+  }
+}
+
+@each $breakpoint, $width in map-remove($breakpoints, xs) {
+  @include media-min-width($breakpoint) {
+    @for $step from 4 through 32 {
+      .fs-#{$breakpoint}-#{$step * 2} {
+        font-size: $step * 1rem * #{math.div(1rem, $font-size-base)} !important;
+      }
+    }
+  }
+}
+
+/**
  ** COLORS
  **/
 
