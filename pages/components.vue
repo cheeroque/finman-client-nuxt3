@@ -3,34 +3,39 @@
     <div class="row">
       <div class="col-lg-6 col-offset-lg-3">
         <form @submit.prevent>
-          <UiFormGroup legend="Sample fieldset">
+          <UiFieldset :disabled="fieldsetDisabled" legend="Sample fieldset">
             <UiFormGroup label="Form group" size="lg">
               <UiInput placeholder="Sample placeholder" />
             </UiFormGroup>
-            <UiFormGroup label="Valid form group" size="lg" valid-feedback="Input validated" valid validated>
+            <UiFormGroup label="Valid form group" size="lg" valid validated>
               <UiInput placeholder="Sample placeholder" />
             </UiFormGroup>
-            <UiFormGroup
-              label="Invalid form group"
-              size="lg"
-              invalid-feedback="Please fill this field"
-              :valid="false"
-              validated
-            >
+            <UiFormGroup label="Invalid form group" :valid="false" validated>
               <UiInput placeholder="Sample placeholder" />
             </UiFormGroup>
-
-            <UiFormGroup size="lg">
-              <UiInput placeholder="Large group without label" />
+            <UiFormGroup label="Form select group" size="lg" :disabled="disabled">
+              <UiSelect v-model="selectedOption" :options="options" />
             </UiFormGroup>
-          </UiFormGroup>
+          </UiFieldset>
         </form>
+
+        selected: {{ selectedOption }}
       </div>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+const fieldsetDisabled = ref(false)
+const disabled = ref(false)
+
+const options = [
+  { value: null, text: 'option null', disabled: true },
+  { value: 1, text: 'option 1' },
+  { value: 2, text: 'option 2' },
+]
+const selectedOption = ref(null)
+</script>
 
 <style lang="scss" scoped>
 .container {

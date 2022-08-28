@@ -1,9 +1,9 @@
 <template>
   <input
+    :id="id"
     :autocomplete="autocomplete"
-    :class="{ 'is-invalid': state === false, 'is-valid': state === true }"
+    :class="componentClasses"
     :disabled="disabled"
-    :form="form"
     :max="max"
     :min="min"
     :name="name"
@@ -11,7 +11,7 @@
     :readonly="readonly"
     :required="required"
     :step="step"
-    :type="type"
+    :type="inputType"
     :value="modelValue"
     class="form-control"
     @input="onInput"
@@ -19,6 +19,8 @@
 </template>
 
 <script lang="ts" setup>
+import { ComputedRef } from 'vue'
+
 interface InputInputEventTarget extends EventTarget {
   value: string
 }
@@ -30,7 +32,6 @@ interface InputInputEvent extends InputEvent {
 const props = defineProps<{
   autocomplete?: string
   disabled?: boolean
-  form?: string
   max?: number | string
   min?: number | string
   modelValue?: number | string
@@ -46,8 +47,32 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['update:modelValue'])
 
-const state = computed(() => (props.validated ? props.valid : null))
-const type = computed(() => props.type ?? 'text')
+const id: ComputedRef<string> = inject('control-id')
+const inputType = computed(() => props.type ?? 'text')
+const validationState = computed(() => (props.validated ? props.valid : null))
+
+const groupSize: ComputedRef<string> = inject('group-size')
+const size = computed(() => props.size || groupSize?.value)
+
+const groupDisabled: ComputedRef<boolean> = inject('group-disabled')
+const disabled = computed(() => props.disabled || groupDisabled?.value)
+
+const componentClasses = computed(() => {
+  const classes = []
+  if (disabled.value) {
+    classes.push('disabled')
+  }
+  if (size.value) {
+    classes.push(`form-control-${size.value}`)
+  }
+  if (validationState.value === true) {
+    classes.push('is-valid')
+  }
+  if (validationState.value === false) {
+    classes.push('is-invalid')
+  }
+  return classes
+})
 
 function onInput(event: InputInputEvent): void {
   emit('update:modelValue', event.target.value)

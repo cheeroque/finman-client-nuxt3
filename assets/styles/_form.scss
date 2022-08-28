@@ -1,60 +1,85 @@
-.form-group {
-  position: relative;
-  display: block;
+.form-fieldset {
   margin: 0 0 $spacer;
   padding: 0;
   border: none;
   appearance: none;
 
-  & > .form-group {
-    &:last-child {
-      margin-bottom: 0;
-    }
+  & > *:last-child {
+    margin-bottom: 0;
   }
+}
 
-  label,
-  legend {
-    display: block;
-    line-height: $line-height-base;
-  }
-
-  label {
-    margin-bottom: $spacer * 0.5;
-    font-family: $font-family-base;
-    font-size: $font-size-base * 0.75;
-    font-weight: $font-weight-normal;
-  }
-
-  legend {
-    margin-bottom: $spacer;
-    font-family: $font-family-alternate;
-    font-size: $font-size-base;
-    font-weight: $font-weight-medium;
-  }
+.form-group {
+  position: relative;
+  display: block;
+  margin: 0 0 $spacer;
 
   &.form-group-lg {
-    label {
+    .form-label {
       position: absolute;
       top: $control-padding-y;
       left: $control-padding-x;
-      color: var(--primary);
+      color: $control-accent;
+      z-index: 1;
     }
-  }
 
-  &.is-valid {
-    &.form-group-lg {
-      label {
-        color: var(--success);
+    &:focus-within {
+      .form-label {
+        color: $control-focus-accent;
+      }
+    }
+
+    &.disabled {
+      .form-label {
+        color: $control-disabled-accent;
+      }
+    }
+
+    &:not(.disabled) {
+      &.is-valid {
+        .form-label {
+          color: $control-valid-accent;
+        }
+      }
+
+      &.is-invalid {
+        .form-label {
+          color: $control-invalid-accent;
+        }
       }
     }
   }
+}
 
-  &.is-invalid {
-    &.form-group-lg {
-      label {
-        color: var(--danger);
-      }
-    }
+.form-legend {
+  display: block;
+  margin-bottom: $spacer;
+  font-family: $font-family-alternate;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-base;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: $spacer * 0.5;
+  font-family: $font-family-base;
+  font-size: $font-size-base * 0.75;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-base;
+  transition: $transition;
+  transition-property: color;
+}
+
+.form-feedback {
+  margin: 0.25rem 0 0;
+  font-size: $font-size-base * 0.75;
+
+  &.form-feedback-valid {
+    color: $control-valid-accent;
+  }
+  &.form-feedback-invalid {
+    color: $control-invalid-accent;
   }
 }
 
@@ -69,12 +94,12 @@
   line-height: $line-height-base;
   border: none;
   border-radius: $control-border-radius $control-border-radius 0 0;
-  color: var(--on-surface);
-  background-color: var(--surface);
-  background-image: linear-gradient(to top, var(--secondary), var(--secondary)),
-    linear-gradient(to top, var(--on-surface), var(--on-surface));
-  background-position: bottom, bottom;
-  background-repeat: no-repeat, no-repeat;
+  color: $control-color;
+  background-color: $control-bg;
+  background-image: linear-gradient(to top, $control-focus-accent, $control-focus-accent),
+    linear-gradient(to top, $control-color, $control-color);
+  background-position: bottom left, bottom;
+  background-repeat: no-repeat;
   background-size: 0 $border-width * 2, 100% $border-width;
   transition: $transition;
   transition-property: background-color, background-size;
@@ -91,63 +116,124 @@
   }
 
   &::placeholder {
-    color: var(--primary);
+    color: $control-accent;
+    opacity: 0.5;
   }
 
   &.focus,
   &:focus {
-    color: var(--on-secondary-container);
-    background-color: var(--secondary-container);
+    color: $control-focus-color;
+    background-color: $control-focus-bg;
     background-size: 100% $border-width * 2, 100% $border-width;
     box-shadow: none;
     outline: none;
 
     &::placeholder {
-      color: var(--secondary);
+      color: $control-focus-accent;
     }
   }
 
   &:disabled {
-    color: var(--on-disabled-container);
-    background-color: var(--disabled-container);
+    color: $control-disabled-color;
+    background-color: $control-disabled-bg;
     background-image: none;
     cursor: default;
-  }
-
-  &.is-valid,
-  .is-valid & {
-    color: var(--on-success-container);
-    background-color: var(--success-container);
-    background-image: linear-gradient(to top, var(--success), var(--success)),
-      linear-gradient(to top, var(--on-surface), var(--on-surface));
 
     &::placeholder {
-      color: var(--success);
+      color: $control-disabled-accent;
     }
   }
 
-  &:invalid,
-  &.is-invalid,
-  .is-invalid & {
-    color: var(--on-danger-container);
-    background-color: var(--danger-container);
-    background-image: linear-gradient(to top, var(--danger), var(--danger)),
-      linear-gradient(to top, var(--on-surface), var(--on-surface));
+  &:not(:disabled):not(.disabled) {
+    &.is-valid,
+    .is-valid & {
+      color: $control-valid-color;
+      background-color: $control-valid-bg;
+      background-image: linear-gradient(to top, $control-valid-accent, $control-valid-accent),
+        linear-gradient(to top, $control-valid-color, $control-valid-color);
 
-    &::placeholder {
-      color: var(--danger);
+      &::placeholder {
+        color: $control-valid-accent;
+      }
+    }
+
+    &:invalid,
+    &.is-invalid,
+    .is-invalid & {
+      color: $control-invalid-color;
+      background-color: $control-invalid-bg;
+      background-image: linear-gradient(to top, $control-invalid-accent, $control-invalid-accent),
+        linear-gradient(to top, $control-invalid-color, $control-invalid-color);
+
+      &::placeholder {
+        color: $control-invalid-accent;
+      }
     }
   }
 }
 
-.form-feedback {
-  margin: 0.25rem 0 0;
-  font-size: $font-size-base * 0.75;
+.form-select {
+  position: relative;
 
-  &.form-feedback-valid {
-    color: var(--success);
+  .form-select-indicator {
+    position: absolute;
+    right: $control-padding-x;
+    bottom: $control-padding-y;
+    color: $control-accent;
+    transform: rotate(0);
+    transition: $transition;
+    transition-property: transform;
   }
-  &.form-feedback-invalid {
-    color: var(--danger);
+
+  &:focus-within {
+    .form-select-indicator {
+      color: $control-focus-accent;
+      transform: rotate(-180deg);
+    }
+  }
+
+  &.disabled {
+    .form-select-indicator {
+      color: $control-disabled-accent;
+    }
+  }
+
+  &:not(:disabled):not(.disabled) {
+    &.is-valid,
+    .is-valid & {
+      .form-select-indicator {
+        color: $control-valid-accent;
+      }
+    }
+
+    &:invalid,
+    &.is-invalid,
+    .is-invalid & {
+      .form-select-indicator {
+        color: $control-invalid-accent;
+      }
+    }
+  }
+
+  .form-group-lg label ~ & > .form-control {
+    padding: ($control-padding-y-lg * 2 - $control-padding-y) calc(#{$control-padding-x} + #{$border-width})
+      calc(#{$control-padding-y} + #{$border-width * 2});
+  }
+
+  option {
+    transition: $transition;
+    transition-property: background-color;
+  }
+}
+
+@-moz-document url-prefix() {
+  .form-select {
+    .form-control {
+      padding-left: calc(#{$control-padding-x} - 4px);
+    }
+
+    .form-group-lg label ~ & > .form-control {
+      padding-left: calc(#{$control-padding-x} - 4px);
+    }
   }
 }

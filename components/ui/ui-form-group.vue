@@ -1,40 +1,27 @@
 <template>
-  <component
-    :is="hasLegend ? 'fieldset' : 'div'"
-    v-uid
-    ref="fieldset"
-    :class="componentClasses"
-    :disabled="disabled"
-    :form="form"
-    class="form-group"
-  >
-    <legend v-if="hasLegend">
-      <slot name="legend">
-        {{ legend }}
-      </slot>
-    </legend>
-    <label v-if="hasLabel" :for="controlId">
+  <div v-uid ref="parent" :class="componentClasses" class="form-group">
+    <label v-if="hasLabel" :for="controlId" class="form-label">
       <slot name="label">
         {{ label }}
       </slot>
     </label>
     <slot></slot>
     <p
-      v-if="feedback"
+      v-if="validationFeedback"
       :class="{ 'form-feedback-invalid': validationState === false, 'form-feedback-valid': validationState === true }"
       class="form-feedback"
-      v-text="feedback"
+      v-text="validationFeedback"
     />
-  </component>
+  </div>
 </template>
 
 <script lang="ts" setup>
+import { ComputedRef } from 'vue'
+
 const props = defineProps<{
   disabled?: boolean
-  form?: string
   invalidFeedback?: string
   label?: string
-  legend?: string
   size?: string
   valid?: boolean
   validFeedback?: string
@@ -42,22 +29,29 @@ const props = defineProps<{
 }>()
 const slots = useSlots()
 
-const fieldset = ref(null)
+const parent = ref(null)
 
-const hasLegend = computed(() => Boolean(props.legend || slots.legend))
+const controlId = computed(() => `${parent?.value?.id}-control`)
 const hasLabel = computed(() => Boolean(props.label || slots.label))
-const validationState = computed(() => (props.validated ? props.valid : null))
 
-const feedback = computed(
+const validationState = computed(() => (props.validated ? props.valid : null))
+const validationFeedback = computed(
   () =>
     (validationState.value === true && props.validFeedback) ||
     (validationState.value === false && props.invalidFeedback)
 )
-const controlId = computed(() => `${fieldset?.value?.id}-control`)
+
+const size = computed(() => props.size)
+
+const fieldsetDisabled: ComputedRef<boolean> = inject('fieldset-disabled')
+const disabled = computed(() => props.disabled || fieldsetDisabled.value)
 
 const componentClasses = computed(() => {
   const classes = []
-  if (props.size) {
+  if (disabled.value) {
+    classes.push('disabled')
+  }
+  if (size.value) {
     classes.push(`form-group-${props.size}`)
   }
   if (validationState.value === true) {
@@ -69,13 +63,7 @@ const componentClasses = computed(() => {
   return classes
 })
 
-onMounted(() => {
-  if (hasLabel) {
-    const control = fieldset?.value?.querySelector('input, output, select, textarea')
-    control?.setAttribute('id', controlId.value)
-    if (props.size) {
-      control?.classList.add(`form-control-${props.size}`)
-    }
-  }
-})
+provide('control-id', controlId)
+provide('group-size', size)
+provide('group-disabled', disabled)
 </script>

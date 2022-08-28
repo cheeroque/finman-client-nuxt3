@@ -166,6 +166,26 @@ $control-focus-filter: brightness(0.7) contrast(2.25);
 $control-hover-filter: brightness(0.85) contrast(1.5);
 $control-focus-outline-width: 2px;
 
+$control-color: var(--on-surface);
+$control-bg: var(--surface);
+$control-accent: var(--primary);
+
+$control-focus-color: var(--on-secondary-container);
+$control-focus-bg: var(--secondary-container);
+$control-focus-accent: var(--secondary);
+
+$control-valid-color: var(--on-success-container);
+$control-valid-bg: var(--success-container);
+$control-valid-accent: var(--success);
+
+$control-invalid-color: var(--on-danger-container);
+$control-invalid-bg: var(--danger-container);
+$control-invalid-accent: var(--danger);
+
+$control-disabled-color: var(--on-disabled-container);
+$control-disabled-bg: var(--disabled-container);
+$control-disabled-accent: var(--on-disabled-container);
+
 /**
  ** GRID
  **/
