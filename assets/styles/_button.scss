@@ -24,11 +24,29 @@
     cursor: default;
   }
 
-  &:not(:disabled):not(.disabled):focus,
-  &:not(:disabled):not(.disabled):hover {
-    color: $body-color;
-    background-color: $body-bg;
-    filter: brightness(0.85);
+  &:not(:disabled):not(.disabled) {
+    &:active,
+    &:focus,
+    &:hover {
+      color: $body-color;
+      background-color: $body-bg;
+    }
+
+    &:active {
+      filter: $control-active-filter;
+    }
+    &:focus {
+      outline: none;
+      filter: $control-focus-filter;
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 $control-focus-outline-width rgba($neutral-40, 0.1);
+      filter: $control-focus-filter;
+    }
+    &:hover {
+      filter: $control-hover-filter;
+    }
   }
 
   &.btn-lg {
@@ -69,13 +87,17 @@
 @each $variant in $theme-colors {
   .btn-#{$variant} {
     color: var(--on-#{$variant}) !important;
+    border-color: var(--#{$variant}) !important;
     background-color: var(--#{$variant}) !important;
 
-    &:not(:disabled):not(.disabled):focus,
-    &:not(:disabled):not(.disabled):hover {
-      color: var(--on-#{$variant}) !important;
-      background-color: var(--#{$variant}) !important;
-      filter: brightness(0.85) saturate(1.5);
+    &:not(:disabled):not(.disabled) {
+      &:active,
+      &:focus,
+      &:hover {
+        color: var(--on-#{$variant}) !important;
+        border-color: var(--#{$variant}) !important;
+        background-color: var(--#{$variant}) !important;
+      }
     }
   }
 
@@ -84,24 +106,30 @@
     border-color: var(--#{$variant}) !important;
     background-color: transparent !important;
 
-    &:not(:disabled):not(.disabled):focus,
-    &:not(:disabled):not(.disabled):hover {
-      color: var(--on-#{$variant}) !important;
-      border-color: var(--#{$variant}) !important;
-      background-color: var(--#{$variant}) !important;
-      filter: none;
+    &:not(:disabled):not(.disabled) {
+      &:active,
+      &:focus,
+      &:hover {
+        color: var(--on-#{$variant}) !important;
+        border-color: var(--#{$variant}) !important;
+        background-color: var(--#{$variant}) !important;
+      }
     }
   }
 
   .btn-#{$variant}-muted {
     color: var(--on-#{$variant}-container) !important;
+    border-color: var(--#{$variant}-container) !important;
     background-color: var(--#{$variant}-container) !important;
 
-    &:not(:disabled):not(.disabled):focus,
-    &:not(:disabled):not(.disabled):hover {
-      color: var(--on-#{$variant}-container) !important;
-      background-color: var(--#{$variant}-container) !important;
-      filter: brightness(0.85) saturate(1.5);
+    &:not(:disabled):not(.disabled) {
+      &:active,
+      &:focus,
+      &:hover {
+        color: var(--on-#{$variant}-container) !important;
+        border-color: var(--#{$variant}-container) !important;
+        background-color: var(--#{$variant}-container) !important;
+      }
     }
   }
 }

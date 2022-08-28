@@ -161,6 +161,10 @@ $control-padding-y-lg: 0.9375rem;
 $control-padding-x: 0.6875rem;
 $control-padding-x-lg: 1.4375rem;
 $control-border-radius: 0.25rem;
+$control-active-filter: brightness(0.75) contrast(1.875);
+$control-focus-filter: brightness(0.7) contrast(2.25);
+$control-hover-filter: brightness(0.85) contrast(1.5);
+$control-focus-outline-width: 2px;
 
 /**
  ** GRID

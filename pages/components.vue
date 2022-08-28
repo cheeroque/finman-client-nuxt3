@@ -1,21 +1,15 @@
 <template>
-  <div class="container">
+  <div class="container py-8">
     <div class="row">
-      <div class="col-12 col-md-6 order-lg-3">
-        <div class="block">1</div>
+      <div class="col-2">
+        <UiButton icon="home-24" variant="danger" block> Test block button </UiButton>
       </div>
-      <div class="col-6 col-md-4 col-lg-2 order-lg-2 order-xl-none">
-        <div class="block">2</div>
+      <div class="col-2">
+        <UiButton icon="home-24" variant="danger-outline" block> Test block button </UiButton>
       </div>
-      <div class="col-auto col-md-2 order-lg-1 order-xl-none">
-        <div class="block">3</div>
+      <div class="col-2">
+        <UiButton icon="home-24" variant="danger-muted" block> Test block button </UiButton>
       </div>
-      <div class="col-sm-6 col-md-8 col-lg-auto col-offset-6 col-offset-lg-8 col-offset-xl-0 order-lg-4">
-        <div class="block">4</div>
-      </div>
-    </div>
-    <div class="d-flex px-40 py-24">
-      <p class="fs-24 fs-xl-64">spacing test 2</p>
     </div>
   </div>
 </template>
