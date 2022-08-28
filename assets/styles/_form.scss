@@ -1,0 +1,153 @@
+.form-group {
+  position: relative;
+  display: block;
+  margin: 0 0 $spacer;
+  padding: 0;
+  border: none;
+  appearance: none;
+
+  & > .form-group {
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  label,
+  legend {
+    display: block;
+    line-height: $line-height-base;
+  }
+
+  label {
+    margin-bottom: $spacer * 0.5;
+    font-family: $font-family-base;
+    font-size: $font-size-base * 0.75;
+    font-weight: $font-weight-normal;
+  }
+
+  legend {
+    margin-bottom: $spacer;
+    font-family: $font-family-alternate;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+  }
+
+  &.form-group-lg {
+    label {
+      position: absolute;
+      top: $control-padding-y;
+      left: $control-padding-x;
+      color: var(--primary);
+    }
+  }
+
+  &.is-valid {
+    &.form-group-lg {
+      label {
+        color: var(--success);
+      }
+    }
+  }
+
+  &.is-invalid {
+    &.form-group-lg {
+      label {
+        color: var(--danger);
+      }
+    }
+  }
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: $control-padding-y calc(#{$control-padding-x} + #{$border-width})
+    calc(#{$control-padding-y} + #{$border-width * 2});
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-base;
+  border: none;
+  border-radius: $control-border-radius $control-border-radius 0 0;
+  color: var(--on-surface);
+  background-color: var(--surface);
+  background-image: linear-gradient(to top, var(--secondary), var(--secondary)),
+    linear-gradient(to top, var(--on-surface), var(--on-surface));
+  background-position: bottom, bottom;
+  background-repeat: no-repeat, no-repeat;
+  background-size: 0 $border-width * 2, 100% $border-width;
+  transition: $transition;
+  transition-property: background-color, background-size;
+  appearance: none;
+
+  &.form-control-lg {
+    padding: $control-padding-y-lg calc(#{$control-padding-x-lg} + #{$border-width})
+      calc(#{$control-padding-y-lg} + #{$border-width * 2});
+  }
+
+  .form-group-lg label ~ & {
+    padding: ($control-padding-y-lg * 2 - $control-padding-y) calc(#{$control-padding-x} + #{$border-width})
+      calc(#{$control-padding-y} + #{$border-width * 2});
+  }
+
+  &::placeholder {
+    color: var(--primary);
+  }
+
+  &.focus,
+  &:focus {
+    color: var(--on-secondary-container);
+    background-color: var(--secondary-container);
+    background-size: 100% $border-width * 2, 100% $border-width;
+    box-shadow: none;
+    outline: none;
+
+    &::placeholder {
+      color: var(--secondary);
+    }
+  }
+
+  &:disabled {
+    color: var(--on-disabled-container);
+    background-color: var(--disabled-container);
+    background-image: none;
+    cursor: default;
+  }
+
+  &.is-valid,
+  .is-valid & {
+    color: var(--on-success-container);
+    background-color: var(--success-container);
+    background-image: linear-gradient(to top, var(--success), var(--success)),
+      linear-gradient(to top, var(--on-surface), var(--on-surface));
+
+    &::placeholder {
+      color: var(--success);
+    }
+  }
+
+  &:invalid,
+  &.is-invalid,
+  .is-invalid & {
+    color: var(--on-danger-container);
+    background-color: var(--danger-container);
+    background-image: linear-gradient(to top, var(--danger), var(--danger)),
+      linear-gradient(to top, var(--on-surface), var(--on-surface));
+
+    &::placeholder {
+      color: var(--danger);
+    }
+  }
+}
+
+.form-feedback {
+  margin: 0.25rem 0 0;
+  font-size: $font-size-base * 0.75;
+
+  &.form-feedback-valid {
+    color: var(--success);
+  }
+  &.form-feedback-invalid {
+    color: var(--danger);
+  }
+}

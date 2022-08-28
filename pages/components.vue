@@ -1,14 +1,30 @@
 <template>
   <div class="container py-8">
     <div class="row">
-      <div class="col-2">
-        <UiButton icon="home-24" variant="danger" block> Test block button </UiButton>
-      </div>
-      <div class="col-2">
-        <UiButton icon="home-24" variant="danger-outline" block> Test block button </UiButton>
-      </div>
-      <div class="col-2">
-        <UiButton icon="home-24" variant="danger-muted" block> Test block button </UiButton>
+      <div class="col-lg-6 col-offset-lg-3">
+        <form @submit.prevent>
+          <UiFormGroup legend="Sample fieldset">
+            <UiFormGroup label="Form group" size="lg">
+              <UiInput placeholder="Sample placeholder" />
+            </UiFormGroup>
+            <UiFormGroup label="Valid form group" size="lg" valid-feedback="Input validated" valid validated>
+              <UiInput placeholder="Sample placeholder" />
+            </UiFormGroup>
+            <UiFormGroup
+              label="Invalid form group"
+              size="lg"
+              invalid-feedback="Please fill this field"
+              :valid="false"
+              validated
+            >
+              <UiInput placeholder="Sample placeholder" />
+            </UiFormGroup>
+
+            <UiFormGroup size="lg">
+              <UiInput placeholder="Large group without label" />
+            </UiFormGroup>
+          </UiFormGroup>
+        </form>
       </div>
     </div>
   </div>
