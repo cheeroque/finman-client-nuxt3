@@ -1,5 +1,5 @@
 <template>
-  <div v-uid ref="parent" :class="componentClasses" class="form-group">
+  <div v-uid ref="parent" :class="componentClasses">
     <label v-if="hasLabel" :for="controlId" class="form-label">
       <slot name="label">
         {{ label }}
@@ -20,6 +20,7 @@ import { ComputedRef } from 'vue'
 
 const props = defineProps<{
   disabled?: boolean
+  floatingLabel?: boolean
   invalidFeedback?: string
   label?: string
   size?: string
@@ -43,11 +44,17 @@ const validationFeedback = computed(
 
 const size = computed(() => props.size)
 
-const fieldsetDisabled: ComputedRef<boolean> = inject('fieldset-disabled')
+const fieldsetDisabled: ComputedRef<boolean> = inject(
+  'fieldset-disabled',
+  computed(() => false)
+)
 const disabled = computed(() => props.disabled || fieldsetDisabled.value)
 
 const componentClasses = computed(() => {
-  const classes = []
+  const classes = ['form-group']
+  if (props.floatingLabel) {
+    classes.push('floating-label')
+  }
   if (disabled.value) {
     classes.push('disabled')
   }

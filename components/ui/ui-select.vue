@@ -51,13 +51,19 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['update:modelValue'])
 
-const id: ComputedRef<string> = inject('control-id')
+const id: ComputedRef<string> | null = inject('control-id', null)
 const validationState = computed(() => (props.validated ? props.valid : null))
 
-const groupSize: ComputedRef<string> = inject('group-size')
+const groupSize: ComputedRef<string> = inject(
+  'group-size',
+  computed(() => '')
+)
 const size = computed(() => props.size || groupSize?.value)
 
-const groupDisabled: ComputedRef<boolean> = inject('group-disabled')
+const groupDisabled: ComputedRef<boolean> = inject(
+  'group-disabled',
+  computed(() => false)
+)
 const disabled = computed(() => props.disabled || groupDisabled?.value)
 
 const componentClasses = computed(() => {
