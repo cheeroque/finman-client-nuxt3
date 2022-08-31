@@ -14,8 +14,11 @@
               <UiInput placeholder="Sample placeholder" />
             </UiFormGroup>
             <UiFormGroup label="Form select group" size="lg" :disabled="disabled">
-              <UiSelect v-model="selectedOption" :options="options" />
+              <UiSelect v-model="selectedOption" :options="options">
+                <template #option-text="{ option, text }"> Value: {{ option.value }}. Text: {{ text }} </template>
+              </UiSelect>
             </UiFormGroup>
+            <UiSelect v-model="selectedOption" :options="options" />
           </UiFieldset>
         </form>
 

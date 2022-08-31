@@ -2,6 +2,7 @@
   <div :class="componentClasses" class="form-select">
     <select
       ref="select"
+      v-model="localValue"
       :id="id"
       :class="componentClasses"
       :disabled="disabled"
@@ -9,16 +10,16 @@
       :required="required"
       autocomplete="off"
       class="form-control"
-      @input="onInput"
     >
       <option
         v-for="(option, index) in options"
         :key="`option-${index}`"
         :disabled="option.disabled"
-        :selected="option.value === modelValue"
         :value="option.value"
       >
-        {{ option.text }}
+        <slot name="option-text" :option="option" :text="option.text">
+          {{ option.text }}
+        </slot>
       </option>
     </select>
     <span class="form-select-indicator" aria-hidden="true">
@@ -36,14 +37,6 @@ type SelectOption = {
   disabled?: boolean
   text: string
   value: SelectValue
-}
-
-interface SelectInputEventTarget extends EventTarget {
-  value: string
-}
-
-interface SelectInputEvent extends InputEvent {
-  target: SelectInputEventTarget
 }
 
 const props = defineProps<{
@@ -84,7 +77,11 @@ const componentClasses = computed(() => {
   return classes
 })
 
-function onInput(event: SelectInputEvent): void {
-  emit('update:modelValue', event.target.value)
-}
+const localValue = computed({
+  get: () => props.modelValue,
+  set: (event) => {
+    emit('update:modelValue', event)
+    console.log(event === props.modelValue)
+  },
+})
 </script>
