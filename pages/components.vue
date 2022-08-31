@@ -4,19 +4,19 @@
       <div class="col-lg-6 col-offset-lg-3">
         <form @submit.prevent>
           <UiFieldset :disabled="fieldsetDisabled" legend="Sample fieldset">
-            <UiFormGroup label="Form group" size="lg">
-              <UiInput placeholder="Sample placeholder" />
-            </UiFormGroup>
-            <UiFormGroup label="Valid form group" size="lg" valid validated>
-              <UiInput placeholder="Sample placeholder" />
-            </UiFormGroup>
-            <UiFormGroup label="Invalid form group" :valid="false" validated>
-              <UiInput placeholder="Sample placeholder" />
-            </UiFormGroup>
-            <UiFormGroup label="Form select group" size="lg" :disabled="disabled">
+            <UiFormGroup :valid="false" label="Form group" size="lg" floating-label validated>
               <UiSelect v-model="selectedOption" :options="options">
                 <template #option-text="{ option, text }"> Value: {{ option.value }}. Text: {{ text }} </template>
               </UiSelect>
+            </UiFormGroup>
+            <UiFormGroup label="Valid form group" floating-label valid validated>
+              <UiSelect v-model="selectedOption" :options="options" />
+            </UiFormGroup>
+            <UiFormGroup label="Invalid form group" :valid="false" size="lg" validated>
+              <UiInput placeholder="Sample placeholder" />
+            </UiFormGroup>
+            <UiFormGroup label="Invalid form group" :valid="false" size="lg" validated>
+              <UiSelect v-model="selectedOption" :options="options" />
             </UiFormGroup>
             <UiSelect v-model="selectedOption" :options="options" />
           </UiFieldset>

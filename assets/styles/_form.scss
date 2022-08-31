@@ -74,7 +74,8 @@
   }
 
   &.focus,
-  &:focus {
+  &:focus,
+  &:focus-within {
     color: $control-focus-color;
     background-color: $control-focus-bg;
     background-size: 100% $border-width * 2, 100% $border-width;
@@ -86,6 +87,7 @@
     }
   }
 
+  &.disabled,
   &:disabled {
     color: $control-disabled-color;
     background-color: $control-disabled-bg;
@@ -125,8 +127,20 @@
   }
 }
 
-.form-select {
+.form-control-select {
   position: relative;
+  padding: 0;
+
+  .form-select {
+    width: 100%;
+    padding: $control-padding-y calc(#{$control-padding-x} + #{$border-width})
+      calc(#{$control-padding-y} + #{$border-width * 2});
+    font-size: inherit;
+    line-height: inherit;
+    border: none;
+    background-color: transparent;
+    appearance: none;
+  }
 
   .form-select-indicator {
     position: absolute;
@@ -151,7 +165,7 @@
     }
   }
 
-  &:not(:disabled):not(.disabled) {
+  &:not(.disabled) {
     &.is-valid,
     .is-valid & {
       .form-select-indicator {
@@ -168,14 +182,13 @@
     }
   }
 
-  .form-group-lg label ~ & > .form-control {
-    padding: ($control-padding-y-lg * 2 - $control-padding-y) calc(#{$control-padding-x} + #{$border-width})
-      calc(#{$control-padding-y} + #{$border-width * 2});
-  }
+  &.form-control-lg {
+    padding: 0;
 
-  option {
-    transition: $transition;
-    transition-property: background-color;
+    .form-select {
+      padding: $control-padding-y-lg calc(#{$control-padding-x-lg} + #{$border-width})
+        calc(#{$control-padding-y-lg} + #{$border-width * 2});
+    }
   }
 }
 
@@ -197,6 +210,15 @@
     .form-control {
       padding: ($control-padding-y-lg * 2 - $control-padding-y) calc(#{$control-padding-x} + #{$border-width})
         calc(#{$control-padding-y} + #{$border-width * 2});
+    }
+
+    .form-control-select {
+      padding: 0;
+
+      .form-select {
+        padding: ($control-padding-y-lg * 2 - $control-padding-y) calc(#{$control-padding-x} + #{$border-width})
+          calc(#{$control-padding-y} + #{$border-width * 2});
+      }
     }
 
     &:focus-within {
@@ -235,20 +257,47 @@
         padding: ($control-padding-y-lg * 2) calc(#{$control-padding-x-lg} + #{$border-width})
           calc(#{$control-padding-y-lg} + #{$border-width * 2});
       }
+
+      .form-control-select {
+        padding: 0;
+
+        .form-select {
+          padding: ($control-padding-y-lg * 2) calc(#{$control-padding-x-lg} + #{$border-width})
+            calc(#{$control-padding-y-lg} + #{$border-width * 2});
+        }
+      }
     }
   }
 }
 
-/* fix <select> extra horizontal padding in Firefox */
+/**
+ ** Fix <select> extra horizontal padding in Firefox
+ **/
 
 @-moz-document url-prefix() {
-  .form-select {
-    .form-control {
+  .form-control-select {
+    .form-select {
       padding-left: calc(#{$control-padding-x} - 4px);
     }
 
-    .form-group-lg label ~ & > .form-control {
-      padding-left: calc(#{$control-padding-x} - 4px);
+    &.form-control-lg {
+      .form-select {
+        padding-left: calc(#{$control-padding-x-lg} - 4px);
+      }
+    }
+  }
+
+  .form-group.floating-label {
+    .form-control-select {
+      .form-select {
+        padding-left: calc(#{$control-padding-x} - 4px);
+      }
+
+      &.form-control-lg {
+        .form-select {
+          padding-left: calc(#{$control-padding-x-lg} - 4px);
+        }
+      }
     }
   }
 }

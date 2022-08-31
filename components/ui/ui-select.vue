@@ -1,15 +1,14 @@
 <template>
-  <div :class="componentClasses" class="form-select">
+  <div :class="componentClasses">
     <select
       ref="select"
       v-model="localValue"
       :id="id"
-      :class="componentClasses"
       :disabled="disabled"
       :name="name"
       :required="required"
       autocomplete="off"
-      class="form-control"
+      class="form-select"
     >
       <option
         v-for="(option, index) in options"
@@ -67,7 +66,7 @@ const groupDisabled: ComputedRef<boolean> = inject(
 const disabled = computed(() => props.disabled || groupDisabled?.value)
 
 const componentClasses = computed(() => {
-  const classes = []
+  const classes = ['form-control form-control-select']
   if (disabled.value) {
     classes.push('disabled')
   }
