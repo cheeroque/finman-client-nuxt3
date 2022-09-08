@@ -34,7 +34,7 @@ const props = defineProps<{
   icon?: string
   iconRight?: boolean
   modelValue?: boolean
-  size?: string
+  size?: ControlSize
   text?: string
   variant?: string
 }>()

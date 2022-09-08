@@ -23,7 +23,7 @@ const props = defineProps<{
   floatingLabel?: boolean
   invalidFeedback?: string
   label?: string
-  size?: string
+  size?: ControlSize
   valid?: boolean
   validFeedback?: string
   validated?: boolean

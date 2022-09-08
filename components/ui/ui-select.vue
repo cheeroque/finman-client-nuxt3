@@ -44,7 +44,7 @@ const props = defineProps<{
   name?: string
   options?: SelectOption[]
   required?: boolean
-  size?: string
+  size?: ControlSize
   valid?: boolean
   validated?: boolean
 }>()

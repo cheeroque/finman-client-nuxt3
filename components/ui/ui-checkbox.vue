@@ -37,7 +37,7 @@ const props = defineProps<{
   modelValue?: CheckboxValue | CheckboxValue[]
   name?: string
   required?: boolean
-  size?: string
+  size?: ControlSize
   uncheckedValue?: CheckboxValue
   valid?: boolean
   validated?: boolean

@@ -1,0 +1,136 @@
+.input-group {
+  display: flex;
+  border-radius: $control-border-radius $control-border-radius 0 0;
+  color: $control-color;
+  background-color: $control-bg;
+  background-image: linear-gradient(to top, $control-focus-accent, $control-focus-accent),
+    linear-gradient(to top, $control-color, $control-color);
+  background-position: bottom left, bottom;
+  background-repeat: no-repeat;
+  background-size: 0 $border-width * 2, 100% $border-width;
+  transition: $transition;
+  transition-property: background-color, background-size;
+
+  .form-control {
+    background-color: transparent;
+    background-image: none;
+  }
+
+  &.input-group-lg {
+    .input-group-prepend,
+    .input-group-append {
+      padding-top: $control-padding-y-lg;
+      padding-bottom: calc(#{$control-padding-y-lg} + #{$border-width * 2});
+    }
+
+    .input-group-prepend {
+      padding-left: calc(#{$control-padding-x-lg} + #{$border-width});
+    }
+
+    .input-group-append {
+      padding-right: calc(#{$control-padding-x-lg} + #{$border-width});
+    }
+  }
+
+  .floating-label & {
+    .input-group-prepend,
+    .input-group-append {
+      padding-top: $control-padding-y-lg * 2 - $control-padding-y;
+      padding-bottom: calc(#{$control-padding-y} + #{$border-width * 2});
+    }
+  }
+
+  .form-group-lg.floating-label & {
+    .input-group-prepend,
+    .input-group-append {
+      padding-top: ($control-padding-y-lg * 2);
+      padding-bottom: calc(#{$control-padding-y-lg} + #{$border-width * 2});
+    }
+
+    .input-group-prepend {
+      padding-left: calc(#{$control-padding-x-lg} + #{$border-width});
+    }
+
+    .input-group-append {
+      padding-right: calc(#{$control-padding-x-lg} + #{$border-width});
+    }
+  }
+
+  &:focus-within {
+    color: $control-focus-color;
+    background-color: $control-focus-bg;
+    background-size: 100% $border-width * 2, 100% $border-width;
+    box-shadow: none;
+    outline: none;
+
+    .input-group-prepend,
+    .input-group-append,
+    &::placeholder {
+      color: $control-focus-accent;
+    }
+  }
+
+  &:not(.disabled) {
+    &.is-valid,
+    .is-valid & {
+      color: $control-valid-color;
+      background-color: $control-valid-bg;
+      background-image: linear-gradient(to top, $control-valid-accent, $control-valid-accent),
+        linear-gradient(to top, $control-valid-color, $control-valid-color);
+
+      &::placeholder {
+        color: $control-valid-accent;
+      }
+
+      .form-control {
+        background-color: transparent;
+        background-image: none;
+      }
+
+      .input-group-prepend,
+      .input-group-append {
+        color: $control-valid-accent;
+      }
+    }
+
+    &:invalid,
+    &.is-invalid,
+    .is-invalid & {
+      color: $control-invalid-color;
+      background-color: $control-invalid-bg;
+      background-image: linear-gradient(to top, $control-invalid-accent, $control-invalid-accent),
+        linear-gradient(to top, $control-invalid-color, $control-invalid-color);
+
+      &::placeholder {
+        color: $control-invalid-accent;
+      }
+
+      .form-control {
+        background-color: transparent;
+        background-image: none;
+      }
+
+      .input-group-prepend,
+      .input-group-append {
+        color: $control-invalid-accent;
+      }
+    }
+  }
+}
+
+.input-group-prepend,
+.input-group-append {
+  display: flex;
+  align-items: center;
+  padding-top: $control-padding-y;
+  padding-bottom: calc(#{$control-padding-y} + #{$border-width * 2});
+  color: $control-accent;
+}
+
+.input-group-prepend {
+  padding-left: calc(#{$control-padding-x} + #{$border-width});
+}
+
+.input-group-append {
+  padding-right: calc(#{$control-padding-x} + #{$border-width});
+}

@@ -25,7 +25,7 @@ const props = defineProps<{
   iconRight?: boolean
   iconSize?: number | string
   rel?: string
-  size?: string
+  size?: ControlSize
   target?: string
   to?: string | RouteLocationRaw
   type?: string

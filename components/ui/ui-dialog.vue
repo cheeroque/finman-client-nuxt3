@@ -27,8 +27,6 @@
 </template>
 
 <script lang="ts" setup>
-type DialogSize = 'sm' | 'md' | 'lg' | null
-
 const props = defineProps<{
   hideFooter?: boolean
   hideHeader?: boolean

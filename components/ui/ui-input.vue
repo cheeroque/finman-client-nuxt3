@@ -39,7 +39,7 @@ const props = defineProps<{
   placeholder?: string
   readonly?: boolean
   required?: boolean
-  size?: string
+  size?: ControlSize
   step?: number | string
   type?: string
   valid?: boolean

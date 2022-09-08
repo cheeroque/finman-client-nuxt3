@@ -1,16 +1,41 @@
 <template>
   <div class="container py-8">
-    <UiButton variant="secondary" @click="dialogVisible = true"> Show dialog </UiButton>
-    &nbsp;
-    <UiButton variant="secondary-muted" @click="toastVisible = true"> Show toast </UiButton>
-    <UiDialog v-model="dialogVisible" title="Hello too!"> dialog content </UiDialog>
-    <UiToast v-model="toastVisible" :autohide="false" message="Toast message" title="Hello!" variant="secondary" />
+    <p>{{ color }}</p>
+    <div class="row">
+      <div class="col-4">
+        <UiFormGroup label="Color picker" floating-label>
+          <UiColorpicker v-model="color" :valid="false" validated />
+        </UiFormGroup>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-4">
+        <UiFormGroup label="Color picker" size="lg" floating-label>
+          <UiColorpicker v-model="color" />
+        </UiFormGroup>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-4">
+        <UiFormGroup label="Color picker">
+          <UiInputGroup prepend="$" size="lg">
+            <UiInput value="9999" />
+          </UiInputGroup>
+        </UiFormGroup>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-4">
+        <UiInputGroup prepend="$">
+          <UiInput value="9999" />
+        </UiInputGroup>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-const dialogVisible = ref(false)
-const toastVisible = ref(false)
+const color = ref(null)
 </script>
 
 <style lang="scss" scoped>

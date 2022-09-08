@@ -17,6 +17,8 @@ const props = defineProps<{
 
 <style lang="scss" scoped>
 .nuxt-icon-fixed {
+  line-height: 0;
+
   :deep(svg) {
     width: var(--nuxt-icon-size);
     height: var(--nuxt-icon-size);
