@@ -3,7 +3,7 @@
     :fill="fill"
     :name="name"
     :class="{ 'nuxt-icon-fixed': size }"
-    :style="{ '--nuxt-icon-size': `${size}px` }"
+    :style="{ '--nuxt-icon-size': size && `${size}px` }"
   />
 </template>
 
