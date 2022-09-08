@@ -6,7 +6,7 @@
           <slot name="header" :close="close">
             <h6 class="toast-title">{{ title }}</h6>
             <UiButton class="btn-close" @click="close">
-              <UiIcon name="close-24" />
+              <UiIcon name="close-24" size="16" />
             </UiButton>
           </slot>
         </div>

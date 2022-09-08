@@ -1,15 +1,16 @@
 $toast-padding-x: 1rem;
 $toast-padding-y: 0.75rem;
+$toast-border-radius: 0.25rem;
 
 .toast {
   position: fixed;
   right: 2rem;
   bottom: 2rem;
   width: 15rem;
-  border-radius: $control-border-radius;
+  border-radius: $toast-border-radius;
   color: $body-color;
   background-color: $body-bg;
-  z-index: $zindex-modal + 1;
+  z-index: $zindex-modal + 2;
 
   .btn-close {
     padding: 0.25rem;
@@ -19,6 +20,7 @@ $toast-padding-y: 0.75rem;
 .toast-header {
   display: flex;
   align-items: center;
+  gap: 0 $grid-gap;
   padding: $toast-padding-y $toast-padding-x 0;
 }
 
