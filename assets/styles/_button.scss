@@ -84,6 +84,18 @@
   width: 100%;
 }
 
+.btn-close {
+  line-height: 0;
+  border-radius: 99rem;
+  color: inherit;
+
+  .nuxt-icon {
+    svg {
+      margin-bottom: 0;
+    }
+  }
+}
+
 @each $variant in $theme-colors {
   .btn-#{$variant} {
     color: var(--on-#{$variant}) !important;
