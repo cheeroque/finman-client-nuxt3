@@ -1,0 +1,43 @@
+$toast-padding-x: 1rem;
+$toast-padding-y: 0.75rem;
+
+.toast {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+  width: 15rem;
+  border-radius: $control-border-radius;
+  color: $body-color;
+  background-color: $body-bg;
+  z-index: $zindex-modal + 1;
+
+  .btn-close {
+    padding: 0.25rem;
+  }
+}
+
+.toast-header {
+  display: flex;
+  align-items: center;
+  padding: $toast-padding-y $toast-padding-x 0;
+}
+
+.toast-title {
+  flex: 1 1 auto;
+  margin: 0;
+}
+
+.toast-body {
+  padding: $toast-padding-y $toast-padding-x;
+}
+
+@each $variant in $theme-colors {
+  .toast-#{$variant} {
+    color: var(--on-#{$variant}-container);
+    background-color: var(--#{$variant}-container);
+
+    .toast-header {
+      color: var(--#{$variant});
+    }
+  }
+}

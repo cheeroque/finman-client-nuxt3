@@ -1,10 +1,10 @@
 <template>
   <Teleport to="body">
     <Transition name="toast">
-      <div v-if="modelValue" :class="variant && `toast-${variant}`" class="toast">
+      <div v-if="modelValue" :class="toastClasses">
         <div class="toast-header">
           <slot name="header" :close="close">
-            {{ title }}
+            <h6 class="toast-title">{{ title }}</h6>
             <UiButton class="btn-close" @click="close">
               <UiIcon name="close-24" />
             </UiButton>
@@ -30,9 +30,12 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['update:modelValue'])
 
-const autohide = computed(() => props.autohide || 3000)
+const autohide = computed(() => props.autohide ?? 3000)
 
-let timeout: NodeJS.Timeout
+let toastClasses = ['toast']
+if (props.variant) toastClasses.push(`toast-${props.variant}`)
+
+let timeout: NodeJS.Timeout = undefined
 
 watch(
   () => props.modelValue,
@@ -48,11 +51,3 @@ function close(): void {
   emit('update:modelValue', false)
 }
 </script>
-
-<style lang="scss" scoped>
-.toast {
-  position: fixed;
-  right: 2rem;
-  bottom: 2rem;
-}
-</style>
