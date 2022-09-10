@@ -14,7 +14,7 @@
       </UiButton>
     </slot>
     <UiCollapse
-      :modelValue="visible"
+      :modelValue="localVisible"
       transition="dropdown"
       collapse-class="dropdown-menu"
       @hidden="$emit('hidden')"
@@ -41,9 +41,17 @@ const props = defineProps<{
 const emit = defineEmits(['update:modelValue', 'hidden'])
 
 const dropdown = ref(null)
-const visible = computed({
+
+const localVisible = computed({
   get: () => props.modelValue ?? false,
-  set: (event) => emit('update:modelValue', event),
+  set: (event) => {
+    emit('update:modelValue', event)
+    if (event) {
+      document.addEventListener('click', handleClickOutside)
+    } else {
+      document.removeEventListener('click', handleClickOutside)
+    }
+  },
 })
 
 function handleClickOutside(event: InputEvent): void {
@@ -53,12 +61,7 @@ function handleClickOutside(event: InputEvent): void {
 }
 
 function handleUpdate(event: boolean): void {
-  visible.value = event
-  if (event) {
-    document.addEventListener('click', handleClickOutside)
-  } else {
-    document.removeEventListener('click', handleClickOutside)
-  }
+  localVisible.value = event
 }
 
 function hide() {
@@ -70,7 +73,7 @@ function show() {
 }
 
 function toggle() {
-  handleUpdate(!visible.value)
+  handleUpdate(!localVisible.value)
 }
 </script>
 
