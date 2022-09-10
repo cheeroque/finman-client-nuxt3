@@ -10,6 +10,7 @@
         <button
           v-for="hourIndex in 24"
           :key="`hour-${hourIndex}`"
+          :class="{ active: currentHour === hourIndex - 1 }"
           class="timepicker-hour"
           @click="setHour(hourIndex - 1)"
         >
@@ -20,20 +21,22 @@
         <button
           v-for="minuteIndex in minuteCount"
           :key="`minute-${minuteIndex}`"
+          :class="{ active: currentMinute === minuteIndex - 1 }"
           class="timepicker-minute"
-          @click="setMinute((minuteIndex - 1) * Number(stepMinutes))"
+          @click="setMinute((minuteIndex - 1) * stepMinutes)"
         >
-          {{ formatUnit((minuteIndex - 1) * Number(stepMinutes)) }}
+          {{ formatUnit((minuteIndex - 1) * stepMinutes) }}
         </button>
       </div>
       <div v-if="showSeconds" class="timepicker-seconds">
         <button
           v-for="secondIndex in secondCount"
           :key="`second-${secondIndex}`"
+          :class="{ active: currentSecond === secondIndex - 1 }"
           class="timepicker-second"
-          @click="setSecond((secondIndex - 1) * Number(stepSeconds))"
+          @click="setSecond((secondIndex - 1) * stepSeconds)"
         >
-          {{ formatUnit((secondIndex - 1) * Number(stepSeconds)) }}
+          {{ formatUnit((secondIndex - 1) * stepSeconds) }}
         </button>
       </div>
     </div>
@@ -55,9 +58,12 @@ const emit = defineEmits(['click:hours', 'click:minutes', 'click:seconds', 'upda
 
 const locale = props.locale
 
+const stepMinutes = computed(() => Math.min(Number(props.stepMinutes ?? 5), 1))
+const stepSeconds = computed(() => Math.min(Number(props.stepSeconds ?? 5), 1))
+
 const luxonDate = computed(() => DateTime.fromJSDate(props.modelValue || new Date()))
-const minuteCount = computed(() => Math.round(60 / Number(props.stepMinutes)))
-const secondCount = computed(() => Math.round(60 / Number(props.stepSeconds)))
+const minuteCount = computed(() => Math.round(60 / stepMinutes.value))
+const secondCount = computed(() => Math.round(60 / stepSeconds.value))
 
 const titleFormat = computed(() => `HH:mm${props.showSeconds ? ':ss' : ''}`)
 const title = computed(() => luxonDate.value.toFormat(titleFormat.value, { locale }))

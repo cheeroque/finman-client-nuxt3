@@ -1,41 +1,19 @@
 <template>
-  <div class="container py-8">
-    <p>{{ color }}</p>
+  <div class="container py-32">
     <div class="row">
-      <div class="col-4">
-        <UiFormGroup label="Color picker" floating-label>
-          <UiColorpicker v-model="color" :valid="false" validated />
+      <div class="col-4 col-offset-4">
+        <h1 class="mb-32">{{ datetime.toLocaleString() || 'No datetime set' }}</h1>
+
+        <UiFormGroup label="Datetime picker" floating-label>
+          <UiInputDatetime v-model="datetime" />
         </UiFormGroup>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-4">
-        <UiFormGroup label="Color picker" size="lg" floating-label>
-          <UiColorpicker v-model="color" />
-        </UiFormGroup>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-4">
-        <UiFormGroup label="Color picker">
-          <UiInputGroup prepend="$" size="lg">
-            <UiInput value="9999" />
-          </UiInputGroup>
-        </UiFormGroup>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-4">
-        <UiInputGroup prepend="$">
-          <UiInput value="9999" />
-        </UiInputGroup>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-const color = ref(null)
+const datetime = ref(new Date(2022, 5, 1, 14, 7, 22))
 </script>
 
 <style lang="scss" scoped>

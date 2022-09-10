@@ -65,7 +65,7 @@ const titleFormat = computed(() => props.titleFormat || 'LLLL y')
 
 const weekdays = Info.weekdays('short', { locale })
 
-const luxonDate = ref(DateTime.fromJSDate(props.modelValue).set({ day: 1 }))
+const luxonDate = ref(DateTime.fromJSDate(props.modelValue ?? new Date()).set({ day: 1 }))
 
 const currentMonth = computed(() => luxonDate.value.month)
 const currentYear = computed(() => luxonDate.value.year)
