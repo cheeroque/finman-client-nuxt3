@@ -3,25 +3,33 @@
     <div class="datepicker-header">
       <slot
         name="header"
-        :month="currentMonth"
+        :month="selectedMonth"
         :set-next-month="setNextMonth"
         :set-next-year="setNextYear"
         :set-prev-month="setPrevMonth"
         :set-prev-year="setPrevYear"
-        :year="currentYear"
+        :year="selectedYear"
       >
-        <UiButton class="btn-prev-year" @click="setPrevYear">
-          <slot name="btn-prev-year"> &lt;&lt; </slot>
+        <UiButton class="datepicker-nav btn-prev-year" @click="setPrevYear">
+          <slot name="btn-prev-year">
+            <UiIcon name="chevron-double-left-24" size="24" />
+          </slot>
         </UiButton>
-        <UiButton class="btn-prev-month" @click="setPrevMonth">
-          <slot name="btn-prev-month">&lt;</slot>
+        <UiButton class="datepicker-nav btn-prev-month" @click="setPrevMonth">
+          <slot name="btn-prev-month">
+            <UiIcon name="chevron-left-24" size="24" />
+          </slot>
         </UiButton>
         <span class="datepicker-title">{{ title }}</span>
-        <UiButton class="btn-next-month" @click="setNextMonth">
-          <slot name="btn-next-month"> &gt; </slot>
+        <UiButton class="datepicker-nav btn-next-month" @click="setNextMonth">
+          <slot name="btn-next-month">
+            <UiIcon name="chevron-right-24" size="24" />
+          </slot>
         </UiButton>
-        <UiButton class="btn-next-year" @click="setNextYear">
-          <slot name="btn-next-year"> &gt;&gt; </slot>
+        <UiButton class="datepicker-nav btn-next-year" @click="setNextYear">
+          <slot name="btn-next-year">
+            <UiIcon name="chevron-double-right-24" size="24" />
+          </slot>
         </UiButton>
       </slot>
     </div>
@@ -39,8 +47,7 @@
         <button
           v-for="(day, index) in monthdays"
           :key="`monthday-${index}`"
-          :class="{ 'not-current-month': day.month !== currentMonth }"
-          class="datepicker-day"
+          :class="getDayClasses(day)"
           @click="setDate(day)"
         >
           {{ day.day }}
@@ -67,8 +74,9 @@ const weekdays = Info.weekdays('short', { locale })
 
 const luxonDate = ref(DateTime.fromJSDate(props.modelValue ?? new Date()).set({ day: 1 }))
 
-const currentMonth = computed(() => luxonDate.value.month)
-const currentYear = computed(() => luxonDate.value.year)
+const selectedDay = computed(() => DateTime.fromJSDate(props.modelValue ?? new Date()).day)
+const selectedMonth = computed(() => luxonDate.value.month)
+const selectedYear = computed(() => luxonDate.value.year)
 const title = computed(() => luxonDate.value.toFormat(titleFormat.value, { locale }))
 
 const monthdays = computed(() => {
@@ -81,6 +89,20 @@ const monthdays = computed(() => {
   }
   return days
 })
+
+function getDayClasses(day: DateTime): string[] {
+  const classes = ['datepicker-day']
+  if (day.day === selectedDay.value && day.month === selectedMonth.value) {
+    classes.push('active')
+  }
+  if (day.month !== selectedMonth.value) {
+    classes.push('not-current-month')
+  }
+  if (day.day === DateTime.now().day && day.month === DateTime.now().month) {
+    classes.push('today')
+  }
+  return classes
+}
 
 function setNextMonth() {
   luxonDate.value = luxonDate.value.plus({ months: 1 })
@@ -100,25 +122,3 @@ function setDate(date: DateTime) {
   emit('update:modelValue', date.toJSDate())
 }
 </script>
-
-<style lang="scss" scoped>
-.datepicker-header {
-  display: flex;
-}
-
-.datepicker-weekdays,
-.datepicker-month {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-}
-
-.datepicker-weekday,
-.datepicker-day {
-  text-align: center;
-}
-
-.datepicker-title {
-  flex: 1 1 auto;
-  text-align: center;
-}
-</style>
