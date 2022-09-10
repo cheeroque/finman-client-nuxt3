@@ -27,14 +27,6 @@
 <script lang="ts" setup>
 import { ComputedRef } from 'vue'
 
-interface InputInputEventTarget extends EventTarget {
-  value: string
-}
-
-interface InputInputEvent extends InputEvent {
-  target: InputInputEventTarget
-}
-
 const props = defineProps<{
   disabled?: boolean
   modelValue?: string
@@ -77,7 +69,7 @@ function getContrastColor(bgColor: string): string {
   return lightness >= 165 ? '#000' : '#fff'
 }
 
-function onInput(event: InputInputEvent): void {
+function onInput(event: TextInputEvent): void {
   emit('update:modelValue', event.target.value)
 }
 </script>
