@@ -7,17 +7,25 @@ $datepicker-button-padding-y: 0.75rem;
   gap: 0 0.25rem;
   margin-bottom: 0.25rem;
   font-weight: $font-weight-medium;
+  text-align: center;
   color: var(--primary);
 }
 
 .datepicker-nav {
   padding: 0.25rem;
   color: inherit;
+
+  &:not(:disabled):not(.disabled) {
+    &:hover {
+      color: var(--on-primary-container);
+      background-color: var(--primary-container);
+      filter: none;
+    }
+  }
 }
 
 .datepicker-title {
   flex: 1 1 auto;
-  text-align: center;
 }
 
 .datepicker-weekdays,
@@ -45,6 +53,7 @@ $datepicker-button-padding-y: 0.75rem;
 .datepicker-day {
   @extend .btn;
 
+  padding: $datepicker-button-padding-y $datepicker-button-padding-x;
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
@@ -55,12 +64,14 @@ $datepicker-button-padding-y: 0.75rem;
     background-color: var(--secondary-container);
   }
 
-  &.active {
-    color: var(--on-primary);
-    background-color: var(--primary);
-  }
-
   &:not(:disabled):not(.disabled) {
+    &.active,
+    &:focus.active {
+      color: var(--on-primary);
+      background-color: var(--primary);
+      filter: none;
+    }
+
     &:hover {
       color: var(--on-primary-container);
       background-color: var(--primary-container);

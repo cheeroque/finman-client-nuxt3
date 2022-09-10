@@ -1,0 +1,52 @@
+$timepicker-button-padding-x: 0.75rem;
+$timepicker-button-padding-y: 0.75rem;
+
+.timepicker-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(24px + 0.5rem + #{$border-width * 2});
+  margin-bottom: 0.25rem;
+  font-weight: $font-weight-medium;
+  text-align: center;
+  color: var(--primary);
+}
+
+.timepicker-body {
+  display: flex;
+  gap: 0 $grid-gap;
+}
+
+.timepicker-hours,
+.timepicker-minutes {
+  flex: 1 1 0;
+  overflow-y: auto;
+}
+
+.timepicker-hour,
+.timepicker-minute {
+  @extend .btn;
+
+  display: block;
+  width: 100%;
+  padding: $timepicker-button-padding-y $timepicker-button-padding-x;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+
+  &:not(:disabled):not(.disabled) {
+    &.active,
+    &:focus.active {
+      color: var(--on-primary);
+      background-color: var(--primary);
+      filter: none;
+    }
+
+    &:hover {
+      color: var(--on-primary-container);
+      background-color: var(--primary-container);
+      filter: none;
+    }
+  }
+}

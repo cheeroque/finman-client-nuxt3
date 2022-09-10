@@ -1,7 +1,11 @@
 <template>
   <div class="datetimepicker-menu">
-    <UiDatepicker v-show="!savedDate" v-model="localDate" />
-    <UiTimepicker v-show="savedDate" v-model="localTime" />
+    <div :class="{ 'panel-time': savedDate && !hideTime }" class="datetimepicker-panels">
+      <UiDatepicker v-model="localDate" class="datetimepicker-panel" />
+      <div v-if="!hideTime" class="datetimepicker-panel datetimepicker-panel-time">
+        <UiTimepicker v-model="localTime" />
+      </div>
+    </div>
   </div>
 </template>
 
