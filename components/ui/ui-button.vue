@@ -36,10 +36,15 @@ const slots = useSlots()
 
 const tagName = props.href ? 'a' : props.to ? resolveComponent('NuxtLink') : 'button'
 
-let buttonClasses = ['btn']
-if (props.block) buttonClasses.push('btn-block')
-if (props.disabled) buttonClasses.push('disabled')
-if (props.size) buttonClasses.push(`btn-${props.size}`)
-if (props.variant) buttonClasses.push(`btn-${props.variant}`)
-if (!slots.default) buttonClasses.push('btn-icon')
+const buttonClasses = computed(() => {
+  let classes = ['btn']
+
+  if (props.block) classes.push('btn-block')
+  if (props.disabled) classes.push('disabled')
+  if (props.size) classes.push(`btn-${props.size}`)
+  if (props.variant) classes.push(`btn-${props.variant}`)
+  if (!slots.default) classes.push('btn-icon')
+
+  return classes
+})
 </script>
