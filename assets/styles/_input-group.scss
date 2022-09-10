@@ -125,6 +125,15 @@
   padding-top: $control-padding-y;
   padding-bottom: calc(#{$control-padding-y} + #{$border-width * 2});
   color: $control-accent;
+
+  .btn,
+  .input-group-text {
+    min-width: calc(16px + 0.5rem);
+    padding: 0.25rem;
+    line-height: 1;
+    text-align: center;
+    border: none;
+  }
 }
 
 .input-group-prepend {

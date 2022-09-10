@@ -4,6 +4,9 @@ declare global {
   interface TextInputEvent extends InputEvent {
     target: TextInputEventTarget
   }
+  interface TextInputFocusEvent extends FocusEvent {
+    target: TextInputEventTarget
+  }
 
   interface TextInputEventTarget extends EventTarget {
     value: string

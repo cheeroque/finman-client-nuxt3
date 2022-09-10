@@ -7,6 +7,10 @@
         <UiFormGroup label="Datetime picker" floating-label>
           <UiInputDatetime v-model="datetime" />
         </UiFormGroup>
+
+        <UiFormGroup label="Calculator input" floating-label>
+          <UiInputCalc v-model="sum" />
+        </UiFormGroup>
       </div>
     </div>
   </div>
@@ -14,6 +18,7 @@
 
 <script setup>
 const datetime = ref(new Date(2022, 5, 1, 14, 7, 22))
+const sum = ref(0)
 </script>
 
 <style lang="scss" scoped>
