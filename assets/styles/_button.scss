@@ -49,8 +49,16 @@
     }
   }
 
+  &.btn-icon {
+    padding: $control-padding-y;
+  }
+
   &.btn-lg {
     padding: $control-padding-y-lg $control-padding-x-lg;
+
+    &.btn-icon {
+      padding: $control-padding-y-lg;
+    }
   }
 }
 

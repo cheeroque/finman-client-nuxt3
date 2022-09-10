@@ -32,6 +32,7 @@ const props = defineProps<{
   variant?: string
 }>()
 const emit = defineEmits(['click'])
+const slots = useSlots()
 
 const tagName = props.href ? 'a' : props.to ? resolveComponent('NuxtLink') : 'button'
 
@@ -40,4 +41,5 @@ if (props.block) buttonClasses.push('btn-block')
 if (props.disabled) buttonClasses.push('disabled')
 if (props.size) buttonClasses.push(`btn-${props.size}`)
 if (props.variant) buttonClasses.push(`btn-${props.variant}`)
+if (!slots.default) buttonClasses.push('btn-icon')
 </script>
