@@ -41,7 +41,10 @@ const props = defineProps<{
 const emit = defineEmits(['update:modelValue', 'hidden'])
 
 const dropdown = ref(null)
-const visible = ref(props.modelValue ?? false)
+const visible = computed({
+  get: () => props.modelValue ?? false,
+  set: (event) => emit('update:modelValue', event),
+})
 
 function handleClickOutside(event: InputEvent): void {
   if (!dropdown.value.contains(event.target)) {
@@ -51,7 +54,6 @@ function handleClickOutside(event: InputEvent): void {
 
 function handleUpdate(event: boolean): void {
   visible.value = event
-  emit('update:modelValue', event)
   if (event) {
     document.addEventListener('click', handleClickOutside)
   } else {
