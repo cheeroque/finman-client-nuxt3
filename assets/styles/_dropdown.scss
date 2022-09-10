@@ -1,0 +1,24 @@
+$dropdown-border-radius: 0.25rem;
+$dropdown-offset: 0.25rem;
+$dropdown-padding-x: 1rem;
+$dropdown-padding-y: 1rem;
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  z-index: $zindex-dropdown;
+}
+
+.dropdown-content {
+  margin-top: $dropdown-offset;
+  padding: $dropdown-padding-y $dropdown-padding-x;
+  border-radius: $dropdown-border-radius;
+  background-color: $body-bg;
+  box-shadow: $shadow-1;
+}

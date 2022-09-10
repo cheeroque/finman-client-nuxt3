@@ -21,7 +21,9 @@
       @update:modelValue="handleUpdate"
     >
       <template #default="{ close }">
-        <slot :close="close"></slot>
+        <div class="dropdown-content">
+          <slot :close="close"></slot>
+        </div>
       </template>
     </UiCollapse>
   </div>
@@ -76,16 +78,3 @@ function toggle() {
   handleUpdate(!localVisible.value)
 }
 </script>
-
-<style lang="scss" scoped>
-.dropdown {
-  position: relative;
-}
-
-.dropdown-menu {
-  position: absolute;
-  left: 0;
-  top: 100%;
-  z-index: $zindex-dropdown;
-}
-</style>
