@@ -27,14 +27,15 @@ const props = defineProps<{
   rel?: string
   size?: ControlSize
   target?: string
-  to?: string | RouteLocationRaw
+  to?: RouteLocationRaw
   type?: string
   variant?: string
 }>()
 const emit = defineEmits(['click'])
 const slots = useSlots()
 
-const tagName = props.href ? 'a' : props.to ? resolveComponent('NuxtLink') : 'button'
+const isLink = computed(() => Boolean(props.href || props.to))
+const tagName = computed(() => (isLink ? resolveComponent('NuxtLink') : 'button'))
 
 const buttonClasses = computed(() => {
   let classes = ['btn']
