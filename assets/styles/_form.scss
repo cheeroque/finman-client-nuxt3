@@ -1,196 +1,4 @@
-.form-fieldset {
-  margin: 0 0 $spacer;
-  padding: 0;
-  border: none;
-  appearance: none;
-
-  & > *:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.form-legend {
-  display: block;
-  margin-bottom: $spacer;
-  font-family: $font-family-alternate;
-  font-size: $font-size-base;
-  font-weight: $font-weight-medium;
-  line-height: $line-height-base;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: $spacer * 0.5;
-  font-family: $font-family-base;
-  font-size: $font-size-base * 0.75;
-  font-weight: $font-weight-normal;
-  line-height: $line-height-base;
-  transition: $transition;
-  transition-property: color;
-}
-
-.form-feedback {
-  margin: 0.25rem 0 0;
-  font-size: $font-size-base * 0.75;
-
-  &.form-feedback-valid {
-    color: $control-valid-accent;
-  }
-  &.form-feedback-invalid {
-    color: $control-invalid-accent;
-  }
-}
-
-.form-control {
-  display: block;
-  width: 100%;
-  padding: $control-padding-y calc(#{$control-padding-x} + #{$border-width})
-    calc(#{$control-padding-y} + #{$border-width * 2});
-  font-family: $font-family-base;
-  font-size: $font-size-base;
-  font-weight: $font-weight-normal;
-  line-height: $line-height-base;
-  border: none;
-  border-radius: $control-border-radius $control-border-radius 0 0;
-  color: $control-color;
-  background-color: $control-bg;
-  background-image: linear-gradient(to top, $control-focus-accent, $control-focus-accent),
-    linear-gradient(to top, $control-color, $control-color);
-  background-position: bottom left, bottom;
-  background-repeat: no-repeat;
-  background-size: 0 $border-width * 2, 100% $border-width;
-  transition: $transition;
-  transition-property: background-color, background-size;
-  appearance: none;
-
-  &.form-control-lg {
-    padding: $control-padding-y-lg calc(#{$control-padding-x-lg} + #{$border-width})
-      calc(#{$control-padding-y-lg} + #{$border-width * 2});
-  }
-
-  &::placeholder {
-    color: $control-accent;
-    opacity: 0.5;
-  }
-
-  &.focus,
-  &:focus,
-  &:focus-within {
-    color: $control-focus-color;
-    background-color: $control-focus-bg;
-    background-size: 100% $border-width * 2, 100% $border-width;
-    box-shadow: none;
-    outline: none;
-
-    &::placeholder {
-      color: $control-focus-accent;
-    }
-  }
-
-  &.disabled,
-  &:disabled {
-    color: $control-disabled-color;
-    background-color: $control-disabled-bg;
-    background-image: none;
-    cursor: default;
-
-    &::placeholder {
-      color: $control-disabled-accent;
-    }
-  }
-
-  &:not(:disabled):not(.disabled) {
-    &.is-valid,
-    .is-valid & {
-      color: $control-valid-color;
-      background-color: $control-valid-bg;
-      background-image: linear-gradient(to top, $control-valid-accent, $control-valid-accent),
-        linear-gradient(to top, $control-valid-color, $control-valid-color);
-
-      &::placeholder {
-        color: $control-valid-accent;
-      }
-    }
-
-    &:invalid,
-    &.is-invalid,
-    .is-invalid & {
-      color: $control-invalid-color;
-      background-color: $control-invalid-bg;
-      background-image: linear-gradient(to top, $control-invalid-accent, $control-invalid-accent),
-        linear-gradient(to top, $control-invalid-color, $control-invalid-color);
-
-      &::placeholder {
-        color: $control-invalid-accent;
-      }
-    }
-  }
-}
-
-.form-control-select {
-  position: relative;
-  padding: 0;
-
-  .form-select {
-    width: 100%;
-    padding: $control-padding-y calc(#{$control-padding-x} + #{$border-width})
-      calc(#{$control-padding-y} + #{$border-width * 2});
-    font-size: inherit;
-    line-height: inherit;
-    border: none;
-    background-color: transparent;
-    appearance: none;
-  }
-
-  .form-select-indicator {
-    position: absolute;
-    right: $control-padding-x;
-    bottom: $control-padding-y;
-    color: $control-accent;
-    transform: rotate(0);
-    transition: $transition;
-    transition-property: transform;
-  }
-
-  &:focus-within {
-    .form-select-indicator {
-      color: $control-focus-accent;
-      transform: rotate(-180deg);
-    }
-  }
-
-  &.disabled {
-    .form-select-indicator {
-      color: $control-disabled-accent;
-    }
-  }
-
-  &:not(.disabled) {
-    &.is-valid,
-    .is-valid & {
-      .form-select-indicator {
-        color: $control-valid-accent;
-      }
-    }
-
-    &:invalid,
-    &.is-invalid,
-    .is-invalid & {
-      .form-select-indicator {
-        color: $control-invalid-accent;
-      }
-    }
-  }
-
-  &.form-control-lg {
-    padding: 0;
-
-    .form-select {
-      padding: $control-padding-y-lg calc(#{$control-padding-x-lg} + #{$border-width})
-        calc(#{$control-padding-y-lg} + #{$border-width * 2});
-    }
-  }
-}
+$floating-label-height: 1rem;
 
 .form-group {
   display: block;
@@ -203,22 +11,9 @@
       position: absolute;
       top: $control-padding-y;
       left: $control-padding-x;
+      margin: 0;
       color: $control-accent;
       z-index: 1;
-    }
-
-    .form-control {
-      padding: ($control-padding-y-lg * 2 - $control-padding-y) calc(#{$control-padding-x} + #{$border-width})
-        calc(#{$control-padding-y} + #{$border-width * 2});
-    }
-
-    .form-control-select {
-      padding: 0;
-
-      .form-select {
-        padding: ($control-padding-y-lg * 2 - $control-padding-y) calc(#{$control-padding-x} + #{$border-width})
-          calc(#{$control-padding-y} + #{$border-width * 2});
-      }
     }
 
     &:focus-within {
@@ -246,28 +41,266 @@
         }
       }
     }
+  }
+}
 
-    &.form-group-lg {
-      .form-label {
-        top: $control-padding-y-lg;
-        left: $control-padding-x-lg;
+.form-control {
+  position: relative;
+
+  &:not(.disabled) {
+    &::before {
+      display: block;
+      content: '';
+      position: absolute;
+      left: -$border-width * 2;
+      right: -$border-width * 2;
+      top: -$border-width * 2;
+      bottom: -$border-width * 2;
+      border-radius: $control-border-radius $control-border-radius 0 0;
+      background-color: $control-focus-accent;
+      opacity: 0;
+      transition: $transition;
+      transition-property: opacity;
+      z-index: -1;
+    }
+
+    &::after {
+      display: block;
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: $border-width;
+      background-color: $control-color;
+      transition: $transition;
+      transition-property: height, background-color;
+    }
+
+    &:focus-within {
+      &::before {
+        opacity: $focus-outline-opacity;
       }
 
-      .form-control {
-        padding: ($control-padding-y-lg * 2) calc(#{$control-padding-x-lg} + #{$border-width})
-          calc(#{$control-padding-y-lg} + #{$border-width * 2});
+      &::after {
+        height: $border-width * 2;
+        background-color: $control-focus-accent;
+      }
+    }
+
+    &.is-valid {
+      &::before {
+        background-color: $control-valid-accent;
       }
 
-      .form-control-select {
-        padding: 0;
+      &:focus-within {
+        &::after {
+          background-color: $control-valid-accent;
+        }
+      }
+    }
 
-        .form-select {
-          padding: ($control-padding-y-lg * 2) calc(#{$control-padding-x-lg} + #{$border-width})
-            calc(#{$control-padding-y-lg} + #{$border-width * 2});
+    &.is-invalid {
+      &::before {
+        background-color: $control-invalid-accent;
+      }
+
+      &:focus-within {
+        &::after {
+          background-color: $control-invalid-accent;
         }
       }
     }
   }
+}
+
+.form-control-append {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  padding: $control-padding-y $control-padding-x;
+  color: $control-accent;
+
+  .form-control-lg & {
+    padding: $control-padding-y-lg $control-padding-x-lg;
+  }
+
+  .floating-label & {
+    padding-top: $control-padding-y + $floating-label-height;
+  }
+
+  .floating-label .form-control-lg & {
+    padding-top: $control-padding-y-lg + $floating-label-height;
+    padding-left: $control-padding-x;
+  }
+
+  :disabled &,
+  .disabled &,
+  .form-control-el:disabled ~ & {
+    color: $control-disabled-accent;
+  }
+
+  .form-control-el:not(:disabled):focus ~ & {
+    color: $control-focus-accent;
+  }
+
+  .is-valid &,
+  .form-control-el.is-valid ~ & {
+    color: $control-valid-accent;
+  }
+
+  .is-invalid &,
+  .form-control-el.is-invalid ~ & {
+    color: $control-invalid-accent;
+  }
+}
+
+.form-control-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: $line-height-base * $font-size-base;
+  text-align: center;
+
+  &.btn {
+    padding: 0.25rem;
+  }
+}
+
+.form-select-indicator {
+  transform: rotate(0);
+  transition: $transition;
+  transition-property: transform;
+
+  .form-control-el:focus ~ .form-control-append & {
+    transform: rotate(-180deg);
+  }
+}
+
+.form-control-el {
+  display: block;
+  width: 100%;
+  padding: $control-padding-y $control-padding-x;
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-base;
+  border: $border-width solid transparent;
+  border-radius: $control-border-radius $control-border-radius 0 0;
+  color: $control-color;
+  background-color: $control-bg;
+  appearance: none;
+  transition: $transition;
+  transition-property: background-color;
+
+  .form-control-lg & {
+    padding: $control-padding-y-lg $control-padding-x-lg;
+  }
+
+  .floating-label & {
+    padding-top: $control-padding-y + $floating-label-height;
+  }
+
+  .floating-label .form-control-lg & {
+    padding-top: $control-padding-y-lg + $floating-label-height;
+    padding-left: $control-padding-x;
+  }
+
+  &::placeholder {
+    color: $control-accent;
+    opacity: 0.5;
+    transition: $transition;
+    transition-property: color;
+  }
+
+  &:focus {
+    color: $control-focus-color;
+    background-color: $control-focus-bg;
+    box-shadow: none;
+    outline: none;
+
+    &::placeholder {
+      color: $control-focus-accent;
+    }
+  }
+
+  .disabled &,
+  &:disabled {
+    color: $control-disabled-color;
+    background-color: $control-disabled-bg;
+    cursor: default;
+
+    &::placeholder {
+      color: $control-disabled-accent;
+    }
+  }
+
+  &:not(:disabled) {
+    .is-valid & {
+      color: $control-valid-color;
+      background-color: $control-valid-bg;
+
+      &::placeholder {
+        color: $control-valid-accent;
+      }
+    }
+
+    &:invalid,
+    .is-invalid & {
+      color: $control-invalid-color;
+      background-color: $control-invalid-bg;
+
+      &::placeholder {
+        color: $control-invalid-accent;
+      }
+    }
+  }
+}
+
+.form-fieldset {
+  margin: 0 0 $spacer;
+  padding: 0;
+  border: none;
+  appearance: none;
+
+  & > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form-legend {
+  display: block;
+  margin-bottom: $spacer;
+  font-family: $font-family-alternate;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-base;
+}
+
+.form-feedback {
+  margin: 0.25rem 0 0;
+  font-size: $font-size-base * 0.75;
+
+  &.form-feedback-valid {
+    color: $control-valid-accent;
+  }
+  &.form-feedback-invalid {
+    color: $control-invalid-accent;
+  }
+}
+
+.form-label {
+  display: block;
+  margin-bottom: $spacer * 0.5;
+  font-family: $font-family-base;
+  font-size: $font-size-base * 0.75;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-base;
+  transition: $transition;
+  transition-property: color;
 }
 
 /**
@@ -276,26 +309,26 @@
 
 @-moz-document url-prefix() {
   .form-control-select {
-    .form-select {
+    .form-control-el {
       padding-left: calc(#{$control-padding-x} - 4px);
     }
 
     &.form-control-lg {
-      .form-select {
+      .form-control-el {
         padding-left: calc(#{$control-padding-x-lg} - 4px);
       }
     }
   }
 
-  .form-group.floating-label {
+  .floating-label {
     .form-control-select {
-      .form-select {
+      .form-control-el {
         padding-left: calc(#{$control-padding-x} - 4px);
       }
 
       &.form-control-lg {
-        .form-select {
-          padding-left: calc(#{$control-padding-x-lg} - 4px);
+        .form-control-el {
+          padding-left: calc(#{$control-padding-x} - 4px);
         }
       }
     }

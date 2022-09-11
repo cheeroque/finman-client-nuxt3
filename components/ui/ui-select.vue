@@ -1,14 +1,13 @@
 <template>
   <div :class="componentClasses">
     <select
-      ref="select"
-      v-model="localValue"
+      v-model="modelValue"
       :id="id"
       :disabled="disabled"
       :name="name"
       :required="required"
       autocomplete="off"
-      class="form-select"
+      class="form-control-el"
     >
       <option
         v-for="(option, index) in options"
@@ -21,9 +20,11 @@
         </slot>
       </option>
     </select>
-    <span class="form-select-indicator" aria-hidden="true">
-      <UiIcon name="select-indicator" size="16" />
-    </span>
+    <div class="form-control-append">
+      <span class="form-select-indicator" aria-hidden="true">
+        <UiIcon name="select-indicator" />
+      </span>
+    </div>
   </div>
 </template>
 
@@ -40,30 +41,28 @@ type SelectOption = {
 
 const props = defineProps<{
   disabled?: boolean
-  modelValue?: SelectValue | SelectValue[]
+  modelValue?: SelectValue
   name?: string
   options?: SelectOption[]
   required?: boolean
   size?: ControlSize
-  valid?: boolean
-  validated?: boolean
+  state?: ControlState
 }>()
-const emit = defineEmits(['update:modelValue'])
 
-const id: ComputedRef<string> | null = inject('control-id', null)
-const validationState = computed(() => (props.validated ? props.valid : null))
-
-const groupSize: ComputedRef<string> = inject(
-  'group-size',
-  computed(() => '')
-)
-const size = computed(() => props.size || groupSize?.value)
-
-const groupDisabled: ComputedRef<boolean> = inject(
-  'group-disabled',
+/* Injects from parent */
+const id: ComputedRef<string> | null = inject('controlId', null)
+const parentDisabled = inject(
+  'disabled',
   computed(() => false)
 )
-const disabled = computed(() => props.disabled || groupDisabled?.value)
+const parentState = inject(
+  'state',
+  computed(() => null)
+)
+
+const disabled = computed(() => props.disabled || parentDisabled.value)
+const size = computed(() => props.size)
+const state = computed(() => props.state ?? parentState.value)
 
 const componentClasses = computed(() => {
   const classes = ['form-control form-control-select']
@@ -73,20 +72,12 @@ const componentClasses = computed(() => {
   if (size.value) {
     classes.push(`form-control-${size.value}`)
   }
-  if (validationState.value === true) {
+  if (state.value === true) {
     classes.push('is-valid')
   }
-  if (validationState.value === false) {
+  if (state.value === false) {
     classes.push('is-invalid')
   }
   return classes
-})
-
-const localValue = computed({
-  get: () => props.modelValue,
-  set: (event) => {
-    emit('update:modelValue', event)
-    console.log(event === props.modelValue)
-  },
 })
 </script>

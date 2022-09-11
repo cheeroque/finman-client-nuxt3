@@ -1,27 +1,23 @@
 <template>
   <UiDropdown v-model="dropdownVisible" class="datetimepicker">
     <template #toggle="{ show }">
-      <UiInputGroup :size="size" :valid="valid" :validated="validated">
-        <UiInput
-          :id="id"
-          :disabled="disabled"
-          :name="name"
-          :placeholder="placeholder"
-          :readonly="readonly"
-          :required="required"
-          :size="size"
-          :valid="valid"
-          :validated="validated"
-          :value="formattedValue"
-          autocomplete="off"
-          class="form-control"
-          @click="show"
-          @input="onInput"
-        />
+      <UiInput
+        :disabled="disabled"
+        :model-value="formattedValue"
+        :name="name"
+        :placeholder="placeholder"
+        :readonly="readonly"
+        :required="required"
+        :size="size"
+        :state="state"
+        autocomplete="off"
+        @click="show"
+        @input="onInput"
+      >
         <template #append>
-          <UiButton icon="stopwatch-24" icon-size="16" variant="link" @click="setNow" />
+          <UiButton icon="stopwatch-24" variant="link" class="form-control-icon" @click="setNow" />
         </template>
-      </UiInputGroup>
+      </UiInput>
     </template>
     <template #default="{ close }">
       <UiInputDatetimeDropdown v-model="modelValue" @close="close" />
@@ -42,41 +38,26 @@ const props = defineProps<{
   readonly?: boolean
   required?: boolean
   size?: ControlSize
-  valid?: boolean
-  validated?: boolean
+  state?: ControlState
 }>()
 const emit = defineEmits(['update:modelValue'])
 
-const id: ComputedRef<string> | null = inject('control-id', null)
-const groupDisabled: ComputedRef<boolean> = inject(
-  'group-disabled',
-  computed(() => false)
-)
-const groupSize: ComputedRef<string> = inject(
-  'group-size',
-  computed(() => '')
-)
-
-const disabled = computed(() => props.disabled || groupDisabled?.value)
-const size = computed(() => props.size || groupSize?.value)
+const dropdownVisible = ref(false)
 
 const format = computed(() => props.format || 'dd.LL.yyyy HH:mm')
 const formattedValue = computed(() =>
   props.modelValue ? DateTime.fromJSDate(props.modelValue).toFormat(format.value) : null
 )
-
 const placeholder = computed(() => props.placeholder || DateTime.now().toFormat(format.value))
 
-const dropdownVisible = ref(false)
-
-function onInput(event: TextInputEvent): void {
-  const value = event.target.value
-  if (!value) {
+function onInput(event: InputEvent): void {
+  const target = event.target as HTMLInputElement
+  if (!target.value) {
     emit('update:modelValue', null)
     return
   }
 
-  const datetime = DateTime.fromFormat(value, format.value)
+  const datetime = DateTime.fromFormat(target.value, format.value)
   if (!datetime.isValid) return
   emit('update:modelValue', datetime.toJSDate())
 }

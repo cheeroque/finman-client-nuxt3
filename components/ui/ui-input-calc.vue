@@ -1,35 +1,31 @@
 <template>
-  <UiInputGroup :size="size" :valid="valid" :validated="validated">
-    <UiInput
-      ref="input"
-      :id="id"
-      :disabled="disabled"
-      :model-value="modelValue"
-      :name="name"
-      :required="required"
-      :size="size"
-      :valid="valid"
-      :validated="validated"
-      autocomplete="off"
-      placeholder="0"
-      @blur.native="calculate"
-      @focus.native="onFocus"
-      @input.native.prevent="onInput"
-      @keydown.native.enter="onEnter"
-    />
+  <UiInput
+    ref="input"
+    :disabled="disabled"
+    :model-value="modelValue"
+    :name="name"
+    :required="required"
+    :size="size"
+    :state="state"
+    autocomplete="off"
+    placeholder="0"
+    prevent-native-input
+    @blur="calculate"
+    @focus="onFocus"
+    @input="onInput"
+    @keydown="onKeydown"
+  >
     <template #append>
       <slot name="append">
-        <div class="input-group-text">
+        <div class="form-control-icon">
           {{ append || '₽' }}
         </div>
       </slot>
     </template>
-  </UiInputGroup>
+  </UiInput>
 </template>
 
 <script lang="ts" setup>
-import { ComputedRef } from 'vue'
-
 type FakeFocusEvent = {
   target: HTMLInputElement
 }
@@ -41,28 +37,14 @@ const props = defineProps<{
   name?: string
   required?: boolean
   size?: ControlSize
-  valid?: boolean
-  validated?: boolean
+  state?: ControlState
 }>()
 const emit = defineEmits(['update:modelValue'])
 
 const input = ref(null)
-
-const id: ComputedRef<string> | null = inject('control-id', null)
-
-const groupSize: ComputedRef<string> = inject(
-  'group-size',
-  computed(() => '')
-)
-const size = computed(() => props.size || groupSize?.value)
-
-const groupDisabled: ComputedRef<boolean> = inject(
-  'group-disabled',
-  computed(() => false)
-)
-const disabled = computed(() => props.disabled || groupDisabled?.value)
-
 const hasTotal = ref(false)
+
+const size = computed(() => props.size)
 
 function calculate(event: FocusEvent | FakeFocusEvent): void {
   const target = event.target as HTMLInputElement
@@ -75,29 +57,39 @@ function calculate(event: FocusEvent | FakeFocusEvent): void {
   hasTotal.value = true
 }
 
-function onEnter(event: KeyboardEvent): void {
-  const target = event.target as HTMLInputElement
-  if (!hasTotal.value) {
-    event.preventDefault()
-    calculate({ target })
-    // /* force input value update (for +0 situations) */
-    target.value = props.modelValue.toString()
-  }
-}
-
 function onFocus(event: FocusEvent): void {
-  /* move caret to the end on input focus */
+  hasTotal.value = false
+  /* Move caret to the end on input focus */
   const target = event.target as HTMLInputElement
   if (target.selectionEnd) {
-    target.setSelectionRange(target.selectionEnd, target.selectionEnd)
+    setTimeout(() => {
+      target.setSelectionRange(target.selectionEnd, target.selectionEnd)
+    }, 0)
   }
 }
 
-function onInput(event: InputEvent): void {
+function onInput(): void {
   hasTotal.value = false
+}
+
+function onKeydown(event: KeyboardEvent): void {
   const target = event.target as HTMLInputElement
-  const pattern = /[^\d+-]/
-  const filteredValue = `${target.value}`.replace(pattern, '')
-  target.value = filteredValue || '0'
+
+  if (!event.key.match(/^[\d+-]$/)) {
+    /* NOT number/plus/minus key pressed */
+    if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+      /* Single letter key & no modifier pressed */
+      event.preventDefault()
+    }
+  }
+
+  if (event.key === 'Enter') {
+    if (!hasTotal.value) {
+      event.preventDefault()
+      calculate({ target })
+      /* Force input value update (for +0 situations) */
+      target.value = props.modelValue.toString()
+    }
+  }
 }
 </script>

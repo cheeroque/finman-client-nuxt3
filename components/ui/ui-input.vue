@@ -1,27 +1,39 @@
 <template>
-  <input
-    :id="id"
-    :autocomplete="autocomplete"
-    :class="componentClasses"
-    :disabled="disabled"
-    :max="max"
-    :min="min"
-    :name="name"
-    :placeholder="placeholder"
-    :readonly="readonly"
-    :required="required"
-    :step="step"
-    :type="inputType"
-    :value="modelValue"
-    class="form-control"
-    @input="onInput"
-  />
+  <div :class="componentClasses">
+    <input
+      v-model="modelValue"
+      :id="id"
+      :autocomplete="autocomplete"
+      :disabled="disabled"
+      :max="max"
+      :min="min"
+      :name="name"
+      :placeholder="placeholder"
+      :readonly="readonly"
+      :required="required"
+      :step="step"
+      :type="type"
+      class="form-control-el"
+      @blur="emit('blur', $event)"
+      @click="emit('click', $event)"
+      @focus="emit('focus', $event)"
+      @input="emit('input', $event)"
+    />
+    <div v-if="hasAppend" class="form-control-append">
+      <slot name="append">
+        <span class="form-control-icon">
+          {{ append }}
+        </span>
+      </slot>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import { ComputedRef } from 'vue'
 
 const props = defineProps<{
+  append?: string
   autocomplete?: string
   disabled?: boolean
   max?: number | string
@@ -32,47 +44,48 @@ const props = defineProps<{
   readonly?: boolean
   required?: boolean
   size?: ControlSize
+  state?: ControlState
   step?: number | string
   type?: string
-  valid?: boolean
-  validated?: boolean
 }>()
-const emit = defineEmits(['update:modelValue'])
+const slots = useSlots()
+const emit = defineEmits(['blur', 'click', 'focus', 'input'])
 
-const id: ComputedRef<string> | null = inject('control-id', null)
-const inputType = computed(() => props.type ?? 'text')
-const validationState = computed(() => (props.validated ? props.valid : null))
-
-const groupSize: ComputedRef<string> = inject(
-  'group-size',
-  computed(() => '')
-)
-const size = computed(() => props.size || groupSize?.value)
-
-const groupDisabled: ComputedRef<boolean> = inject(
-  'group-disabled',
+/* Injects from parent */
+const id: ComputedRef<string> | null = inject('controlId', null)
+const parentDisabled = inject(
+  'disabled',
   computed(() => false)
 )
-const disabled = computed(() => props.disabled || groupDisabled?.value)
+const parentState = inject(
+  'state',
+  computed(() => null)
+)
+
+const disabled = computed(() => props.disabled || parentDisabled.value)
+const size = computed(() => props.size)
+const state = computed(() => props.state ?? parentState.value)
+const type = computed(() => props.type ?? 'text')
+
+const hasAppend = computed(() => Boolean(props.append || slots.append))
 
 const componentClasses = computed(() => {
-  const classes = []
+  const classes = ['form-control']
   if (disabled.value) {
     classes.push('disabled')
+  }
+  if (hasAppend.value) {
+    classes.push('has-append')
   }
   if (size.value) {
     classes.push(`form-control-${size.value}`)
   }
-  if (validationState.value === true) {
+  if (state.value === true) {
     classes.push('is-valid')
   }
-  if (validationState.value === false) {
+  if (state.value === false) {
     classes.push('is-invalid')
   }
   return classes
 })
-
-function onInput(event: TextInputEvent): void {
-  emit('update:modelValue', event.target.value)
-}
 </script>
