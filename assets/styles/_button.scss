@@ -19,6 +19,7 @@
   &:disabled,
   &.disabled {
     border-color: transparent;
+    color: $body-color;
     background-color: transparent;
     opacity: 0.5;
     cursor: default;

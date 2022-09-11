@@ -1,0 +1,33 @@
+$pagination-gap: 0.5rem;
+$pagination-link-padding: 0.5rem;
+$pagination-link-border-radius: 0.75rem;
+
+.pagination {
+  display: flex;
+  gap: $pagination-gap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pagination-link {
+  min-width: 2.5rem;
+  border-radius: $pagination-link-border-radius;
+  color: var(--on-surface);
+  background-color: var(--surface);
+
+  &:not(:disabled):not(.disabled) {
+    &:active,
+    &:focus,
+    &:hover {
+      text-decoration: none;
+      color: var(--on-primary-container);
+      background-color: var(--primary-container);
+    }
+
+    &.active {
+      color: var(--on-primary);
+      background-color: var(--primary);
+    }
+  }
+}

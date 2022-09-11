@@ -12,6 +12,12 @@
           <UiInputCalc v-model="sum" />
         </UiFormGroup>
       </div>
+      <div class="col-8 col-offset-4 mt-40">
+        <UiPagination v-model="page" limit="8" total-pages="20" no-links />
+      </div>
+      <div class="col-8 col-offset-4 mt-40">
+        <UiPagination limit="6" total-pages="20" />
+      </div>
     </div>
   </div>
 </template>
@@ -19,6 +25,7 @@
 <script setup>
 const datetime = ref(new Date(2022, 5, 1, 14, 7, 22))
 const sum = ref(0)
+const page = ref(1)
 </script>
 
 <style lang="scss" scoped>
