@@ -7,7 +7,7 @@
       <slot />
     </div>
     <div class="app-navigation">
-      <nav>app bottom nav</nav>
+      <NavBottom />
     </div>
   </div>
 </template>
