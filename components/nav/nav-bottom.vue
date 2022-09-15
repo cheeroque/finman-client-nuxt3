@@ -9,7 +9,7 @@
       :icon="link.icon"
       :to="link.link"
       icon-size="24"
-      class="navbar-link"
+      :class="getLinkClasses(link)"
     >
       {{ link.text }}
     </UiButton>
@@ -17,13 +17,29 @@
 </template>
 
 <script lang="ts" setup>
+type NavBottomLink = {
+  icon: string
+  link: string
+  text: string
+}
+
 const emit = defineEmits(['toggle:drawer'])
 
-const menuLinks = [
+const { path } = useRoute()
+
+const menuLinks: NavBottomLink[] = [
   { icon: 'home-24', link: '/', text: useString('home') },
   { icon: 'expenses-24', link: '/expenses', text: useString('expenses') },
   { icon: 'incomes-24', link: '/incomes', text: useString('incomes') },
 ]
+
+function getLinkClasses(link: NavBottomLink): string[] {
+  const classes = ['navbar-link']
+  if ((link.link === '/' && path === '/') || (link.link !== '/' && path.startsWith(link.link))) {
+    classes.push('active')
+  }
+  return classes
+}
 </script>
 
 <style lang="scss" scoped>
