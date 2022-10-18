@@ -189,6 +189,14 @@ $control-disabled-bg: var(--disabled-container);
 $control-disabled-accent: var(--on-disabled-container);
 
 /**
+ ** DIALOGS
+ **/
+
+$dialog-border-radius: 1rem;
+$dialog-color: var(--on-secondary-container);
+$dialog-bg: var(--secondary-container);
+
+/**
  ** GRID
  **/
 

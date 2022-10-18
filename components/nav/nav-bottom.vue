@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar">
+  <nav class="nav nav-bottom">
     <UiButton icon="menu-24" icon-size="24" class="navbar-link" @click="emit('toggle:drawer')">
       {{ useString('menu') }}
     </UiButton>
@@ -8,8 +8,8 @@
       :key="`menu-link-${index}`"
       :icon="link.icon"
       :to="link.link"
-      icon-size="24"
       :class="getLinkClasses(link)"
+      icon-size="24"
     >
       {{ link.text }}
     </UiButton>
@@ -43,12 +43,17 @@ function getLinkClasses(link: NavBottomLink): string[] {
 </script>
 
 <style lang="scss" scoped>
-.navbar {
+.nav-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   gap: 0 $grid-gap;
   padding: 0.625rem 0.75rem;
   color: var(--on-surface);
   background-color: var(--surface);
+  z-index: $zindex-dropdown + 1;
 }
 
 .navbar-link {
@@ -89,6 +94,12 @@ function getLinkClasses(link: NavBottomLink): string[] {
         background-color: var(--primary-container);
       }
     }
+  }
+}
+
+@include media-min-width(lg) {
+  .nav-bottom {
+    display: none;
   }
 }
 </style>
