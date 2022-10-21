@@ -1,6 +1,6 @@
 <template>
   <div class="layout-default">
-    <NavDrawer :open="drawerOpen" @close="handleCloseDrawer" />
+    <NavDrawer :open="drawerOpen" @close="handleCloseDrawer" @toggle="handleToggleDrawer" />
 
     <div class="app-content">
       <slot />

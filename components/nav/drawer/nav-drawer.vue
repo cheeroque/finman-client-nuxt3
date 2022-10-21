@@ -5,6 +5,9 @@
         <li role="presentation">
           <h5 class="drawer-heading">{{ useString('pages') }}</h5>
         </li>
+        <li role="presentation" class="d-none d-lg-block">
+          <NavDrawerToggle :open="open" @click="emit('toggle')" />
+        </li>
         <li v-for="page in drawerPages" :key="`link-${page.key}`" role="presentation">
           <NavDrawerPage :page="page" />
         </li>
@@ -29,7 +32,7 @@ const props = defineProps<{
   open?: boolean
 }>()
 
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'toggle'])
 
 const drawerActions: DrawerAction[] = [
   { key: 'snapshot', component: 'NavDrawerSnapshot' },
@@ -51,6 +54,11 @@ const drawerClasses = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+.app-drawer {
+  display: flex;
+  flex-direction: column;
+}
+
 .app-drawer-backdrop {
   position: fixed;
   left: 0;
@@ -60,11 +68,6 @@ const drawerClasses = computed(() => {
   background-color: $backdrop-color;
   cursor: pointer;
   z-index: $zindex-drawer - 1;
-}
-
-.app-drawer {
-  display: flex;
-  flex-direction: column;
 }
 
 .nav-drawer {
@@ -91,6 +94,7 @@ const drawerClasses = computed(() => {
 }
 
 .drawer-heading,
+.drawer-toggle,
 .drawer-item {
   display: flex;
   align-items: center;
@@ -104,17 +108,20 @@ const drawerClasses = computed(() => {
   line-height: $line-height-base * $font-size-base;
 }
 
+.drawer-toggle,
 .drawer-item {
   border-radius: $dialog-border-radius;
   color: inherit;
 
-  :deep(.nuxt-icon) {
-    margin-right: 0.75rem;
-  }
-
   &:hover {
     text-decoration: none;
     color: var(--secondary);
+  }
+}
+
+.drawer-item {
+  :deep(.nuxt-icon) {
+    margin-right: 0.75rem;
   }
 
   &.active {
@@ -149,6 +156,65 @@ const drawerClasses = computed(() => {
   .app-drawer {
     flex: 0 0 auto;
     padding: $grid-gap 0 $grid-gap $grid-gap;
+  }
+
+  .nav-drawer {
+    width: calc(24px + 2rem);
+    transition: $transition;
+    transition-property: width;
+
+    .open & {
+      width: 240px;
+    }
+  }
+
+  .drawer-group {
+    &:not(:last-of-type) {
+      &::after {
+        left: 0;
+        right: 0;
+        background-color: var(--primary);
+      }
+    }
+  }
+
+  .drawer-toggle {
+    justify-content: flex-start;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+
+  .drawer-item {
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+
+    :deep(.caption) {
+      opacity: 0;
+      transition: $transition;
+      transition-property: opacity;
+      .open & {
+        opacity: 1;
+      }
+    }
+
+    :deep(.nuxt-icon) {
+      margin-right: 1rem;
+    }
+
+    &:hover {
+      color: var(--primary);
+    }
+
+    &.active {
+      color: var(--on-primary);
+      background-color: var(--primary);
+    }
+  }
+
+  .app-drawer-backdrop,
+  .drawer-heading {
+    display: none;
   }
 }
 </style>

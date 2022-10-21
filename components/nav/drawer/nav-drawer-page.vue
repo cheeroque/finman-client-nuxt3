@@ -1,7 +1,7 @@
 <template>
   <NuxtLink :to="page.link" :class="componentClasses">
     <UiIcon :name="`${page.key}-24`" size="24" aria-hidden="true" />
-    {{ useString(page.key) }}
+    <span class="caption">{{ useString(page.key) }}</span>
   </NuxtLink>
 </template>
 
