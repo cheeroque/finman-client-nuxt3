@@ -35,7 +35,7 @@ const emit = defineEmits(['click'])
 const slots = useSlots()
 
 const isLink = computed(() => Boolean(props.href || props.to))
-const tagName = computed(() => (isLink ? resolveComponent('NuxtLink') : 'button'))
+const tagName = computed(() => (isLink.value ? resolveComponent('NuxtLink') : 'button'))
 
 const buttonClasses = computed(() => {
   let classes = ['btn']
