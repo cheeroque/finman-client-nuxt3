@@ -17,7 +17,7 @@
       @blur="emit('blur', $event)"
       @click="emit('click', $event)"
       @focus="emit('focus', $event)"
-      @input="emit('input', $event)"
+      @input="onInput"
     />
     <div v-if="hasAppend" class="form-control-append">
       <slot name="append">
@@ -49,7 +49,7 @@ const props = defineProps<{
   type?: string
 }>()
 const slots = useSlots()
-const emit = defineEmits(['blur', 'click', 'focus', 'input'])
+const emit = defineEmits(['blur', 'click', 'focus', 'input', 'update:modelValue'])
 
 /* Injects from parent */
 const id: ComputedRef<string> | null = inject('controlId', null)
@@ -88,4 +88,10 @@ const componentClasses = computed(() => {
   }
   return classes
 })
+
+function onInput(event: InputEvent): void {
+  const target = event.target as HTMLInputElement
+  emit('input', event)
+  emit('update:modelValue', target.value)
+}
 </script>

@@ -25,8 +25,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ComputedRef } from 'vue'
-
 const props = defineProps<{
   disabled?: boolean
   modelValue?: string
