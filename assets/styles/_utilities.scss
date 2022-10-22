@@ -168,6 +168,34 @@
   line-height: 1.4 !important;
 }
 
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+@each $breakpoint, $width in map-remove($breakpoints, xs) {
+  @include media-min-width($breakpoint) {
+    .text-#{$breakpoint}-left {
+      text-align: left;
+    }
+
+    .text-#{$breakpoint}-center {
+      text-align: center;
+    }
+
+    .text-#{$breakpoint}-right {
+      text-align: right;
+    }
+  }
+}
+
 /* Responsive font sizes */
 
 @for $step from 4 through 32 {
@@ -216,4 +244,39 @@
   .text-on-#{$color}-muted {
     color: var(--on-#{$color}-bg) !important;
   }
+}
+
+/**
+ ** SHADOWS
+ **/
+
+.shadow-1 {
+  box-shadow: $shadow-1;
+}
+.shadow-2 {
+  box-shadow: $shadow-2;
+}
+.shadow-3 {
+  box-shadow: $shadow-3;
+}
+.shadow-4 {
+  box-shadow: $shadow-4;
+}
+.shadow-6 {
+  box-shadow: $shadow-6;
+}
+.shadow-8 {
+  box-shadow: $shadow-8;
+}
+.shadow-9 {
+  box-shadow: $shadow-9;
+}
+.shadow-12 {
+  box-shadow: $shadow-12;
+}
+.shadow-16 {
+  box-shadow: $shadow-16;
+}
+.shadow-24 {
+  box-shadow: $shadow-24;
 }
