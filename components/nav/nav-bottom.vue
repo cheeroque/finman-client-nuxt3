@@ -80,18 +80,15 @@ function getLinkClasses(link: NavBottomLink): string[] {
       text-decoration: none;
       color: var(--primary);
       background-color: transparent;
-      filter: none;
     }
 
     &:focus {
-      color: var(--secondary);
       background-color: transparent;
-      filter: none;
     }
 
     &.active {
       :deep(.nuxt-icon) {
-        background-color: var(--primary-container);
+        background-color: var(--primary-bg);
       }
     }
   }

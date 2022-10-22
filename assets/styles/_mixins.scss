@@ -1,3 +1,7 @@
+/**
+ ** MEDIA BREAKPOINTS
+ **/
+
 @mixin media-max-width($breakpoint) {
   $width: map-get($breakpoints, $breakpoint) - 0.02;
   @media (max-width: $width) {
@@ -10,4 +14,66 @@
   @media (min-width: $width) {
     @content;
   }
+}
+
+/**
+ ** LIGHT / DARK THEME MIXINS
+ **/
+
+@mixin theme-light() {
+  @each $color in $theme-colors {
+    --#{$color}: #{map-get($theme-colors-light, $color)};
+    --#{$color}-active: #{color.adjust(map-get($theme-colors-light, $color), $lightness: -7%, $saturation: 7%)};
+    --#{$color}-outline: #{rgba(map-get($theme-colors-light, $color), 0.25)};
+    --on-#{$color}: #{map-get($theme-colors-light, on-#{$color})};
+
+    --#{$color}-bg: #{map-get($theme-colors-light, #{$color}-bg)};
+    --#{$color}-bg-active: #{color.adjust(
+        map-get($theme-colors-light, #{$color}-bg),
+        $lightness: -4%,
+        $saturation: 4%
+      )};
+    --#{$color}-bg-outline: #{rgba(map-get($theme-colors-light, #{$color}-bg), 0.5)};
+    --on-#{$color}-bg: #{map-get($theme-colors-light, on-#{$color}-bg)};
+  }
+
+  --background: #{$neutral-99};
+  --on-background: #{$neutral-10};
+
+  --surface: #{$primary-95};
+  --on-surface: $primary-10;
+
+  --surface-variant: #{$secondary-95};
+  --on-surface-variant: #{$secondary-10};
+
+  --disabled-bg: #{$neutral-90};
+  --on-disabled-bg: #{$neutral-50};
+
+  --outline: #{$neutral-60};
+}
+
+@mixin theme-dark() {
+  @each $color in $theme-colors {
+    --#{$color}: #{map-get($theme-colors-dark, $color)};
+    --#{$color}-active: #{color.adjust(map-get($theme-colors-dark, $color), $lightness: 7%)};
+    --on-#{$color}: #{map-get($theme-colors-dark, on-#{$color})};
+
+    --#{$color}-bg: #{map-get($theme-colors-dark, #{$color}-bg)};
+    --#{$color}-bg-active: #{color.adjust(map-get($theme-colors-dark, #{$color}-bg), $lightness: 7%)};
+    --on-#{$color}-bg: #{map-get($theme-colors-dark, on-#{$color}-bg)};
+  }
+
+  --background: #{$neutral-10};
+  --on-background: #{$neutral-90};
+
+  --surface: #{$primary-10};
+  --on-surface: #{$primary-90};
+
+  --surface-variant: #{$secondary-20};
+  --on-surface-variant: #{$secondary-95};
+
+  --disabled-bg: #{$neutral-30};
+  --on-disabled-bg: #{$neutral-70};
+
+  --outline: #{$neutral-40};
 }

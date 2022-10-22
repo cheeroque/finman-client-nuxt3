@@ -19,7 +19,11 @@ $timepicker-button-padding-y: 0.75rem;
 
 .timepicker-hours,
 .timepicker-minutes {
+  display: flex;
+  flex-direction: column;
   flex: 1 1 0;
+  gap: $control-focus-outline-width;
+  padding: $control-focus-outline-width;
   overflow-y: auto;
 }
 
@@ -40,13 +44,11 @@ $timepicker-button-padding-y: 0.75rem;
     &:focus.active {
       color: var(--on-primary);
       background-color: var(--primary);
-      filter: none;
     }
 
     &:hover {
-      color: var(--on-primary-container);
-      background-color: var(--primary-container);
-      filter: none;
+      color: var(--on-primary-bg);
+      background-color: var(--primary-bg);
     }
   }
 }

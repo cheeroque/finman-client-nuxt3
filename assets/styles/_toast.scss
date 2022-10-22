@@ -35,8 +35,8 @@ $toast-border-radius: 0.25rem;
 
 @each $variant in $theme-colors {
   .toast-#{$variant} {
-    color: var(--on-#{$variant}-container);
-    background-color: var(--#{$variant}-container);
+    color: var(--on-#{$variant}-bg);
+    background-color: var(--#{$variant}-bg);
 
     .toast-header {
       color: var(--#{$variant});

@@ -1,8 +1,7 @@
 <template>
-  <NuxtLink :to="page.link" :class="componentClasses">
-    <UiIcon :name="`${page.key}-24`" size="24" aria-hidden="true" />
+  <UiButton :to="page.link" :icon="`${page.key}-24`" icon-size="24" :class="componentClasses">
     <span class="caption">{{ useString(page.key) }}</span>
-  </NuxtLink>
+  </UiButton>
 </template>
 
 <script lang="ts" setup>

@@ -94,6 +94,78 @@ $success-99: #f7fcf7;
 /* Theme colors */
 
 $theme-colors: ('primary', 'secondary', 'tertiary', 'neutral', 'neutral-variant', 'danger', 'success');
+$theme-colors-light: (
+  primary: $primary-40,
+  on-primary: $primary-99,
+  primary-bg: $primary-90,
+  on-primary-bg: $primary-10,
+
+  secondary: $secondary-40,
+  on-secondary: $secondary-99,
+  secondary-bg: $secondary-90,
+  on-secondary-bg: $secondary-10,
+
+  tertiary: $tertiary-40,
+  on-tertiary: $tertiary-99,
+  tertiary-bg: $tertiary-90,
+  on-tertiary-bg: $tertiary-10,
+
+  neutral: $neutral-40,
+  on-neutral: $neutral-99,
+  neutral-bg: $neutral-90,
+  on-neutral-bg: $neutral-10,
+
+  neutral-variant: $neutral-variant-40,
+  on-neutral-variant: $neutral-variant-99,
+  neutral-variant-bg: $neutral-variant-90,
+  on-neutral-variant-bg: $neutral-variant-10,
+
+  danger: $danger-40,
+  on-danger: $danger-99,
+  danger-bg: $danger-90,
+  on-danger-bg: $danger-10,
+
+  success: $success-40,
+  on-success: $success-99,
+  success-bg: $success-90,
+  on-success-bg: $success-10,
+);
+$theme-colors-dark: (
+  primary: $primary-80,
+  on-primary: $primary-20,
+  primary-bg: $primary-30,
+  on-primary-bg: $primary-90,
+
+  secondary: $secondary-80,
+  on-secondary: $secondary-20,
+  secondary-bg: $secondary-30,
+  on-secondary-bg: $secondary-90,
+
+  tertiary: $tertiary-80,
+  on-tertiary: $tertiary-20,
+  tertiary-bg: $tertiary-30,
+  on-tertiary-bg: $tertiary-90,
+
+  neutral: $neutral-80,
+  on-neutral: $neutral-20,
+  neutral-bg: $neutral-30,
+  on-neutral-bg: $neutral-90,
+
+  neutral-variant: $neutral-variant-80,
+  on-neutral-variant: $neutral-variant-20,
+  neutral-variant-bg: $neutral-variant-30,
+  on-neutral-variant-bg: $neutral-variant-90,
+
+  danger: $danger-80,
+  on-danger: $danger-20,
+  danger-bg: $danger-30,
+  on-danger-bg: $danger-90,
+
+  success: $success-80,
+  on-success: $success-20,
+  success-bg: $success-30,
+  on-success-bg: $success-90,
+);
 
 /* Body colors */
 
@@ -163,38 +235,35 @@ $control-padding-y-lg: 0.9375rem;
 $control-padding-x: 0.6875rem;
 $control-padding-x-lg: 1.4375rem;
 $control-border-radius: 0.25rem;
-$control-active-filter: brightness(0.75) contrast(1.875);
-$control-focus-filter: brightness(0.7) contrast(2.25);
-$control-hover-filter: brightness(0.85) contrast(1.5);
 $control-focus-outline-width: 2px;
 
 $control-color: var(--on-surface);
 $control-bg: var(--surface);
 $control-accent: var(--primary);
 
-$control-focus-color: var(--on-secondary-container);
-$control-focus-bg: var(--secondary-container);
+$control-focus-color: var(--on-secondary-bg);
+$control-focus-bg: var(--secondary-bg);
 $control-focus-accent: var(--secondary);
 
-$control-valid-color: var(--on-success-container);
-$control-valid-bg: var(--success-container);
+$control-valid-color: var(--on-success-bg);
+$control-valid-bg: var(--success-bg);
 $control-valid-accent: var(--success);
 
-$control-invalid-color: var(--on-danger-container);
-$control-invalid-bg: var(--danger-container);
+$control-invalid-color: var(--on-danger-bg);
+$control-invalid-bg: var(--danger-bg);
 $control-invalid-accent: var(--danger);
 
-$control-disabled-color: var(--on-disabled-container);
-$control-disabled-bg: var(--disabled-container);
-$control-disabled-accent: var(--on-disabled-container);
+$control-disabled-color: var(--on-disabled-bg);
+$control-disabled-bg: var(--disabled-bg);
+$control-disabled-accent: var(--on-disabled-bg);
 
 /**
  ** DIALOGS
  **/
 
 $dialog-border-radius: 1rem;
-$dialog-color: var(--on-secondary-container);
-$dialog-bg: var(--secondary-container);
+$dialog-color: var(--on-secondary-bg);
+$dialog-bg: var(--secondary-bg);
 
 /**
  ** GRID

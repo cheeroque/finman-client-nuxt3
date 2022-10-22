@@ -197,11 +197,11 @@
   .bg-on-#{$color} {
     background-color: var(--on-#{$color}) !important;
   }
-  .bg-#{$color}-container {
-    background-color: var(--#{$color}-container) !important;
+  .bg-#{$color}-muted {
+    background-color: var(--#{$color}-bg) !important;
   }
-  .bg-on-#{$color}-container {
-    background-color: var(--on-#{$color}-container) !important;
+  .bg-on-#{$color}-muted {
+    background-color: var(--on-#{$color}-bg) !important;
   }
 
   .text-#{$color} {
@@ -210,10 +210,10 @@
   .text-on-#{$color} {
     color: var(--on-#{$color}) !important;
   }
-  .text-#{$color}-container {
-    color: var(--#{$color}-container) !important;
+  .text-#{$color}-muted {
+    color: var(--#{$color}-bg) !important;
   }
-  .text-on-#{$color}-container {
-    color: var(--on-#{$color}-container) !important;
+  .text-on-#{$color}-muted {
+    color: var(--on-#{$color}-bg) !important;
   }
 }

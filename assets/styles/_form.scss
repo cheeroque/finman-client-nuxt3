@@ -46,24 +46,11 @@ $floating-label-height: 1rem;
 
 .form-control {
   position: relative;
+  border-radius: $control-border-radius $control-border-radius 0 0;
+  transition: $transition;
+  transition-property: box-shadow;
 
   &:not(.disabled) {
-    &::before {
-      display: block;
-      content: '';
-      position: absolute;
-      left: -$border-width * 2;
-      right: -$border-width * 2;
-      top: -$border-width * 2;
-      bottom: -$border-width * 2;
-      border-radius: $control-border-radius $control-border-radius 0 0;
-      background-color: $control-focus-accent;
-      opacity: 0;
-      transition: $transition;
-      transition-property: opacity;
-      z-index: -1;
-    }
-
     &::after {
       display: block;
       content: '';
@@ -78,9 +65,7 @@ $floating-label-height: 1rem;
     }
 
     &:focus-within {
-      &::before {
-        opacity: $focus-outline-opacity;
-      }
+      box-shadow: 0 0 0 $control-focus-outline-width var(--secondary-outline);
 
       &::after {
         height: $border-width * 2;
@@ -89,11 +74,9 @@ $floating-label-height: 1rem;
     }
 
     &.is-valid {
-      &::before {
-        background-color: $control-valid-accent;
-      }
-
       &:focus-within {
+        box-shadow: 0 0 0 $control-focus-outline-width var(--success-outline);
+
         &::after {
           background-color: $control-valid-accent;
         }
@@ -101,11 +84,9 @@ $floating-label-height: 1rem;
     }
 
     &.is-invalid {
-      &::before {
-        background-color: $control-invalid-accent;
-      }
-
       &:focus-within {
+        box-shadow: 0 0 0 $control-focus-outline-width var(--danger-outline);
+
         &::after {
           background-color: $control-invalid-accent;
         }

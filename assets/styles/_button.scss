@@ -14,7 +14,7 @@
   background-color: transparent;
   cursor: pointer;
   transition: $transition;
-  transition-property: border-color, background-color, box-shadow, color, filter, opacity;
+  transition-property: border-color, background-color, box-shadow, color, opacity;
 
   &:disabled,
   &.disabled {
@@ -33,20 +33,13 @@
       background-color: $body-bg;
     }
 
-    &:active {
-      filter: $control-active-filter;
-    }
-    &:focus {
-      outline: none;
-      filter: $control-focus-filter;
-    }
+    &:focus,
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 $control-focus-outline-width rgba($neutral-40, 0.1);
-      filter: $control-focus-filter;
     }
-    &:hover {
-      filter: $control-hover-filter;
+
+    &:focus-visible {
+      box-shadow: 0 0 0 $control-focus-outline-width var(--primary-outline);
     }
   }
 
@@ -76,15 +69,14 @@
   appearance: none;
   cursor: pointer;
 
-  &:focus,
-  &:hover {
-    text-decoration: underline;
-  }
-
-  &:not(:disabled):not(.disabled):focus,
-  &:not(:disabled):not(.disabled):hover {
-    color: $link-hover-color;
-    background-color: transparent;
+  &:not(:disabled):not(.disabled) {
+    &:active,
+    &:focus,
+    &:hover {
+      text-decoration: underline;
+      color: $link-hover-color;
+      background-color: transparent;
+    }
   }
 }
 
@@ -113,12 +105,21 @@
     background-color: var(--#{$variant}) !important;
 
     &:not(:disabled):not(.disabled) {
+      &:focus {
+        color: var(--on-#{$variant}) !important;
+        border-color: var(--#{$variant}-active) !important;
+        background-color: var(--#{$variant}) !important;
+      }
+
+      &:focus-visible {
+        box-shadow: 0 0 0 $control-focus-outline-width var(--#{$variant}-outline) !important;
+      }
+
       &:active,
-      &:focus,
       &:hover {
         color: var(--on-#{$variant}) !important;
-        border-color: var(--#{$variant}) !important;
-        background-color: var(--#{$variant}) !important;
+        border-color: var(--#{$variant}-active) !important;
+        background-color: var(--#{$variant}-active) !important;
       }
     }
   }
@@ -129,8 +130,17 @@
     background-color: transparent !important;
 
     &:not(:disabled):not(.disabled) {
+      &:focus {
+        color: var(--#{$variant}-active) !important;
+        border-color: var(--#{$variant}-active) !important;
+        background-color: transparent;
+      }
+
+      &:focus-visible {
+        box-shadow: 0 0 0 $control-focus-outline-width var(--#{$variant}-outline) !important;
+      }
+
       &:active,
-      &:focus,
       &:hover {
         color: var(--on-#{$variant}) !important;
         border-color: var(--#{$variant}) !important;
@@ -140,17 +150,26 @@
   }
 
   .btn-#{$variant}-muted {
-    color: var(--on-#{$variant}-container) !important;
-    border-color: var(--#{$variant}-container) !important;
-    background-color: var(--#{$variant}-container) !important;
+    color: var(--on-#{$variant}-bg) !important;
+    border-color: var(--#{$variant}-bg) !important;
+    background-color: var(--#{$variant}-bg) !important;
 
     &:not(:disabled):not(.disabled) {
+      &:focus {
+        color: var(--on-#{$variant}-bg) !important;
+        border-color: var(--#{$variant}-bg-active) !important;
+        background-color: var(--#{$variant}-bg) !important;
+      }
+
+      &:focus-visible {
+        box-shadow: 0 0 0 $control-focus-outline-width var(--#{$variant}-bg-outline) !important;
+      }
+
       &:active,
-      &:focus,
       &:hover {
-        color: var(--on-#{$variant}-container) !important;
-        border-color: var(--#{$variant}-container) !important;
-        background-color: var(--#{$variant}-container) !important;
+        color: var(--on-#{$variant}-bg) !important;
+        border-color: var(--#{$variant}-bg-active) !important;
+        background-color: var(--#{$variant}-bg-active) !important;
       }
     }
   }

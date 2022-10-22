@@ -17,9 +17,8 @@ $datepicker-button-padding-y: 0.75rem;
 
   &:not(:disabled):not(.disabled) {
     &:hover {
-      color: var(--on-primary-container);
-      background-color: var(--primary-container);
-      filter: none;
+      color: var(--on-primary-bg);
+      background-color: var(--primary-bg);
     }
   }
 }
@@ -60,8 +59,8 @@ $datepicker-button-padding-y: 0.75rem;
   color: inherit;
 
   &.today {
-    color: var(--on-secondary-container);
-    background-color: var(--secondary-container);
+    color: var(--on-secondary-bg);
+    background-color: var(--secondary-bg);
   }
 
   &:not(:disabled):not(.disabled) {
@@ -69,13 +68,11 @@ $datepicker-button-padding-y: 0.75rem;
     &:focus.active {
       color: var(--on-primary);
       background-color: var(--primary);
-      filter: none;
     }
 
     &:hover {
-      color: var(--on-primary-container);
-      background-color: var(--primary-container);
-      filter: none;
+      color: var(--on-primary-bg);
+      background-color: var(--primary-bg);
     }
   }
 

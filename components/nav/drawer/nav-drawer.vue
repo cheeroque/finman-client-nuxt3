@@ -98,6 +98,7 @@ const drawerClasses = computed(() => {
 .drawer-item {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   width: 100%;
   margin: 0;
   padding: 1rem;
@@ -113,9 +114,12 @@ const drawerClasses = computed(() => {
   border-radius: $dialog-border-radius;
   color: inherit;
 
-  &:hover {
-    text-decoration: none;
-    color: var(--secondary);
+  &:not(:disabled):not(.disabled) {
+    &:hover {
+      text-decoration: none;
+      color: var(--secondary);
+      background-color: transparent;
+    }
   }
 }
 
@@ -127,6 +131,13 @@ const drawerClasses = computed(() => {
   &.active {
     color: var(--on-secondary);
     background-color: var(--secondary);
+
+    &:not(:disabled):not(.disabled) {
+      &:hover {
+        color: var(--on-secondary);
+        background-color: var(--secondary-active);
+      }
+    }
   }
 }
 
@@ -178,17 +189,22 @@ const drawerClasses = computed(() => {
     }
   }
 
-  .drawer-toggle {
-    justify-content: flex-start;
-    margin-bottom: 0.5rem;
-    text-align: left;
-  }
-
+  .drawer-toggle,
   .drawer-item {
     margin-bottom: 0.5rem;
+    text-align: left;
     white-space: nowrap;
     overflow: hidden;
 
+    &:not(:disabled):not(.disabled) {
+      &:hover {
+        color: var(--primary);
+        background-color: transparent;
+      }
+    }
+  }
+
+  .drawer-item {
     :deep(.caption) {
       opacity: 0;
       transition: $transition;
@@ -202,13 +218,16 @@ const drawerClasses = computed(() => {
       margin-right: 1rem;
     }
 
-    &:hover {
-      color: var(--primary);
-    }
-
     &.active {
       color: var(--on-primary);
       background-color: var(--primary);
+
+      &:not(:disabled):not(.disabled) {
+        &:hover {
+          color: var(--on-primary);
+          background-color: var(--primary-active);
+        }
+      }
     }
   }
 
