@@ -169,8 +169,8 @@ $theme-colors-dark: (
 
 /* Body colors */
 
-$body-bg: var(--background);
-$body-color: var(--on-background);
+$body-bg: var(--primary-bg);
+$body-color: var(--on-primary-bg);
 
 /* Misc global colors */
 
@@ -264,6 +264,16 @@ $control-disabled-accent: var(--on-disabled-bg);
 $dialog-border-radius: 1rem;
 $dialog-color: var(--on-secondary-bg);
 $dialog-bg: var(--secondary-bg);
+
+/**
+ ** CARDS
+ **/
+
+$card-padding-x: 0.75rem;
+$card-padding-y: 1rem;
+$card-border-radius: 0.75rem;
+$card-color: var(--on-background);
+$card-bg: var(--background);
 
 /**
  ** GRID

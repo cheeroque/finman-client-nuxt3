@@ -3,6 +3,7 @@
     <NavDrawer :open="drawerOpen" @close="handleCloseDrawer" @toggle="handleToggleDrawer" />
 
     <div class="app-content">
+      <Sidebar />
       <slot />
     </div>
 
