@@ -35,9 +35,9 @@ const props = defineProps<{
 const emit = defineEmits(['close', 'toggle'])
 
 const drawerActions: DrawerAction[] = [
-  { key: 'snapshot', component: 'NavDrawerSnapshot' },
-  { key: 'export', component: 'NavDrawerExport' },
-  { key: 'logout', component: 'NavDrawerLogout' },
+  { key: 'snapshot', component: resolveComponent('NavDrawerSnapshot') },
+  { key: 'export', component: resolveComponent('NavDrawerExport') },
+  { key: 'logout', component: resolveComponent('NavDrawerLogout') },
 ]
 
 const drawerPages: DrawerPage[] = [
@@ -102,6 +102,8 @@ const drawerClasses = computed(() => {
   width: 100%;
   margin: 0;
   padding: 1rem;
+  font-family: $font-family-base;
+  border: none;
 }
 
 .drawer-heading {

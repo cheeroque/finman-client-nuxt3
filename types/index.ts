@@ -1,3 +1,5 @@
+import { ConcreteComponent } from 'vue'
+
 export {}
 
 declare global {
@@ -8,7 +10,7 @@ declare global {
 
   type DrawerAction = {
     key: string
-    component: string
+    component: ConcreteComponent | string
   }
 
   type DrawerPage = {

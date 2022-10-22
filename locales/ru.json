@@ -3,9 +3,11 @@
   "calendar": "Календарь",
   "categories": "Категории",
   "expenses": "Расходы",
+  "exportData": "Экспорт данных",
   "hello": "Привет",
   "home": "Главная",
   "incomes": "Доходы",
+  "logout": "Выйти",
   "menu": "Меню",
   "pages": "Страницы"
 }
