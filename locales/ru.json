@@ -7,9 +7,13 @@
   "hello": "Привет",
   "home": "Главная",
   "incomes": "Доходы",
+  "login": "Войти",
   "logout": "Выйти",
   "menu": "Меню",
   "pages": "Страницы",
+  "password": "Пароль",
   "searchPlaceholder": "Поиск по записям",
-  "thisMonth": "В этом месяце"
+  "thisMonth": "В этом месяце",
+  "userName": "Имя пользователя",
+  "userNamePlaceholder": "Введите имя пользователя"
 }
