@@ -20,6 +20,10 @@
           <component :is="action.component" :action="action" />
         </li>
       </ul>
+
+      <div class="d-lg-none mt-auto p-16">
+        <SearchForm />
+      </div>
     </nav>
   </div>
   <Transition name="fade">
@@ -143,6 +147,26 @@ const drawerClasses = computed(() => {
   }
 }
 
+:deep(.search-form) {
+  .form-control {
+    border-radius: $dialog-border-radius;
+  }
+
+  .form-control-el {
+    border-radius: $dialog-border-radius;
+    color: var(--on-surface-variant);
+    background-color: var(--surface-variant);
+
+    &::placeholder {
+      color: var(--secondary);
+    }
+  }
+
+  .form-control-append {
+    color: var(--secondary);
+  }
+}
+
 @include media-max-width(lg) {
   .app-drawer {
     position: fixed;
@@ -162,6 +186,11 @@ const drawerClasses = computed(() => {
     &.open {
       transform: translateX(0);
     }
+  }
+
+  .nav-drawer {
+    display: flex;
+    flex-direction: column;
   }
 }
 

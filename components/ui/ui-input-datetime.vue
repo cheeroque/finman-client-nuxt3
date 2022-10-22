@@ -26,7 +26,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ComputedRef } from 'vue'
 import { DateTime } from 'luxon'
 
 const props = defineProps<{

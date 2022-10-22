@@ -1,7 +1,6 @@
 <template>
   <aside class="sidebar">
-    <p>search</p>
-
+    <SearchForm class="mb-24" />
     <SidebarMonthly class="mb-24" />
     <SidebarCalendar />
   </aside>
