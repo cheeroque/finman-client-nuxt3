@@ -15,10 +15,10 @@ export function useApiFetch<T>(
     | undefined
 ) {
   const auth = useAuthStore()
-  const config = useRuntimeConfig()
-  const headers = {}
 
   if (auth?.token) {
+    const config = useRuntimeConfig()
+    const headers = {}
     headers['Authorization'] = `Bearer ${auth.token}`
     return useFetch<T>(request, { baseURL: config.public.apiUrl, headers, ...options })
   } else {
