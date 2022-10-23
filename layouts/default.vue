@@ -15,7 +15,10 @@
 import { useRecordsStore } from '@/store/records'
 
 const recordsStore = useRecordsStore()
-await useAsyncData('categories', () => recordsStore.fetchCategories())
+await Promise.all([
+  useAsyncData('categories', () => recordsStore.fetchCategories()),
+  useAsyncData('firstRecord', () => recordsStore.fetchFirstRecord()),
+])
 
 const drawerOpen = ref(false)
 

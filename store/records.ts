@@ -3,6 +3,7 @@ import { useApiFetch } from '@/composables/useApiFetch'
 
 interface State {
   categories: RecordsCategory[]
+  firstRecord: RecordsItem
 }
 
 export const useRecordsStore = defineStore({
@@ -10,6 +11,7 @@ export const useRecordsStore = defineStore({
 
   state: (): State => ({
     categories: [],
+    firstRecord: null,
   }),
 
   actions: {
@@ -18,8 +20,9 @@ export const useRecordsStore = defineStore({
       this.categories = data.value || error.value
     },
 
-    saveCategories(payload: RecordsCategory[]): void {
-      this.categories = payload
+    async fetchFirstRecord(): Promise<void> {
+      const { data, error } = await useApiFetch<RecordsCategory>('records/first')
+      this.firstRecord = data.value || error.value
     },
   },
 })

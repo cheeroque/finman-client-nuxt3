@@ -28,14 +28,24 @@ declare global {
     user: User
   }
 
-  type RecordsCategory = {
+  type RecordsItem = {
+    category_id: number
+    created_at?: string
     id: number
+    note?: string
+    sum: number
+    updated_at?: string
+    user_id?: number
+  }
+
+  type RecordsCategory = {
+    color?: string
+    created_at?: string
+    id: number
+    is_income: 0 | 1
     name: string
     slug: string
-    is_income: 0 | 1
-    created_at?: string
     updated_at?: string
-    color?: string
   }
 
   type User = {
