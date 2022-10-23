@@ -1,11 +1,5 @@
 <template>
-  <div class="p-32">
-    {{ categories.data }}
-  </div>
+  <div class="p-32"></div>
 </template>
 
-<script setup lang="ts">
-import { useApiFetch } from '@/composables/useApiFetch'
-
-const { data: categories } = await useAsyncData(() => useApiFetch('categories'))
-</script>
+<script setup lang="ts"></script>

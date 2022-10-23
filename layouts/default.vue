@@ -12,6 +12,11 @@
 </template>
 
 <script lang="ts" setup>
+import { useRecordsStore } from '@/store/records'
+
+const recordsStore = useRecordsStore()
+await useAsyncData('categories', () => recordsStore.fetchCategories())
+
 const drawerOpen = ref(false)
 
 function handleToggleDrawer(): void {
