@@ -62,4 +62,9 @@ export default defineNuxtConfig({
       },
     },
   },
+  
+  /* prevent unstyled content flashing on reload */
+  experimental: {
+    inlineSSRStyles: false,
+  },
 })

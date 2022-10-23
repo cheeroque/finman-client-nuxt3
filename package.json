@@ -8,7 +8,7 @@
     "preview": "nuxt preview"
   },
   "devDependencies": {
-    "@pinia/nuxt": "^0.3.1",
+    "@pinia/nuxt": "^0.4.3",
     "@types/luxon": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^5.34.0",
     "@typescript-eslint/parser": "^5.34.0",
@@ -18,7 +18,7 @@
     "eslint-plugin-nuxt": "^3.2.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^9.4.0",
-    "nuxt": "3.0.0-rc.6",
+    "nuxt": "^3.0.0-rc.12",
     "nuxt-icons": "^2.0.1",
     "prettier": "^2.7.1",
     "sass": "^1.54.0"
