@@ -1,25 +1,30 @@
 import { DateTime } from 'luxon'
 import { defineStore } from 'pinia'
-import { useCookie, useRouter, useRuntimeConfig } from '#app'
+import { useCookie, useRouter, useRuntimeConfig, CookieRef } from '#app'
 import jwt_decode, { JwtPayload } from 'jwt-decode'
+
+interface State {
+  user: CookieRef<User>
+  token: CookieRef<string>
+}
 
 export const useAuthStore = defineStore({
   id: 'auth',
 
-  state: () => ({
+  state: (): State => ({
     user: useCookie('auth_user'),
     token: useCookie('auth_token'),
   }),
 
   actions: {
-    async login(credentials) {
+    async login(credentials: LoginCredentials): Promise<void> {
       const runtimeConfig = useRuntimeConfig()
       const apiUrl = runtimeConfig.public.apiUrl
 
-      const { access_token, user } = (await $fetch(`${apiUrl}/login`, {
+      const { access_token, user } = await $fetch<LoginResponse>(`${apiUrl}/login`, {
         method: 'POST',
         body: credentials,
-      })) as LoginResponse
+      })
 
       this.user = user
       this.token = access_token
