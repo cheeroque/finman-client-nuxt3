@@ -8,9 +8,9 @@
     :type="type"
     @click="emit('click')"
   >
-    <UiIcon v-if="icon && !iconRight" :name="icon" :size="iconSize" />
+    <UiIcon v-if="icon && !iconRight" :name="icon" :size="iconSize" class="nuxt-icon-left" />
     <slot></slot>
-    <UiIcon v-if="icon && iconRight" :name="icon" :size="iconSize" />
+    <UiIcon v-if="icon && iconRight" :name="icon" :size="iconSize" class="nuxt-icon-right" />
   </component>
 </template>
 

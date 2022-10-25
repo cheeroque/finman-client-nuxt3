@@ -29,6 +29,7 @@
     &:active,
     &:focus,
     &:hover {
+      text-decoration: none;
       color: $body-color;
       background-color: $body-bg;
     }
@@ -52,6 +53,16 @@
 
     &.btn-icon {
       padding: $control-padding-y-lg;
+    }
+  }
+
+  &:not(.btn-icon) {
+    .nuxt-icon-left {
+      margin-right: 0.5rem;
+    }
+
+    .nuxt-icon-right {
+      margin-left: 0.5rem;
     }
   }
 }

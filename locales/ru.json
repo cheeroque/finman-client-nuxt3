@@ -1,8 +1,10 @@
 {
   "actions": "Действия",
+  "addCategory": "Добавить категорию",
   "calendar": "Календарь",
   "categories": "Категории",
   "collapse": "Свернуть",
+  "edit": "Редактировать",
   "expand": "Развернуть",
   "expenses": "Расходы",
   "exportData": "Экспорт данных",
