@@ -9,7 +9,7 @@
           <NavDrawerToggle :open="open" @click="emit('toggle')" />
         </li>
         <li v-for="page in drawerPages" :key="`link-${page.key}`" role="presentation">
-          <NavDrawerPage :page="page" />
+          <NavDrawerPage :page="page" @click="emit('close')" />
         </li>
       </ul>
       <ul class="drawer-group list-unstyled">
