@@ -36,6 +36,12 @@ function handleCloseDrawer(): void {
   padding: 0 ($grid-gap * 0.5);
 }
 
+@include media-max-width(lg) {
+  .layout-default {
+    padding-bottom: calc(4.5rem + 24px);
+  }
+}
+
 @include media-min-width(lg) {
   .layout-default {
     display: flex;
