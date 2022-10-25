@@ -26,7 +26,12 @@
             <span v-if="month.disabled" class="calendar-link disabled">
               {{ month.month }}
             </span>
-            <NuxtLink v-else :to="`/months/${month.link}`" class="calendar-link">
+            <NuxtLink
+              v-else
+              :to="`/months/${month.link}`"
+              :class="{ active: month.link === activeMonthLink }"
+              class="calendar-link"
+            >
               {{ month.month }}
             </NuxtLink>
           </li>
@@ -79,6 +84,13 @@ const isBeginning = computed(() => startDate.year >= currentYear.value)
 const isEnd = computed(() => endDate.year <= currentYear.value)
 
 const yearOffset = computed(() => startDate.year - currentYear.value)
+
+const activeMonthLink = computed(() => {
+  if (!props.date) return
+  const y = props.date.getFullYear()
+  const m = props.date.getMonth() + 1
+  return `${y}-${m.toString().padStart(2, '0')}`
+})
 
 function setYearNext() {
   currentYear.value++
@@ -173,6 +185,16 @@ function setYearPrevious() {
       text-decoration: none;
       color: var(--on-primary-bg);
       background-color: var(--primary-bg);
+    }
+
+    &.active {
+      color: var(--on-primary);
+      background-color: var(--primary);
+
+      &:hover {
+        color: var(--on-primary);
+        background-color: var(--primary-active);
+      }
     }
   }
 
