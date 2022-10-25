@@ -38,7 +38,6 @@ onMounted(() => {
   const parent = el.closest('.category-link')
   const captionWidth = el.offsetWidth
   const parentWidth = parent.offsetWidth
-  console.log(captionWidth, parentWidth)
   captionOutside.value = captionWidth > parentWidth
   mounted.value = true
 })

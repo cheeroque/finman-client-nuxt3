@@ -2,6 +2,8 @@
   "actions": "Действия",
   "calendar": "Календарь",
   "categories": "Категории",
+  "collapse": "Свернуть",
+  "expand": "Развернуть",
   "expenses": "Расходы",
   "exportData": "Экспорт данных",
   "hello": "Привет",
