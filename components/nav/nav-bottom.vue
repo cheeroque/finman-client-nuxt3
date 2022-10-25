@@ -25,7 +25,7 @@ type NavBottomLink = {
 
 const emit = defineEmits(['toggle:drawer'])
 
-const { path } = useRoute()
+const route = useRoute()
 
 const menuLinks: NavBottomLink[] = [
   { icon: 'home-24', link: '/', text: useString('home') },
@@ -35,7 +35,7 @@ const menuLinks: NavBottomLink[] = [
 
 function getLinkClasses(link: NavBottomLink): string[] {
   const classes = ['navbar-link']
-  if ((link.link === '/' && path === '/') || (link.link !== '/' && path.startsWith(link.link))) {
+  if ((link.link === '/' && route.path === '/') || (link.link !== '/' && route.path.startsWith(link.link))) {
     classes.push('active')
   }
   return classes
