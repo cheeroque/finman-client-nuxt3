@@ -1,0 +1,69 @@
+<template>
+  <main class="page-content">
+    <header v-if="hasHeader" class="page-content-header">
+      <slot name="header">
+        <UiButton
+          :title="useString('home')"
+          :aria-label="useString('home')"
+          to="/"
+          icon="arrow-left-24"
+          icon-size="24"
+          variant="link"
+          class="btn-back d-lg-none"
+        />
+        <h1 class="h4 card-title">{{ title }}</h1>
+      </slot>
+    </header>
+    <div class="page-content-body">
+      <slot />
+    </div>
+    <footer v-if="hasFooter" class="page-content-footer">
+      <slot name="footer"> footer </slot>
+    </footer>
+  </main>
+</template>
+
+<script setup lang="ts">
+const props = defineProps<{
+  title?: string
+}>()
+const slots = useSlots()
+
+const hasHeader = computed(() => Boolean(slots.header || props.title))
+const hasFooter = computed(() => Boolean(slots.footer))
+</script>
+
+<style lang="scss" scoped>
+.page-content-header {
+  display: flex;
+  align-items: center;
+  padding: ($grid-gap * 0.5) 0;
+}
+
+.btn-back {
+  margin: 0 0.5rem 0 -0.5rem;
+  padding: 0.5rem;
+}
+
+@include media-min-width(lg) {
+  .page-content {
+    border-radius: $card-border-radius;
+    color: $card-color;
+    background-color: $card-bg;
+  }
+
+  .page-content-header {
+    padding: 1.25rem 1rem;
+    border-bottom: $border-width solid var(--primary-outline);
+    color: var(--primary);
+  }
+
+  .page-content-body {
+    padding: 1.25rem 1rem;
+  }
+
+  .page-content-footer {
+    padding: 1.25rem 1rem;
+  }
+}
+</style>

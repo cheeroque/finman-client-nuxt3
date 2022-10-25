@@ -4,7 +4,10 @@
 
     <div class="app-content">
       <Sidebar />
-      <slot />
+
+      <div class="page">
+        <slot />
+      </div>
     </div>
 
     <NavBottom @toggle:drawer="handleToggleDrawer" />
@@ -29,6 +32,10 @@ function handleCloseDrawer(): void {
 </script>
 
 <style lang="scss" scoped>
+.app-content {
+  padding: 0 ($grid-gap * 0.5);
+}
+
 @include media-min-width(lg) {
   .layout-default {
     display: flex;
@@ -36,9 +43,20 @@ function handleCloseDrawer(): void {
   }
 
   .app-content {
+    display: flex;
     flex: 1 1 auto;
+    align-items: flex-start;
+    gap: 0 $grid-gap;
     min-height: 0;
-    padding: $grid-gap;
+    padding: $grid-gap 0 $grid-gap $grid-gap;
+    overflow: hidden;
+  }
+
+  .page {
+    width: 100%;
+    min-height: 0;
+    max-height: 100%;
+    padding-right: $grid-gap;
     overflow-y: auto;
   }
 }
