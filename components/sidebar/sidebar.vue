@@ -2,9 +2,14 @@
   <aside class="sidebar">
     <SearchForm class="mb-24" />
     <SidebarMonthly class="mb-24" />
-    <SidebarCalendar />
+    <SidebarCalendar v-if="showCalendar" />
   </aside>
 </template>
+
+<script setup lang="ts">
+const route = useRoute()
+const showCalendar = route.path !== '/months'
+</script>
 
 <style lang="scss" scoped>
 .sidebar {

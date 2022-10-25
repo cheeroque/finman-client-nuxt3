@@ -30,7 +30,7 @@ declare global {
 
   type RecordsCategory = {
     color?: string
-    created_at?: string
+    created_at: string
     id: number
     is_income: 0 | 1
     name: string
@@ -40,7 +40,7 @@ declare global {
 
   type RecordsItem = {
     category_id: number
-    created_at?: string
+    created_at: string
     id: number
     note?: string
     sum: number
@@ -50,7 +50,7 @@ declare global {
 
   type RecordsSnapshot = {
     balance: number
-    created_at?: string
+    created_at: string
     id: number
     note?: string
     updated_at?: string
@@ -61,7 +61,7 @@ declare global {
     name: string
     email: string
     email_verified_at?: string
-    created_at?: string
+    created_at: string
     updated_at?: string
   }
 }
