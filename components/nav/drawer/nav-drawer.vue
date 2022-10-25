@@ -121,10 +121,15 @@ const drawerClasses = computed(() => {
   color: inherit;
 
   &:not(:disabled):not(.disabled) {
+    &:focus,
     &:hover {
       text-decoration: none;
       color: var(--secondary);
       background-color: transparent;
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 $control-focus-outline-width var(--secondary-outline);
     }
   }
 }
@@ -139,6 +144,7 @@ const drawerClasses = computed(() => {
     background-color: var(--secondary);
 
     &:not(:disabled):not(.disabled) {
+      &:focus,
       &:hover {
         color: var(--on-secondary);
         background-color: var(--secondary-active);
@@ -228,9 +234,14 @@ const drawerClasses = computed(() => {
     overflow: hidden;
 
     &:not(:disabled):not(.disabled) {
+      &:focus,
       &:hover {
         color: var(--primary);
         background-color: transparent;
+      }
+
+      &:focus-visible {
+        box-shadow: 0 0 0 $control-focus-outline-width var(--primary-outline);
       }
     }
   }
@@ -254,6 +265,11 @@ const drawerClasses = computed(() => {
       background-color: var(--primary);
 
       &:not(:disabled):not(.disabled) {
+        &:focus {
+          color: var(--on-primary);
+          background-color: var(--primary);
+        }
+
         &:hover {
           color: var(--on-primary);
           background-color: var(--primary-active);
