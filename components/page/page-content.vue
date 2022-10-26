@@ -40,6 +40,10 @@ const hasFooter = computed(() => Boolean(slots.footer))
   padding: ($grid-gap * 0.5) 0;
 }
 
+.page-content-footer {
+  padding: ($grid-gap * 0.5) 0;
+}
+
 .btn-back {
   margin: 0 0.5rem 0 -0.5rem;
   padding: 0.5rem;
@@ -63,7 +67,8 @@ const hasFooter = computed(() => Boolean(slots.footer))
   }
 
   .page-content-footer {
-    padding: 1.25rem 1rem;
+    padding: 1.25rem 1rem 1rem;
+    border-top: $border-width solid var(--primary-outline);
   }
 }
 </style>

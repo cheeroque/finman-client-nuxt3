@@ -6,6 +6,7 @@ interface State {
   currentMonthRecords: RecordsItem[]
   firstRecord: RecordsItem
   latestSnapshot: RecordsSnapshot
+  records: RecordsResponse
   total: number
 }
 
@@ -17,6 +18,7 @@ export const useRecordsStore = defineStore({
     currentMonthRecords: [],
     firstRecord: null,
     latestSnapshot: null,
+    records: null,
     total: 0,
   }),
 
@@ -42,6 +44,14 @@ export const useRecordsStore = defineStore({
     async fetchLatestSnapshot(): Promise<void> {
       const { data } = await useApiFetch<RecordsSnapshot>('revises/latest', getFetchKey('latestSnapshot'))
       this.latestSnapshot = data.value
+    },
+
+    async fetchRecords(params?: RecordsRequestParams): Promise<void> {
+      const { data } = await useApiFetch<RecordsResponse>('records', {
+        ...getFetchKey('records'),
+        params,
+      })
+      this.records = data.value
     },
 
     async fetchTotal(): Promise<void> {

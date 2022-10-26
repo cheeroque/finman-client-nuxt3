@@ -39,6 +39,7 @@ declare global {
   }
 
   type RecordsItem = {
+    category?: RecordsCategory
     category_id: number
     created_at: string
     id: number
@@ -48,6 +49,38 @@ declare global {
     user_id?: number
   }
 
+  type RecordsRequestOrder = 'DESC' | 'ASC' | null
+
+  type RecordsRequestParams = {
+    order?: string
+    orderBy?: string
+    page?: number
+    perPage?: number
+    show?: ViewMode
+  }
+
+  type RecordsResponse = {
+    current_page: number
+    data: RecordsItem[]
+    first_page_url: string
+    from: number
+    last_page: string
+    last_page_url: string
+    links: RecordsResponseLink[]
+    next_page_url: string
+    path: string
+    per_page: number | string
+    prev_page_url: string
+    to: number
+    total: number
+  }
+
+  type RecordsResponseLink = {
+    active: boolean
+    label: string
+    url: string
+  }
+
   type RecordsSnapshot = {
     balance: number
     created_at: string
@@ -55,6 +88,8 @@ declare global {
     note?: string
     updated_at?: string
   }
+
+  type ViewMode = 'expense' | 'income' | null
 
   type User = {
     id: number

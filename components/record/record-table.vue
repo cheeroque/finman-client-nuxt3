@@ -1,0 +1,78 @@
+<template>
+  <div class="record-table">
+    <div class="record-table-head">
+      <div class="record-table-th record-date">
+        {{ useString('date') }}
+      </div>
+      <div class="record-table-th record-sum">
+        {{ useString('sum') }}
+      </div>
+      <div class="record-table-th record-category">
+        {{ useString('category') }}
+      </div>
+      <div class="record-table-th record-note">
+        {{ useString('note') }}
+      </div>
+    </div>
+    <div class="record-table-body">
+      <RecordCard v-for="record in records" :key="record.id" :record="record" />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+const props = defineProps<{
+  records: RecordsItem[]
+}>()
+</script>
+
+<style lang="scss" scoped>
+@include media-max-width(lg) {
+  .record-table-body {
+    gap: 0.5rem 0;
+  }
+}
+
+@include media-max-width(xl) {
+  .record-table-head {
+    display: none;
+  }
+
+  .record-table-body {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@include media-min-width(xl) {
+  .record-table-head {
+    display: flex;
+    border-bottom: $border-width solid var(--primary);
+  }
+
+  .record-table-th {
+    flex: 0 0 auto;
+    padding: $table-padding-x $table-padding-x;
+    font-family: $font-family-alternate;
+    font-weight: $font-weight-medium;
+    color: var(--primary);
+  }
+
+  :deep(.record-date) {
+    width: 21%;
+  }
+
+  :deep(.record-sum) {
+    width: 15%;
+    text-align: right;
+  }
+
+  :deep(.record-category) {
+    width: 27%;
+  }
+
+  :deep(.record-note) {
+    width: 37%;
+  }
+}
+</style>

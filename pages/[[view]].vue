@@ -1,5 +1,5 @@
 <template>
-  <div class="p-32"></div>
+  <PageRecords />
 </template>
 
 <script setup lang="ts"></script>
