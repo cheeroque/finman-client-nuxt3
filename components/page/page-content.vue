@@ -1,5 +1,5 @@
 <template>
-  <main class="page-content">
+  <main :class="{ loading: loading }" class="page-content">
     <header v-if="hasHeader" class="page-content-header">
       <slot name="header">
         <UiButton
@@ -16,6 +16,7 @@
     </header>
     <div class="page-content-body">
       <slot />
+      <UiSpinner v-if="loading" :variant="spinnerVariant" />
     </div>
     <footer v-if="hasFooter" class="page-content-footer">
       <slot name="footer"> footer </slot>
@@ -25,6 +26,8 @@
 
 <script setup lang="ts">
 const props = defineProps<{
+  loading?: boolean
+  spinnerVariant?: string
   title?: string
 }>()
 const slots = useSlots()
@@ -40,6 +43,21 @@ const hasFooter = computed(() => Boolean(slots.footer))
   padding: ($grid-gap * 0.5) 0;
 }
 
+.page-content-body {
+  position: relative;
+  opacity: 1;
+  transition: $transition;
+  transition-property: opacity;
+
+  .loading & {
+    opacity: 0.5;
+  }
+
+  :deep(.spinner) {
+    position: absolute;
+  }
+}
+
 .page-content-footer {
   padding: ($grid-gap * 0.5) 0;
 }
@@ -47,6 +65,17 @@ const hasFooter = computed(() => Boolean(slots.footer))
 .btn-back {
   margin: 0 0.5rem 0 -0.5rem;
   padding: 0.5rem;
+}
+
+@include media-max-width(lg) {
+  .page-content-body {
+    :deep(.spinner) {
+      right: 0.5rem;
+      top: 0.5rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
 }
 
 @include media-min-width(lg) {
@@ -64,6 +93,11 @@ const hasFooter = computed(() => Boolean(slots.footer))
 
   .page-content-body {
     padding: 1.25rem 1rem;
+
+    :deep(.spinner) {
+      right: 1rem;
+      top: 1rem;
+    }
   }
 
   .page-content-footer {

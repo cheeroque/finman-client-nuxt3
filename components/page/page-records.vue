@@ -1,5 +1,5 @@
 <template>
-  <PageContent :class="{ loading: pending }" class="page-records">
+  <PageContent :loading="pending" spinner-variant="secondary" class="page-records">
     <template #header>header</template>
 
     <RecordTable :records="records" :view-mode="viewMode" />
@@ -44,20 +44,11 @@ watch(
 .page-records {
   :deep(.page-content-body) {
     padding: 0;
-    opacity: 1;
-    transition: $transition;
-    transition-property: opacity;
   }
 
   :deep(.page-content-footer) {
     display: flex;
     justify-content: center;
-  }
-
-  &.loading {
-    :deep(.page-content-body) {
-      opacity: 0.5;
-    }
   }
 }
 

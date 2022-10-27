@@ -1,0 +1,22 @@
+.spinner {
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 99rem;
+  border: ($border-width * 2) solid var(--outline);
+  border-right-color: transparent;
+  animation: spinner 0.75s linear infinite;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@each $variant in $theme-colors {
+  .spinner-#{$variant} {
+    border-color: var(--#{$variant}-outline) !important;
+    border-right-color: transparent !important;
+  }
+}
