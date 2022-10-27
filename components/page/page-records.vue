@@ -36,7 +36,10 @@ const { pending, refresh } = await useAsyncData(() => recordsStore.fetchRecords(
 
 watch(
   () => route.query.page,
-  () => refresh()
+  async () => {
+    await refresh()
+    setTimeout(() => useScrollTo('.page'), 250)
+  }
 )
 </script>
 
