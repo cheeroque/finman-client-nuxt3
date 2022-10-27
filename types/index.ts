@@ -28,6 +28,12 @@ declare global {
     user: User
   }
 
+  type NavLink = {
+    icon?: string
+    link: string
+    text: string
+  }
+
   type RecordsCategory = {
     color?: string
     created_at: string

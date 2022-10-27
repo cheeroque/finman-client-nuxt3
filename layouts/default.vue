@@ -38,7 +38,7 @@ function handleCloseDrawer(): void {
 
 @include media-max-width(lg) {
   .layout-default {
-    padding-bottom: calc(4.5rem + 24px);
+    padding-bottom: calc(4rem + 24px);
   }
 }
 

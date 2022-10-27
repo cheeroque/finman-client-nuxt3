@@ -17,23 +17,17 @@
 </template>
 
 <script lang="ts" setup>
-type NavBottomLink = {
-  icon: string
-  link: string
-  text: string
-}
-
 const emit = defineEmits(['toggle:drawer'])
 
 const route = useRoute()
 
-const menuLinks: NavBottomLink[] = [
+const menuLinks: NavLink[] = [
   { icon: 'home-24', link: '/', text: useString('home') },
   { icon: 'expenses-24', link: '/view/expense', text: useString('expenses') },
   { icon: 'incomes-24', link: '/view/income', text: useString('incomes') },
 ]
 
-function getLinkClasses(link: NavBottomLink): string[] {
+function getLinkClasses(link: NavLink): string[] {
   const classes = ['navbar-link']
   if ((link.link === '/' && route.path === '/') || (link.link !== '/' && route.path.startsWith(link.link))) {
     classes.push('active')

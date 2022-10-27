@@ -1,6 +1,8 @@
 <template>
   <PageContent :loading="pending" spinner-variant="secondary" class="page-records">
-    <template #header>header</template>
+    <template #header>
+      <PageRecordsHeader />
+    </template>
 
     <RecordTable :records="records" :view-mode="viewMode" />
 
@@ -44,22 +46,32 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-.page-records {
+:deep(.page-content-body) {
+  padding: 0 0 0.5rem;
+}
+
+:deep(.page-content-footer) {
+  display: flex;
+  justify-content: center;
+}
+
+@include media-min-width(lg) {
+  :deep(.page-content-header) {
+    padding: 1.25rem 0 0;
+  }
+
   :deep(.page-content-body) {
     padding: 0;
   }
 
   :deep(.page-content-footer) {
-    display: flex;
-    justify-content: center;
+    justify-content: flex-end;
   }
 }
 
-@include media-min-width(lg) {
-  .page-records {
-    :deep(.page-content-footer) {
-      justify-content: flex-end;
-    }
+@include media-min-width(xxl) {
+  :deep(.page-content-header) {
+    padding: 1.25rem 1rem;
   }
 }
 </style>

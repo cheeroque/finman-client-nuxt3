@@ -101,7 +101,7 @@ const hasFooter = computed(() => Boolean(slots.footer))
   }
 
   .page-content-footer {
-    padding: 1.25rem 1rem 1rem;
+    padding: 1rem;
     border-top: $border-width solid var(--primary-outline);
   }
 }
