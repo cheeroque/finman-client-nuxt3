@@ -29,8 +29,8 @@ const route = useRoute()
 
 const menuLinks: NavBottomLink[] = [
   { icon: 'home-24', link: '/', text: useString('home') },
-  { icon: 'expenses-24', link: '/expenses', text: useString('expenses') },
-  { icon: 'incomes-24', link: '/incomes', text: useString('incomes') },
+  { icon: 'expenses-24', link: '/view/expense', text: useString('expenses') },
+  { icon: 'incomes-24', link: '/view/income', text: useString('incomes') },
 ]
 
 function getLinkClasses(link: NavBottomLink): string[] {

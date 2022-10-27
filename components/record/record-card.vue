@@ -19,6 +19,7 @@ import { DateTime } from 'luxon'
 
 const props = defineProps<{
   record: RecordsItem
+  viewMode?: ViewMode
 }>()
 
 const categoryLink = computed(() => `/categories/${props.record.category.slug}`)
@@ -35,8 +36,7 @@ const recordLink = computed(() => `/records/${props.record.id}`)
 
 const cardClasses = computed(() => {
   const classes = ['record-card']
-  const route = useRoute()
-  if (!route.params.view && props.record.category.is_income) {
+  if (!props.viewMode && props.record.category.is_income) {
     classes.push('record-card-income')
   }
   return classes
@@ -188,7 +188,7 @@ const cardClasses = computed(() => {
   .record-edit {
     flex: 0 0 auto;
     justify-content: flex-end;
-    margin: -$control-padding-y -$control-padding-y -$control-padding-y auto;
+    margin: (-$control-padding-y) (-$control-padding-y) (-$control-padding-y) auto;
     text-align: right;
     color: var(--primary-outline);
 

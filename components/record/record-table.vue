@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="record-table-body">
-      <RecordCard v-for="record in records" :key="record.id" :record="record" />
+      <RecordCard v-for="record in records" :key="record.id" :record="record" :view-mode="viewMode" />
     </div>
   </div>
 </template>
@@ -23,6 +23,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   records: RecordsItem[]
+  viewMode?: ViewMode
 }>()
 </script>
 
