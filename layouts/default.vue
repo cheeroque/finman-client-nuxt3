@@ -59,6 +59,7 @@ function handleCloseDrawer(): void {
   }
 
   .page {
+    align-self: stretch;
     width: 100%;
     min-height: 0;
     max-height: 100%;
