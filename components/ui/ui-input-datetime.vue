@@ -20,7 +20,11 @@
       </UiInput>
     </template>
     <template #default="{ close }">
-      <UiInputDatetimeDropdown v-model="modelValue" @close="close" />
+      <UiInputDatetimeDropdown
+        :model-value="modelValue"
+        @close="close"
+        @update:modelValue="emit('update:modelValue', $event)"
+      />
     </template>
   </UiDropdown>
 </template>
