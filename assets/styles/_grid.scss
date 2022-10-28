@@ -2,7 +2,7 @@
 
 .container,
 .container-full {
-  width: 100%;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
   padding: 0 #{$grid-gap * 0.5};
