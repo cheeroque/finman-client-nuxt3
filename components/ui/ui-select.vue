@@ -1,13 +1,14 @@
 <template>
   <div :class="componentClasses">
     <select
-      v-model="modelValue"
+      :value="modelValue"
       :id="id"
       :disabled="disabled"
       :name="name"
       :required="required"
       autocomplete="off"
       class="form-control-el"
+      @input="onInput"
     >
       <option
         v-for="(option, index) in options"
@@ -49,6 +50,8 @@ const props = defineProps<{
   state?: ControlState
 }>()
 
+const emit = defineEmits(['input', 'update:modelValue'])
+
 /* Injects from parent */
 const id: ComputedRef<string> | null = inject('controlId', null)
 const parentDisabled = inject(
@@ -80,4 +83,10 @@ const componentClasses = computed(() => {
   }
   return classes
 })
+
+function onInput(event: InputEvent): void {
+  const target = event.target as HTMLSelectElement
+  emit('input', event)
+  emit('update:modelValue', target.value)
+}
 </script>
