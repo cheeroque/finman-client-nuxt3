@@ -14,7 +14,7 @@
         <h1 class="h4 card-title">{{ title }}</h1>
       </slot>
     </header>
-    <div class="page-content-body">
+    <div v-if="hasContent" class="page-content-body">
       <slot />
       <UiSpinner v-if="loading" :variant="spinnerVariant" />
     </div>
@@ -32,6 +32,7 @@ const props = defineProps<{
 }>()
 const slots = useSlots()
 
+const hasContent = computed(() => Boolean(slots.default))
 const hasHeader = computed(() => Boolean(slots.header || props.title))
 const hasFooter = computed(() => Boolean(slots.footer))
 </script>
@@ -87,12 +88,15 @@ const hasFooter = computed(() => Boolean(slots.footer))
 
   .page-content-header {
     padding: 1.25rem 1rem;
-    border-bottom: $border-width solid var(--primary-outline);
     color: var(--primary);
   }
 
   .page-content-body {
     padding: 1.25rem 1rem;
+
+    .page-content-header + & {
+      border-top: $border-width solid var(--primary-outline);
+    }
 
     :deep(.spinner) {
       right: 1rem;
