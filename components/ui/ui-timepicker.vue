@@ -11,6 +11,7 @@
           v-for="hourIndex in 24"
           :key="`hour-${hourIndex}`"
           :class="{ active: currentHour === hourIndex - 1 }"
+          type="button"
           class="timepicker-hour"
           @click="setHour(hourIndex - 1)"
         >
@@ -22,6 +23,7 @@
           v-for="minuteIndex in minuteCount"
           :key="`minute-${minuteIndex}`"
           :class="{ active: currentMinute === minuteIndex - 1 }"
+          type="button"
           class="timepicker-minute"
           @click="setMinute((minuteIndex - 1) * stepMinutes)"
         >
@@ -33,6 +35,7 @@
           v-for="secondIndex in secondCount"
           :key="`second-${secondIndex}`"
           :class="{ active: currentSecond === secondIndex - 1 }"
+          type="button"
           class="timepicker-second"
           @click="setSecond((secondIndex - 1) * stepSeconds)"
         >

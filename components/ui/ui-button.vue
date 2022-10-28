@@ -5,7 +5,7 @@
     :disabled="disabled"
     :href="href"
     :to="to"
-    :type="type"
+    :type="type || 'button'"
     @click="emit('click')"
   >
     <UiIcon v-if="icon && !iconRight" :name="icon" :size="iconSize" class="nuxt-icon-left" />

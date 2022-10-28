@@ -48,6 +48,7 @@
           v-for="(day, index) in monthdays"
           :key="`monthday-${index}`"
           :class="getDayClasses(day)"
+          type="button"
           @click="setDate(day)"
         >
           {{ day.day }}
