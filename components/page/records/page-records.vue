@@ -1,5 +1,5 @@
 <template>
-  <PageContent :loading="pending" spinner-variant="secondary" class="page-records">
+  <PageContent :loading="pending" spinner-variant="primary" class="page-records">
     <template #header>
       <PageRecordsHeader />
     </template>
