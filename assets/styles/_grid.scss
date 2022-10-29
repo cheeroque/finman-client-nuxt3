@@ -29,6 +29,32 @@
     padding-left: 0.5 * $grid-gap;
     padding-right: 0.5 * $grid-gap;
   }
+
+  @for $multiplier from 0 through 24 {
+    &.gx-#{$multiplier * 4},
+    &.g-#{$multiplier * 4} {
+      margin-left: -$multiplier * 0.125rem;
+      margin-right: -$multiplier * 0.125rem;
+
+      .col,
+      [class*='col-'] {
+        padding-left: $multiplier * 0.125rem;
+        padding-right: $multiplier * 0.125rem;
+      }
+    }
+
+    &.gy-#{$multiplier * 4},
+    &.g-#{$multiplier * 4} {
+      margin-top: -$multiplier * 0.125rem;
+      margin-bottom: -$multiplier * 0.125rem;
+
+      .col,
+      [class*='col-'] {
+        padding-top: $multiplier * 0.125rem;
+        padding-bottom: $multiplier * 0.125rem;
+      }
+    }
+  }
 }
 
 .col {
