@@ -3,14 +3,17 @@
     <NuxtLink :to="monthLink" class="record-date">
       {{ useDateFormat(record.created_at, { dateStyle: 'long', timeStyle: 'short' }) }}
     </NuxtLink>
-    <NuxtLink :to="recordLink" class="record-sum"> {{ useNumberFormat(record.sum) }}&nbsp;₽ </NuxtLink>
+    <UiButton variant="link" class="record-sum" @click="onRecordClick">
+      {{ useNumberFormat(record.sum) }}&nbsp;₽
+    </UiButton>
     <NuxtLink :to="categoryLink" class="record-category">
       {{ categoryName }}
     </NuxtLink>
     <p class="record-note">
       <span class="caption">{{ record.note }}</span>
-      <UiButton :to="recordLink" icon="edit-24" icon-size="24" variant="link" class="record-edit" />
+      <UiButton icon="edit-24" icon-size="24" variant="link" class="record-edit" @click="onRecordClick" />
     </p>
+    <RecordDialog v-model="dialogVisible" :record="record" />
   </div>
 </template>
 
@@ -22,6 +25,8 @@ const props = defineProps<{
   viewMode?: ViewMode
 }>()
 
+const dialogVisible = ref(false)
+
 const categoryLink = computed(() => `/categories/${props.record.category.slug}`)
 const categoryName = computed(() => props.record.category.name)
 
@@ -32,8 +37,6 @@ const monthLink = computed(() => {
   return `/months/${y}-${m.toString().padStart(2, '0')}`
 })
 
-const recordLink = computed(() => `/records/${props.record.id}`)
-
 const cardClasses = computed(() => {
   const classes = ['record-card']
   if (!props.viewMode && props.record.category.is_income) {
@@ -41,6 +44,10 @@ const cardClasses = computed(() => {
   }
   return classes
 })
+
+function onRecordClick(): void {
+  dialogVisible.value = true
+}
 </script>
 
 <style lang="scss" scoped>

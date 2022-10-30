@@ -20,3 +20,47 @@
 .fade-leave-to {
   opacity: 0;
 }
+
+.dialog-enter-active,
+.dialog-leave-active {
+  /* transition has to be set on wrapper element
+  so that Vue can set its duration automatically */
+  transition: $transition;
+  transition-property: none;
+
+  .dialog-backdrop,
+  .dialog-content {
+    transition: $transition;
+  }
+  .dialog-backdrop {
+    transition-property: opacity;
+  }
+  .dialog-content {
+    transition-property: transform;
+  }
+}
+.dialog-enter-from,
+.dialog-leave-to {
+  .dialog-backdrop {
+    opacity: 0;
+  }
+  .dialog-content {
+    transform: translateX(100%);
+  }
+}
+
+@include media-min-width(md) {
+  .dialog-enter-active,
+  .dialog-leave-active {
+    .dialog-content {
+      transition-property: opacity, transform;
+    }
+  }
+  .dialog-enter-from,
+  .dialog-leave-to {
+    .dialog-content {
+      opacity: 0;
+      transform: translateY(-150%);
+    }
+  }
+}

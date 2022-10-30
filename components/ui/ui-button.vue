@@ -3,6 +3,7 @@
     :is="tagName"
     :class="buttonClasses"
     :disabled="disabled"
+    :form="form"
     :href="href"
     :to="to"
     :type="type || 'button'"
@@ -20,6 +21,7 @@ import { RouteLocationRaw } from 'vue-router'
 const props = defineProps<{
   block?: boolean
   disabled?: boolean
+  form?: string
   href?: string
   icon?: string
   iconRight?: boolean

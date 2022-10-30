@@ -182,8 +182,8 @@ const drawerClasses = computed(() => {
     height: 100%;
     padding: $grid-gap * 0.5;
     border-radius: 0 $dialog-border-radius $dialog-border-radius 0;
-    color: $dialog-color;
-    background-color: $dialog-bg;
+    color: $drawer-color;
+    background-color: $drawer-bg;
     transform: translateX(-100%);
     transition: $transition;
     transition-property: transform;

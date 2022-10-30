@@ -48,7 +48,7 @@ const props = defineProps<{
 @include media-min-width(xl) {
   .record-table-head {
     display: flex;
-    border-bottom: $border-width solid var(--primary);
+    border-bottom: ($border-width * 2) solid var(--primary-outline);
   }
 
   .record-table-th {
@@ -64,6 +64,7 @@ const props = defineProps<{
   }
 
   :deep(.record-sum) {
+    justify-content: flex-end;
     width: 15%;
     text-align: right;
   }

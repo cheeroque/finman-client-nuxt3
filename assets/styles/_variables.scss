@@ -261,9 +261,18 @@ $control-disabled-accent: var(--on-disabled-bg);
  ** DIALOGS
  **/
 
+$dialog-padding-x: 1.125rem;
+$dialog-padding-y: 1rem;
 $dialog-border-radius: 1rem;
-$dialog-color: var(--on-secondary-bg);
-$dialog-bg: var(--secondary-bg);
+$dialog-color: var(--on-background);
+$dialog-bg: var(--background);
+
+/**
+ ** DRAWER
+ **/
+
+$drawer-color: var(--on-secondary-bg);
+$drawer-bg: var(--secondary-bg);
 
 /**
  ** CARDS

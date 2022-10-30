@@ -1,10 +1,6 @@
-$dialog-padding-x: 1.125rem;
-$dialog-padding-y: 1rem;
-$dialog-border-radius: 0.25rem;
-
 .dialog {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   position: fixed;
   left: 0;
@@ -31,7 +27,7 @@ $dialog-border-radius: 0.25rem;
   width: auto;
   max-width: 500px;
   border-radius: $dialog-border-radius;
-  background-color: $body-bg;
+  background-color: $dialog-bg;
 
   .dialog-sm & {
     max-width: 320px;
@@ -46,25 +42,46 @@ $dialog-border-radius: 0.25rem;
   display: flex;
   align-items: center;
   gap: 0 $grid-gap;
-  padding: $dialog-padding-y $dialog-padding-x $dialog-padding-y * 0.5;
+  padding: $dialog-padding-y $dialog-padding-x;
 
   .btn-close {
     margin: -0.25rem -0.25rem -0.25rem 0;
     padding: 0.25rem;
+    border-width: 0;
   }
 }
 
 .dialog-title {
   flex: 1 1 auto;
   margin-bottom: 0;
+  color: var(--primary);
 }
 
 .dialog-body {
   padding: $dialog-padding-y $dialog-padding-x;
+
+  .dialog-header + & {
+    border-top: $border-width solid var(--primary-outline);
+  }
 }
 
 .dialog-footer {
   display: flex;
   gap: 0 $grid-gap;
-  padding: $dialog-padding-y * 0.5 $dialog-padding-x $dialog-padding-y;
+  padding: $dialog-padding-y $dialog-padding-x;
+
+  .dialog-header + &,
+  .dialog-body + & {
+    border-top: $border-width solid var(--primary-outline);
+  }
+
+  .btn {
+    min-width: 7.5rem;
+  }
+}
+
+@include media-min-width(md) {
+  .dialog {
+    align-items: center;
+  }
 }
