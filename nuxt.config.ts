@@ -1,5 +1,3 @@
-import { defineNuxtConfig } from 'nuxt'
-
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
   app: {
@@ -41,7 +39,7 @@ export default defineNuxtConfig({
     },
   },
 
-  buildModules: ['@pinia/nuxt', 'nuxt-icons'],
+  modules: ['@pinia/nuxt', 'nuxt-icons'],
 
   css: ['@/assets/styles/app.scss'],
 

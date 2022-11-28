@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useRecordsStore } from '@/store/records'
+import { useRecordsStore } from '~/store/records'
 
 const recordsStore = useRecordsStore()
 await useAsyncData(() => recordsStore.fetchGlobalData())
