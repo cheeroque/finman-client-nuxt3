@@ -1,7 +1,7 @@
 <template>
   <div :class="componentClasses">
     <input
-      v-model="modelValue"
+      :value="modelValue"
       :id="id"
       :autocomplete="autocomplete"
       :disabled="disabled"
@@ -52,7 +52,7 @@ const slots = useSlots()
 const emit = defineEmits(['blur', 'click', 'focus', 'input', 'update:modelValue'])
 
 /* Injects from parent */
-const id: ComputedRef<string> | null = inject('controlId', null)
+const id: ComputedRef<string> | undefined = inject('controlId', undefined)
 const parentDisabled = inject(
   'disabled',
   computed(() => false)
