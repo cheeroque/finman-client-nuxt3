@@ -14,20 +14,58 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts">
+import { useAuthStore } from '~/store/auth'
 import { useRecordsStore } from '~/store/records'
 
-const recordsStore = useRecordsStore()
-await useAsyncData(() => recordsStore.fetchGlobalData())
+export default {
+  async setup() {
+    const auth = useAuthStore()
+    const recordsStore = useRecordsStore()
+    const config = useRuntimeConfig()
 
-const drawerOpen = ref(false)
+    const baseURL = config.public.apiUrl
+    const headers = { Authorization: `Bearer ${auth.token}` }
 
-function handleToggleDrawer(): void {
-  drawerOpen.value = !drawerOpen.value
-}
+    if (auth?.token) {
+      const date = new Date()
+      const y = date.getFullYear()
+      const m = date.getMonth() + 1
 
-function handleCloseDrawer(): void {
-  drawerOpen.value = false
+      const [
+        { data: balance },
+        { data: categories },
+        { data: firstRecord },
+        { data: monthRecords },
+        { data: snapshot },
+      ] = await Promise.all([
+        useFetch<number>('total', { baseURL, headers }),
+        useFetch<RecordsCategory[]>('categories', { baseURL, headers }),
+        useFetch<RecordsItem>('records/first', { baseURL, headers }),
+        useFetch<RecordsItem[]>(`month/${y}-${m}`, { baseURL, headers }),
+        useFetch<RecordsSnapshot>('revises/latest', { baseURL, headers }),
+      ])
+      recordsStore.balance = balance.value || 0
+      recordsStore.categories = categories.value || []
+      recordsStore.firstRecord = firstRecord.value || {}
+      recordsStore.monthRecords = monthRecords.value || []
+      recordsStore.snapshot = snapshot.value || {}
+    } else {
+      auth.logout()
+    }
+
+    const drawerOpen = ref(false)
+
+    function handleToggleDrawer(): void {
+      drawerOpen.value = !drawerOpen.value
+    }
+
+    function handleCloseDrawer(): void {
+      drawerOpen.value = false
+    }
+
+    return { drawerOpen, handleToggleDrawer, handleCloseDrawer }
+  },
 }
 </script>
 

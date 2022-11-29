@@ -12,37 +12,55 @@
   </PageContent>
 </template>
 
-<script setup lang="ts">
-import { useRecordsStore } from '@/store/records'
+<script lang="ts">
+import { useAuthStore } from '~/store/auth'
+import { useRecordsStore } from '~/store/records'
 
-const props = defineProps<{
-  viewMode?: ViewMode
-}>()
+export default {
+  async setup() {
+    const auth = useAuthStore()
+    const recordsStore = useRecordsStore()
+    const config = useRuntimeConfig()
+    const route = useRoute()
 
-const route = useRoute()
-const recordsStore = useRecordsStore()
-const totalPages = computed(() => recordsStore.records?.last_page)
-const records = computed(() => recordsStore.records?.data)
+    const baseURL = config.public.apiUrl
+    const headers = { Authorization: `Bearer ${auth.token}` }
 
-function buildRequestParams(): RecordsRequestParams {
-  return {
-    order: (route.query.order as string) || 'DESC',
-    orderBy: (route.query.orderBy as string) || 'created_at',
-    page: Number(route.query.page) || 1,
-    perPage: Number(route.query.perPage) || 50,
-    show: props.viewMode || null,
-  }
+    const viewMode = route.params.view as ViewMode
+
+    function buildRequestParams(): RecordsRequestParams {
+      return {
+        order: (route.query.order as string) || 'DESC',
+        orderBy: (route.query.orderBy as string) || 'created_at',
+        page: Number(route.query.page) || 1,
+        perPage: Number(route.query.perPage) || 50,
+        show: viewMode || null,
+      }
+    }
+
+    const { data, pending, refresh } = await useFetch<RecordsResponse>('records', {
+      baseURL,
+      headers,
+      query: buildRequestParams(),
+    })
+
+    recordsStore.records = data.value?.data || []
+    recordsStore.totalPages = data.value?.total || 0
+
+    const records = computed(() => recordsStore.records)
+    const totalPages = computed(() => recordsStore.totalPages)
+
+    watch(
+      () => route.query.page,
+      async () => {
+        await refresh()
+        setTimeout(() => useScrollTo('.page'), 250)
+      }
+    )
+
+    return { pending, records, totalPages, viewMode }
+  },
 }
-
-const { pending, refresh } = await useAsyncData(() => recordsStore.fetchRecords(buildRequestParams()))
-
-watch(
-  () => route.query.page,
-  async () => {
-    await refresh()
-    setTimeout(() => useScrollTo('.page'), 250)
-  }
-)
 </script>
 
 <style lang="scss" scoped>

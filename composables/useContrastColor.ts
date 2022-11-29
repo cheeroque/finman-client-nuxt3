@@ -1,4 +1,8 @@
-export function useContrastColor(hex: string, defaultDark: string = '#000', defaultLight: string = '#fff'): string {
+export function useContrastColor(
+  hex: string = '',
+  defaultDark: string = '#000',
+  defaultLight: string = '#fff'
+): string {
   if (!hex?.length) return defaultDark
 
   const color = hex.substring(1)

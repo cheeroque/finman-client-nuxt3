@@ -45,7 +45,7 @@ declare global {
   }
 
   type RecordsItem = {
-    category?: RecordsCategory
+    category: RecordsCategory
     category_id: number
     created_at: string
     id: number

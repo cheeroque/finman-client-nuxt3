@@ -42,7 +42,7 @@ const VISIBLE_LIMIT = 5
 const recordsStore = useRecordsStore()
 
 const categories = recordsStore.categories
-const records = recordsStore.currentMonthRecords
+const records = recordsStore.monthRecords
 
 const groupedExpenses = computed(() =>
   Object.keys(records)

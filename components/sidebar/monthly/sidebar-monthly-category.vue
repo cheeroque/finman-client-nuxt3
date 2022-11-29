@@ -30,11 +30,12 @@ const widthRatio = computed(() => `${Math.round((props.total * 10000) / props.ma
 
 const mounted = ref(false)
 
-const caption = ref(null)
+const caption = ref()
 const captionOutside = ref(false)
 
 onMounted(() => {
   const el = caption.value
+
   const parent = el.closest('.category-link')
   const captionWidth = el.offsetWidth
   const parentWidth = parent.offsetWidth
