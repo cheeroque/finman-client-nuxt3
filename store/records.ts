@@ -4,7 +4,7 @@ interface State {
   balance: number
   categories: RecordsCategory[] | []
   firstRecord: RecordsItem | {}
-  monthRecords: RecordsItem[] | []
+  monthRecords: { [key: string]: RecordsItem[] }
   records: RecordsItem[] | []
   snapshot: RecordsSnapshot | {}
   totalPages: number
@@ -17,7 +17,7 @@ export const useRecordsStore = defineStore({
     balance: 0,
     categories: [],
     firstRecord: {},
-    monthRecords: [],
+    monthRecords: {},
     snapshot: {},
     records: [],
     totalPages: 0,

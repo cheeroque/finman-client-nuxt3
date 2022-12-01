@@ -23,7 +23,7 @@ const props = defineProps<{
 }>()
 const slots = useSlots()
 
-const formGroup = ref(null)
+const formGroup = ref()
 
 /* Provided to children */
 const controlId = computed(() => `${formGroup?.value?.id}-control`)

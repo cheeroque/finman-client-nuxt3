@@ -35,7 +35,7 @@ const autohide = computed(() => props.autohide ?? 3000)
 let toastClasses = ['toast']
 if (props.variant) toastClasses.push(`toast-${props.variant}`)
 
-let timeout: NodeJS.Timeout = undefined
+let timeout: NodeJS.Timeout
 
 watch(
   () => props.modelValue,

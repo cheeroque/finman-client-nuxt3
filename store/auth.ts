@@ -30,7 +30,7 @@ export const useAuthStore = defineStore({
       this.token = access_token
 
       const decoded: JwtPayload = jwt_decode(access_token)
-      const expires = DateTime.fromSeconds(decoded.exp).toJSDate()
+      const expires = DateTime.fromSeconds(decoded.exp || 0).toJSDate()
       const cookieOptions = {
         expires,
         path: '/',

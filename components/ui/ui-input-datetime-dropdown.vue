@@ -18,7 +18,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['update:modelValue', 'close'])
 
-const savedDate = ref(null)
+const savedDate = ref()
 
 const localDate = computed({
   get: () => props.modelValue,

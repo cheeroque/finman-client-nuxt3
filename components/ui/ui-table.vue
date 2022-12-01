@@ -43,8 +43,8 @@ const normalizedFields = computed(() =>
   props.fields.map((field) => ({
     key: getFieldKey(field),
     label: getFieldLabel(field),
-    tdClass: field.tdClass,
-    thClass: field.thClass,
+    tdClass: typeof field === 'string' ? '' : field.tdClass,
+    thClass: typeof field === 'string' ? '' : field.thClass,
   }))
 )
 

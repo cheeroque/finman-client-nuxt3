@@ -104,8 +104,8 @@ const pages = computed(() => {
   return pages
 })
 
-function getLink(page: number | string): RouteLocationRaw | null {
-  if (props.noLinks) return null
+function getLink(page: number | string): RouteLocationRaw | undefined {
+  if (props.noLinks) return
   let newPage = page
   if (newPage === 'next') {
     newPage = Math.min(currentPage.value + 1, totalPages.value)

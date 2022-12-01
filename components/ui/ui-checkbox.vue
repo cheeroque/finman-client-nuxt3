@@ -27,10 +27,6 @@ interface CheckboxInputEventTarget extends EventTarget {
   checked: boolean
 }
 
-interface CheckboxInputEvent extends InputEvent {
-  target: CheckboxInputEventTarget
-}
-
 const props = defineProps<{
   disabled?: boolean
   form?: string
@@ -45,7 +41,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['update:modelValue'])
 
-const checkbox = ref(null)
+const checkbox = ref()
 const defaultValue = ref(props.value || true)
 
 const controlId = computed(() => `${checkbox?.value?.id}-control`)
@@ -68,9 +64,11 @@ function removeValue(value: CheckboxValue, array: CheckboxValue[]): CheckboxValu
   return array?.filter((el) => el !== value)
 }
 
-function onInput(event: CheckboxInputEvent): void {
-  const checked = event.target.checked
+function onInput(event: Event): void {
   let payload
+  const target = event.target as CheckboxInputEventTarget
+  const checked = target.checked
+
   if (Array.isArray(props.modelValue)) {
     if (checked) {
       payload = addValue(defaultValue.value, props.modelValue)

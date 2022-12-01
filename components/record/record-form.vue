@@ -28,10 +28,10 @@ const recordsStore = useRecordsStore()
 const categories = recordsStore.categories
 const categoryOptions = computed(() => categories.map(({ id, name }) => ({ text: name, value: id })))
 
-const categoryId = ref(props.record.category_id)
-const sum = ref(props.record.sum)
-const createdAt = ref(DateTime.fromISO(props.record.created_at).toJSDate())
-const note = ref(props.record.note)
+const categoryId = ref(props.record?.category_id)
+const sum = ref(props.record?.sum)
+const createdAt = ref(DateTime.fromISO(props.record?.created_at || '').toJSDate())
+const note = ref(props.record?.note)
 
 const form = ref(null)
 defineExpose({ form })

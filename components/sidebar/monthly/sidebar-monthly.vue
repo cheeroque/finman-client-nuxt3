@@ -47,12 +47,12 @@ const records = recordsStore.monthRecords
 const groupedExpenses = computed(() =>
   Object.keys(records)
     .map((key) => {
-      const category = categories?.find(({ id }) => String(id) === key)
+      const category = categories?.find(({ id }) => String(id) === key) as RecordsCategory
       const total = records[key].reduce((total, { sum }) => (total += sum), 0)
       return { category, total }
     })
     .sort(({ total: totalA }, { total: totalB }) => totalB - totalA)
-    .filter(({ category: { is_income } }) => !Boolean(is_income))
+    .filter(({ category }) => !Boolean(category?.is_income))
 )
 
 const collapseOpen = ref(false)

@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-const q = ref(null)
+const q = ref()
 </script>
 
 <style lang="scss" scoped>

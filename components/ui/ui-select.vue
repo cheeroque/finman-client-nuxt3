@@ -53,7 +53,7 @@ const props = defineProps<{
 const emit = defineEmits(['input', 'update:modelValue'])
 
 /* Injects from parent */
-const id: ComputedRef<string> | null = inject('controlId', null)
+const id: ComputedRef<string> | undefined = inject('controlId', undefined)
 const parentDisabled = inject(
   'disabled',
   computed(() => false)
@@ -84,7 +84,7 @@ const componentClasses = computed(() => {
   return classes
 })
 
-function onInput(event: InputEvent): void {
+function onInput(event: Event): void {
   const target = event.target as HTMLSelectElement
   emit('input', event)
   emit('update:modelValue', target.value)

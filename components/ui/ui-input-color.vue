@@ -37,7 +37,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['update:modelValue'])
 
-const colorInput = ref(null)
+const colorInput = ref()
 
 const bgColor = computed(() => props.modelValue || 'transparent')
 const iconColor = computed(() => (props.modelValue ? getContrastColor(props.modelValue) : 'inherit'))
@@ -55,7 +55,7 @@ function getContrastColor(bgColor: string): string {
   return lightness >= 165 ? '#000' : '#fff'
 }
 
-function onInput(event: InputEvent): void {
+function onInput(event: Event): void {
   const target = event.target as HTMLInputElement
   emit('update:modelValue', target.value)
 }

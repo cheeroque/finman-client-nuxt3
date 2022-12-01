@@ -45,20 +45,31 @@
 import { DateTime } from 'luxon'
 import { useRecordsStore } from '@/store/records'
 
+type CalendarMonth = {
+  month: string,
+  link: string,
+  disabled: boolean
+}
+
+type CalendarItem = {
+  year: number | string
+  months: CalendarMonth[]
+}
+
 const props = defineProps<{
   date?: Date
   numericMonths?: boolean
 }>()
 
 const recordsStore = useRecordsStore()
-const { firstRecord } = recordsStore
+const firstRecord = recordsStore.firstRecord as RecordsItem
 
 const startDate = DateTime.fromISO(firstRecord.created_at)
 const endDate = DateTime.now()
 
-const calendarItems = []
+const calendarItems: CalendarItem[] = []
 for (let i = startDate.year; i <= endDate.year; i++) {
-  const months = []
+  const months: CalendarMonth[] = []
   for (let m = 1; m <= 12; m++) {
     const date = new Date()
     date.setMonth(m - 1)

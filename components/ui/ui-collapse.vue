@@ -46,7 +46,7 @@ function onEnter(el: HTMLElement): void {
 }
 
 function onAfterEnter(el: HTMLElement): void {
-  el.style.height = null
+  el.style.height = ''
 }
 
 function onBeforeLeave(el: HTMLElement): void {
@@ -58,7 +58,7 @@ function onLeave(el: HTMLElement): void {
 }
 
 function onAfterLeave(el: HTMLElement): void {
-  el.style.height = null
+  el.style.height = ''
   emit('hidden')
 }
 </script>

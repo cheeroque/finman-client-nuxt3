@@ -42,6 +42,6 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:modelValue'])
 
-const form = ref(null)
+const form = ref()
 const formId = computed(() => form?.value?.form.id)
 </script>

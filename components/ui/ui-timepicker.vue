@@ -71,9 +71,9 @@ const secondCount = computed(() => Math.round(60 / stepSeconds.value))
 const titleFormat = computed(() => `HH:mm${props.showSeconds ? ':ss' : ''}`)
 const title = computed(() => luxonDate.value.toFormat(titleFormat.value, { locale }))
 
-const currentHour = ref(null)
-const currentMinute = ref(null)
-const currentSecond = ref(null)
+const currentHour = ref()
+const currentMinute = ref()
+const currentSecond = ref()
 
 function formatUnit(unit: number): string {
   return unit.toString().padStart(2, '0')
@@ -82,7 +82,7 @@ function formatUnit(unit: number): string {
 function setHour(hour: number): void {
   emit('click:hours')
   currentHour.value = hour
-  const clickedLast = currentMinute.value !== null && (currentSecond.value !== null || !props.showSeconds)
+  const clickedLast = currentMinute.value !== undefined && (currentSecond.value !== undefined || !props.showSeconds)
   if (clickedLast) {
     setValue()
   }
@@ -91,7 +91,7 @@ function setHour(hour: number): void {
 function setMinute(minute: number): void {
   emit('click:minutes')
   currentMinute.value = minute
-  const clickedLast = currentHour.value !== null && (currentSecond.value !== null || !props.showSeconds)
+  const clickedLast = currentHour.value !== undefined && (currentSecond.value !== undefined || !props.showSeconds)
   if (clickedLast) {
     setValue()
   }
@@ -100,7 +100,7 @@ function setMinute(minute: number): void {
 function setSecond(second: number): void {
   emit('click:seconds')
   currentSecond.value = second
-  const clickedLast = currentHour.value !== null && currentMinute.value !== null
+  const clickedLast = currentHour.value !== undefined && currentMinute.value !== undefined
   if (clickedLast) {
     setValue()
   }
@@ -113,9 +113,9 @@ function setValue(): void {
     second: currentSecond.value,
   }).toJSDate()
   emit('update:modelValue', date)
-  currentHour.value = null
-  currentMinute.value = null
-  currentSecond.value = null
+  currentHour.value = undefined
+  currentMinute.value = undefined
+  currentSecond.value = undefined
 }
 </script>
 

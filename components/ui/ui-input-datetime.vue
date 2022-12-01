@@ -49,11 +49,11 @@ const dropdownVisible = ref(false)
 
 const format = computed(() => props.format || 'dd.LL.yyyy HH:mm')
 const formattedValue = computed(() =>
-  props.modelValue ? DateTime.fromJSDate(props.modelValue).toFormat(format.value) : null
+  props.modelValue ? DateTime.fromJSDate(props.modelValue).toFormat(format.value) : undefined
 )
 const placeholder = computed(() => props.placeholder || DateTime.now().toFormat(format.value))
 
-function onInput(event: InputEvent): void {
+function onInput(event: Event): void {
   const target = event.target as HTMLInputElement
   if (!target.value) {
     emit('update:modelValue', null)

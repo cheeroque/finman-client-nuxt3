@@ -48,7 +48,7 @@ const size = computed(() => props.size)
 
 function calculate(event: FocusEvent | FakeFocusEvent): void {
   const target = event.target as HTMLInputElement
-  const matches = target.value.match(/([+-]{0,}\d{1,})/gi) || []
+  const matches: string[] = target.value.match(/([+-]{0,}\d{1,})/gi) || []
   const total = matches.reduce((total, match) => {
     total += Number(match)
     return total
@@ -88,7 +88,7 @@ function onKeydown(event: KeyboardEvent): void {
       event.preventDefault()
       calculate({ target })
       /* Force input value update (for +0 situations) */
-      target.value = props.modelValue.toString()
+      target.value = props.modelValue?.toString() || ''
     }
   }
 }

@@ -42,13 +42,13 @@ export default {
         useFetch<number>('total', { baseURL, headers }),
         useFetch<RecordsCategory[]>('categories', { baseURL, headers }),
         useFetch<RecordsItem>('records/first', { baseURL, headers }),
-        useFetch<RecordsItem[]>(`month/${y}-${m}`, { baseURL, headers }),
+        useFetch<{ [key: string]: RecordsItem[] }>(`month/${y}-${m}`, { baseURL, headers }),
         useFetch<RecordsSnapshot>('revises/latest', { baseURL, headers }),
       ])
       recordsStore.balance = balance.value || 0
       recordsStore.categories = categories.value || []
       recordsStore.firstRecord = firstRecord.value || {}
-      recordsStore.monthRecords = monthRecords.value || []
+      recordsStore.monthRecords = monthRecords.value || {}
       recordsStore.snapshot = snapshot.value || {}
     } else {
       auth.logout()
