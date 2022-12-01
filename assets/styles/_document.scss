@@ -4,6 +4,11 @@ body {
   line-height: $line-height-base;
   color: $body-color;
   background-color: $body-bg;
+
+  &.body-error {
+    color: var(--on-danger-bg);
+    background-color: var(--danger-bg);
+  }
 }
 
 hr {

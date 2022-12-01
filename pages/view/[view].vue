@@ -7,6 +7,9 @@ const route = useRoute()
 const viewMode = route.params.view as string
 
 if (!['expense', 'income'].includes(viewMode)) {
-  showError({ statusCode: 404 })
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Page not found',
+  })
 }
 </script>
