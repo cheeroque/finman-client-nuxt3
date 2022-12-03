@@ -62,6 +62,7 @@ function getLinkClasses(link: NavLink): string[] {
 
   :deep(.nuxt-icon) {
     align-self: stretch;
+    margin-right: 0;
     margin-bottom: 0.25rem;
     padding: 0.25rem;
     border-radius: 99rem;
