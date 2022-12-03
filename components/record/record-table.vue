@@ -15,8 +15,15 @@
       </div>
     </div>
     <div class="record-table-body">
-      <RecordCard v-for="record in records" :key="record.id" :record="record" :view-mode="viewMode" />
+      <RecordCard
+        v-for="record in records"
+        :key="record.id"
+        :record="record"
+        :view-mode="viewMode"
+        @edit="onRecordEdit(record)"
+      />
     </div>
+    <RecordDialog v-model="dialogVisible" :record="currentRecord" @closed="onDialogClosed" />
   </div>
 </template>
 
@@ -25,6 +32,18 @@ const props = defineProps<{
   records: RecordsItem[]
   viewMode?: ViewMode
 }>()
+
+const currentRecord = ref<RecordsItem>()
+const dialogVisible = ref(false)
+
+function onRecordEdit(record: RecordsItem): void {
+  currentRecord.value = record
+  dialogVisible.value = true
+}
+
+function onDialogClosed(): void {
+  currentRecord.value = undefined
+}
 </script>
 
 <style lang="scss" scoped>

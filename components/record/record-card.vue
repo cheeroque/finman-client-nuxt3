@@ -3,7 +3,7 @@
     <NuxtLink :to="monthLink" class="record-date">
       {{ useDateFormat(record.created_at, { dateStyle: 'long', timeStyle: 'short' }) }}
     </NuxtLink>
-    <UiButton variant="link" class="record-sum" @click="onRecordClick">
+    <UiButton variant="link" class="record-sum" @click="emit('edit')">
       {{ useNumberFormat(record.sum) }}&nbsp;₽
     </UiButton>
     <NuxtLink :to="categoryLink" class="record-category">
@@ -11,9 +11,8 @@
     </NuxtLink>
     <p class="record-note">
       <span class="caption">{{ record.note }}</span>
-      <UiButton icon="edit-24" icon-size="24" variant="link" class="record-edit" @click="onRecordClick" />
+      <UiButton icon="edit-24" icon-size="24" variant="link" class="record-edit" @click="emit('edit')" />
     </p>
-    <RecordDialog v-model="dialogVisible" :record="record" />
   </div>
 </template>
 
@@ -25,7 +24,7 @@ const props = defineProps<{
   viewMode?: ViewMode
 }>()
 
-const dialogVisible = ref(false)
+const emit = defineEmits(['edit'])
 
 const categoryLink = computed(() => `/categories/${props.record.category.slug}`)
 const categoryName = computed(() => props.record.category.name)
@@ -44,10 +43,6 @@ const cardClasses = computed(() => {
   }
   return classes
 })
-
-function onRecordClick(): void {
-  dialogVisible.value = true
-}
 </script>
 
 <style lang="scss" scoped>

@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <Transition name="dialog">
+    <Transition name="dialog" @after-leave="onAfterLeave">
       <div v-if="modelValue" :class="dialogClasses">
         <div class="dialog-content">
           <div v-if="hasHeader" class="dialog-header">
@@ -38,7 +38,7 @@ const props = defineProps<{
   size?: DialogSize
   title?: string
 }>()
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['closed', 'update:modelValue'])
 const slots = useSlots()
 
 const hasHeader = computed(() => Boolean(props.title || slots.header))
@@ -53,5 +53,9 @@ if (props.size) {
 
 function close(): void {
   emit('update:modelValue', false)
+}
+
+function onAfterLeave(): void {
+  emit('closed')
 }
 </script>

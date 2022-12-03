@@ -2,6 +2,7 @@
   <UiDialog
     :model-value="modelValue"
     :title="useString('changeRecord')"
+    @closed="emit('closed')"
     @update:modelValue="emit('update:modelValue', $event)"
   >
     <template #default="{ close }">
@@ -40,7 +41,7 @@ const props = defineProps<{
   record?: RecordsItem
 }>()
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['closed', 'update:modelValue'])
 
 const form = ref()
 const formId = computed(() => form?.value?.form.id)
