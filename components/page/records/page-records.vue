@@ -5,9 +5,12 @@
     </template>
 
     <RecordTable :records="records" :view-mode="viewMode" />
+    <RecordFab :show="!paginationVisible" />
 
     <template #footer>
-      <UiPagination :disabled="pending" :total-pages="totalPages" hide-prev-next />
+      <div ref="paginationAnchor">
+        <UiPagination :disabled="pending" :total-pages="totalPages" hide-prev-next />
+      </div>
     </template>
   </PageContent>
 </template>
@@ -18,6 +21,15 @@ import { useRecordsStore } from '~/store/records'
 
 export default {
   async setup() {
+    /** Lifecycle hooks in async setup should be registered
+     ** before first await statement */
+    onMounted(() => {
+      setObserver()
+    })
+    onUnmounted(() => {
+      removeObserver()
+    })
+
     const auth = useAuthStore()
     const recordsStore = useRecordsStore()
     const config = useRuntimeConfig()
@@ -35,6 +47,27 @@ export default {
         page: Number(route.query.page) || 1,
         perPage: Number(route.query.perPage) || 50,
         show: viewMode || null,
+      }
+    }
+
+    const observer = ref()
+    const paginationAnchor = ref()
+    const paginationVisible = ref(false)
+
+    function setObserver() {
+      if (!process.client) return
+
+      if ('IntersectionObserver' in window) {
+        observer.value = new IntersectionObserver(([{ isIntersecting }]) => {
+          paginationVisible.value = isIntersecting
+        })
+        observer.value.observe(paginationAnchor.value)
+      }
+    }
+
+    function removeObserver() {
+      if (paginationAnchor.value && observer.value instanceof IntersectionObserver) {
+        observer.value.unobserve(paginationAnchor.value)
       }
     }
 
@@ -58,7 +91,7 @@ export default {
       }
     )
 
-    return { pending, records, totalPages, viewMode }
+    return { paginationAnchor, paginationVisible, pending, records, totalPages, viewMode }
   },
 }
 </script>

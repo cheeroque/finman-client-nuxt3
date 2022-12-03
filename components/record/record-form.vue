@@ -1,16 +1,16 @@
 <template>
   <form ref="form" class="record-form">
     <UiFormGroup :label="useString('category')">
-      <UiSelect v-model="categoryId" :options="categoryOptions" />
+      <UiSelect v-model="formData.category_id" :options="categoryOptions" />
     </UiFormGroup>
     <UiFormGroup :label="useString('sum')">
-      <UiInputCalc v-model="sum" />
+      <UiInputCalc v-model="formData.sum" />
     </UiFormGroup>
     <UiFormGroup :label="useString('dateTime')">
-      <UiInputDatetime v-model="createdAt" />
+      <UiInputDatetime v-model="formData.created_at" />
     </UiFormGroup>
     <UiFormGroup :label="useString('note')" class="mb-0">
-      <UiInput v-model="note" />
+      <UiInput v-model="formData.note" :placeholder="useString('notePlaceholder')" />
     </UiFormGroup>
   </form>
 </template>
@@ -19,20 +19,49 @@
 import { DateTime } from 'luxon'
 import { useRecordsStore } from '@/store/records'
 
+type RecordsForm = {
+  category_id: number
+  created_at: Date
+  note?: string
+  sum: number
+}
+
 const props = defineProps<{
-  edit?: boolean
   record?: RecordsItem
 }>()
+
+/* Expose form element as ref for parent */
+const form = ref()
+defineExpose({ form })
 
 const recordsStore = useRecordsStore()
 const categories = recordsStore.categories
 const categoryOptions = computed(() => categories.map(({ id, name }) => ({ text: name, value: id })))
 
-const categoryId = ref(props.record?.category_id)
-const sum = ref(props.record?.sum)
-const createdAt = ref(DateTime.fromISO(props.record?.created_at || '').toJSDate())
-const note = ref(props.record?.note)
+const formData = ref<RecordsForm>({
+  category_id: categoryOptions.value[0]?.value,
+  created_at: new Date(),
+  note: undefined,
+  sum: 0,
+})
 
-const form = ref(null)
-defineExpose({ form })
+function initFormData(): void {
+  if (props.record?.id) {
+    const { category_id, created_at, note, sum } = props.record
+    formData.value = {
+      category_id,
+      created_at: DateTime.fromISO(created_at).toJSDate(),
+      note,
+      sum,
+    }
+  }
+}
+
+initFormData()
+watch(
+  () => props.record?.id,
+  () => {
+    initFormData()
+  }
+)
 </script>

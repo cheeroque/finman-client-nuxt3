@@ -1,7 +1,7 @@
 <template>
   <UiDialog
     :model-value="modelValue"
-    :title="useString('changeRecord')"
+    :title="dialogTitle"
     @closed="emit('closed')"
     @update:modelValue="emit('update:modelValue', $event)"
   >
@@ -44,5 +44,7 @@ const props = defineProps<{
 const emit = defineEmits(['closed', 'update:modelValue'])
 
 const form = ref()
-const formId = computed(() => form?.value?.form.id)
+const formId = computed(() => form.value?.form.id)
+
+const dialogTitle = computed(() => useString(Boolean(props.record?.id) ? 'changeRecord' : 'createRecord'))
 </script>
