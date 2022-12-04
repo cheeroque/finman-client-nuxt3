@@ -6,7 +6,7 @@
     @update:modelValue="emit('update:modelValue', $event)"
   >
     <template #default="{ close }">
-      <RecordForm v-uid ref="form" :record="record" @submit="close" />
+      <RecordForm v-uid ref="form" :record="record" @success="close" />
     </template>
 
     <template #footer="{ close }">

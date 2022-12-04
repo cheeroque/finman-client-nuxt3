@@ -1,22 +1,38 @@
 <template>
-  <form ref="form" class="record-form">
-    <UiFormGroup :label="useString('category')">
-      <UiSelect v-model="formData.category_id" :options="categoryOptions" />
+  <form ref="form" class="record-form" @submit="onSubmit">
+    <UiFormGroup
+      :label="useString('category')"
+      :invalid-feedback="errors.category_id"
+      :state="errors.category_id ? false : null"
+    >
+      <UiSelect v-model="category_id" :options="categoryOptions" name="category_id" />
     </UiFormGroup>
-    <UiFormGroup :label="useString('sum')">
-      <UiInputCalc v-model="formData.sum" />
+    <UiFormGroup :label="useString('sum')" :invalid-feedback="errors.sum" :state="errors.sum ? false : null">
+      <UiInputCalc v-model="sum" name="sum" />
     </UiFormGroup>
-    <UiFormGroup :label="useString('dateTime')">
-      <UiInputDatetime v-model="formData.created_at" />
+    <UiFormGroup
+      :label="useString('dateTime')"
+      :invalid-feedback="errors.created_at"
+      :state="errors.created_at ? false : null"
+    >
+      <UiInputDatetime v-model="created_at" name="created_at" />
     </UiFormGroup>
-    <UiFormGroup :label="useString('note')" class="mb-0">
-      <UiInput v-model="formData.note" :placeholder="useString('notePlaceholder')" />
+    <UiFormGroup
+      :label="useString('note')"
+      :invalid-feedback="errors.note"
+      :state="errors.note ? false : null"
+      class="mb-0"
+    >
+      <UiInput v-model="note" :placeholder="useString('notePlaceholder')" name="note" />
     </UiFormGroup>
   </form>
 </template>
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
+import { useForm } from 'vee-validate'
+import { Ref } from 'vue'
+import { date, number, object, string } from 'yup'
 import { useRecordsStore } from '@/store/records'
 
 type RecordsForm = {
@@ -29,6 +45,8 @@ type RecordsForm = {
 const props = defineProps<{
   record?: RecordsItem
 }>()
+
+const emit = defineEmits(['success'])
 
 /* Expose form element as ref for parent */
 const form = ref()
@@ -64,4 +82,30 @@ watch(
     initFormData()
   }
 )
+
+/* Form validation */
+const schema = object().shape({
+  category_id: number().integer().min(1, useString('fieldRequired')),
+  created_at: date(),
+  note: string().required(useString('fieldRequired')),
+  sum: number()
+    .integer()
+    .required(useString('fieldRequired'))
+    .min(0, ({ min }) => `${useString('fieldMinimumValue')} ${min}`),
+})
+
+const { errors, handleSubmit, useFieldModel } = useForm({
+  initialValues: formData.value,
+  validationSchema: schema,
+})
+
+const category_id: Ref<number> = useFieldModel('category_id')
+const created_at: Ref<Date> = useFieldModel('created_at')
+const note: Ref<string | undefined> = useFieldModel('note')
+const sum: Ref<number> = useFieldModel('sum')
+
+const onSubmit = handleSubmit(() => {
+  console.log('submit!')
+  emit('success')
+})
 </script>
