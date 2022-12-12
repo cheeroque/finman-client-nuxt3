@@ -1,38 +1,41 @@
 <template>
-  <form ref="form" class="record-form" @submit="onSubmit">
+  <form ref="form" class="record-form" @submit.prevent="onSubmit">
     <UiFormGroup
       :label="useString('category')"
-      :invalid-feedback="errors.category_id"
-      :state="errors.category_id ? false : null"
+      :invalid-feedback="formatErrors(v$.category_id.$errors)"
+      :state="v$.category_id.$error ? false : null"
     >
-      <UiSelect v-model="category_id" :options="categoryOptions" name="category_id" />
+      <UiSelect v-model="formData.category_id" :options="categoryOptions" name="category_id" />
     </UiFormGroup>
-    <UiFormGroup :label="useString('sum')" :invalid-feedback="errors.sum" :state="errors.sum ? false : null">
-      <UiInputCalc v-model="sum" name="sum" />
+    <UiFormGroup
+      :label="useString('sum')"
+      :invalid-feedback="formatErrors(v$.sum.$errors)"
+      :state="v$.sum.$error ? false : null"
+    >
+      <UiInputCalc v-model="formData.sum" name="sum" />
     </UiFormGroup>
     <UiFormGroup
       :label="useString('dateTime')"
-      :invalid-feedback="errors.created_at"
-      :state="errors.created_at ? false : null"
+      :invalid-feedback="formatErrors(v$.created_at.$errors)"
+      :state="v$.created_at.$error ? false : null"
     >
-      <UiInputDatetime v-model="created_at" name="created_at" />
+      <UiInputDatetime v-model="formData.created_at" name="created_at" />
     </UiFormGroup>
     <UiFormGroup
       :label="useString('note')"
-      :invalid-feedback="errors.note"
-      :state="errors.note ? false : null"
+      :invalid-feedback="formatErrors(v$.note.$errors)"
+      :state="v$.note.$error ? false : null"
       class="mb-0"
     >
-      <UiInput v-model="note" :placeholder="useString('notePlaceholder')" name="note" />
+      <UiInput v-model="formData.note" :placeholder="useString('notePlaceholder')" name="note" />
     </UiFormGroup>
   </form>
 </template>
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { useForm } from 'vee-validate'
-import { Ref } from 'vue'
-import { date, number, object, string } from 'yup'
+import { ErrorObject, useVuelidate } from '@vuelidate/core'
+import { helpers, minValue, required } from '@vuelidate/validators'
 import { useRecordsStore } from '@/store/records'
 
 type RecordsForm = {
@@ -56,7 +59,7 @@ const recordsStore = useRecordsStore()
 const categories = recordsStore.categories
 const categoryOptions = computed(() => categories.map(({ id, name }) => ({ text: name, value: id })))
 
-const formData = ref<RecordsForm>({
+const formData = reactive<RecordsForm>({
   category_id: categoryOptions.value[0]?.value,
   created_at: new Date(),
   note: undefined,
@@ -66,12 +69,11 @@ const formData = ref<RecordsForm>({
 function initFormData(): void {
   if (props.record?.id) {
     const { category_id, created_at, note, sum } = props.record
-    formData.value = {
-      category_id,
-      created_at: DateTime.fromISO(created_at).toJSDate(),
-      note,
-      sum,
-    }
+
+    formData.category_id = category_id
+    formData.created_at = DateTime.fromISO(created_at).toJSDate()
+    formData.note = note
+    formData.sum = sum
   }
 }
 
@@ -84,28 +86,33 @@ watch(
 )
 
 /* Form validation */
-const schema = object().shape({
-  category_id: number().integer().min(1, useString('fieldRequired')),
-  created_at: date(),
-  note: string().required(useString('fieldRequired')),
-  sum: number()
-    .integer()
-    .required(useString('fieldRequired'))
-    .min(0, ({ min }) => `${useString('fieldMinimumValue')} ${min}`),
-})
+function isValidDate(value: Date): boolean {
+  return DateTime.fromJSDate(value).isValid
+}
 
-const { errors, handleSubmit, useFieldModel } = useForm({
-  initialValues: formData.value,
-  validationSchema: schema,
-})
+function formatErrors(errors: ErrorObject[]): string {
+  return errors.map(({ $message }) => $message).join(' ')
+}
 
-const category_id: Ref<number> = useFieldModel('category_id')
-const created_at: Ref<Date> = useFieldModel('created_at')
-const note: Ref<string | undefined> = useFieldModel('note')
-const sum: Ref<number> = useFieldModel('sum')
+const rules = computed(() => ({
+  category_id: { required: helpers.withMessage(useString('fieldRequired'), required) },
+  created_at: {
+    required: helpers.withMessage(useString('fieldRequired'), required),
+    isValidDate: helpers.withMessage(useString('invalidDate'), isValidDate),
+  },
+  note: { required: helpers.withMessage(useString('fieldRequired'), required) },
+  sum: {
+    minValue: helpers.withMessage(({ $params }) => `${useString('fieldMinimumValue')} ${$params.min}`, minValue(0)),
+    required: helpers.withMessage(useString('fieldRequired'), required),
+  },
+}))
 
-const onSubmit = handleSubmit(() => {
-  console.log('submit!')
-  emit('success')
-})
+const v$ = useVuelidate<RecordsForm>(rules, formData, { $lazy: true })
+
+function onSubmit() {
+  v$.value.$validate()
+  if (!v$.value.$error) {
+    emit('success')
+  }
+}
 </script>
