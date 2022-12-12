@@ -283,35 +283,3 @@ $floating-label-height: 1rem;
   transition: $transition;
   transition-property: color;
 }
-
-/**
- ** Fix <select> extra horizontal padding in Firefox
- **/
-
-@-moz-document url-prefix() {
-  .form-control-select {
-    .form-control-el {
-      padding-left: calc(#{$control-padding-x} - 4px);
-    }
-
-    &.form-control-lg {
-      .form-control-el {
-        padding-left: calc(#{$control-padding-x-lg} - 4px);
-      }
-    }
-  }
-
-  .floating-label {
-    .form-control-select {
-      .form-control-el {
-        padding-left: calc(#{$control-padding-x} - 4px);
-      }
-
-      &.form-control-lg {
-        .form-control-el {
-          padding-left: calc(#{$control-padding-x} - 4px);
-        }
-      }
-    }
-  }
-}
