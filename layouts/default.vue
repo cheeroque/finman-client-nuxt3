@@ -22,30 +22,7 @@ export default {
     const recordsStore = useRecordsStore()
     const drawerOpen = ref(false)
 
-    await fetchGlobalData()
-
-    async function fetchGlobalData() {
-      const date = new Date()
-      const y = date.getFullYear()
-      const m = date.getMonth() + 1
-
-      const headers = useRequestHeaders(['cookie'])
-      const cookie = headers.cookie as string
-      const params = { method: 'GET', headers: { cookie } }
-
-      const [balance, categories, firstRecord, monthRecords, snapshot] = await Promise.all([
-        $fetch<number>('/api/data/total', params),
-        $fetch<RecordsCategory[]>('/api/data/categories', params),
-        $fetch<RecordsItem>('/api/data/records/first', params),
-        $fetch<{ [key: string]: RecordsItem[] }>(`/api/data/month/${y}-${m}`, params),
-        $fetch<RecordsSnapshot>('/api/data/revises/latest', params),
-      ])
-      recordsStore.balance = balance || 0
-      recordsStore.categories = categories || []
-      recordsStore.firstRecord = firstRecord || {}
-      recordsStore.monthRecords = monthRecords || {}
-      recordsStore.snapshot = snapshot || {}
-    }
+    await recordsStore.fetchGlobalData()
 
     function handleToggleDrawer(): void {
       drawerOpen.value = !drawerOpen.value

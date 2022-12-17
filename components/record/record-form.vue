@@ -46,19 +46,21 @@ type RecordsForm = {
 }
 
 const props = defineProps<{
+  edit?: boolean
   record?: RecordsItem
 }>()
 
 const emit = defineEmits(['success'])
 
-/* Expose form element as ref for parent */
-const form = ref()
-defineExpose({ form })
-
 const recordsStore = useRecordsStore()
 const categories = recordsStore.categories
 const categoryOptions = computed(() => categories.map(({ id, name }) => ({ text: name, value: id })))
 
+/* Expose form element as ref for parent */
+const form = ref()
+defineExpose({ form })
+
+/* Initialize form & watch for record changes */
 const formData = reactive<RecordsForm>({
   category_id: categoryOptions.value[0]?.value,
   created_at: new Date(),
@@ -67,8 +69,8 @@ const formData = reactive<RecordsForm>({
 })
 
 function initFormData(): void {
-  if (props.record?.id) {
-    const { category_id, created_at, note, sum } = props.record
+  if (props.edit) {
+    const { category_id, created_at, note, sum } = props.record as RecordsItem
 
     formData.category_id = category_id
     formData.created_at = DateTime.fromISO(created_at).toJSDate()
@@ -109,9 +111,31 @@ const rules = computed(() => ({
 
 const v$ = useVuelidate<RecordsForm>(rules, formData, { $lazy: true })
 
-function onSubmit() {
+/* Submit form */
+const pending = computed(() => recordsStore.pending)
+
+async function onSubmit() {
   v$.value.$validate()
   if (!v$.value.$error) {
+    const headers = useRequestHeaders(['cookie'])
+    const cookie = headers.cookie as string
+    const method = props.edit ? 'PUT' : 'POST'
+
+    recordsStore.pending = true
+    const record = await $fetch<RecordsItem>('/api/data/record', {
+      method,
+      body: formData,
+      headers: { cookie },
+      query: { id: props.record?.id },
+    })
+
+    /** TODO: confirmation toast */
+    console.log(`Record #${record.id} created!`)
+
+    /** Refetch stored records */
+    await recordsStore.refetchOnRecordsChange()
+
+    recordsStore.pending = false
     emit('success')
   }
 }

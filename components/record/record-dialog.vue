@@ -6,7 +6,7 @@
     @update:modelValue="emit('update:modelValue', $event)"
   >
     <template #default="{ close }">
-      <RecordForm v-uid ref="form" :record="record" @success="close" />
+      <RecordForm v-uid ref="form" :edit="isEdit" :record="record" @success="close" />
     </template>
 
     <template #footer="{ close }">
@@ -20,13 +20,13 @@
             </div>
             <div class="col-6 col-md-auto">
               <UiButton :form="formId" type="submit" variant="primary" block>
-                {{ useString('update') }}
+                {{ useString(isEdit ? 'update' : 'save') }}
               </UiButton>
             </div>
           </div>
         </div>
-        <div class="col-12 col-md-auto order-md-1">
-          <UiButton variant="danger-muted" block>
+        <div v-if="isEdit" class="col-12 col-md-auto order-md-1">
+          <UiButton variant="danger-muted" block @click="handleRemoveClick">
             {{ useString('remove') }}
           </UiButton>
         </div>
@@ -36,15 +36,40 @@
 </template>
 
 <script setup lang="ts">
+import { useRecordsStore } from '~/store/records'
+
 const props = defineProps<{
   modelValue?: boolean
   record?: RecordsItem
 }>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
+const recordsStore = useRecordsStore()
 
 const form = ref()
 const formId = computed(() => form.value?.form.id)
+const isEdit = computed(() => Boolean(props.record?.id))
 
-const dialogTitle = computed(() => useString(Boolean(props.record?.id) ? 'changeRecord' : 'createRecord'))
+const dialogTitle = computed(() => useString(isEdit.value ? 'changeRecord' : 'createRecord'))
+
+async function handleRemoveClick() {
+  const headers = useRequestHeaders(['cookie'])
+  const cookie = headers.cookie as string
+
+  recordsStore.pending = true
+  await $fetch<RecordsItem>('/api/data/record', {
+    method: 'DELETE',
+    headers: { cookie },
+    query: { id: props.record?.id },
+  })
+
+  /** TODO: confirmation toast */
+  console.log(`Record #${props.record?.id} removed!`)
+
+  /** Refetch stored records */
+  await recordsStore.refetchOnRecordsChange()
+
+  recordsStore.pending = false
+  emit('update:modelValue', false)
+}
 </script>

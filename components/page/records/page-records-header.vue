@@ -11,7 +11,7 @@
 import { useRecordsStore } from '~/store/records'
 
 const recordsStore = useRecordsStore()
-const balance = recordsStore.balance
+const balance = computed(() => recordsStore.balance)
 </script>
 
 <style lang="scss" scoped>

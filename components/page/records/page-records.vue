@@ -36,13 +36,13 @@ export default {
     const route = useRoute()
     const viewMode = route.params.view as ViewMode
 
-    const pending = ref(false)
+    const pending = computed(() => recordsStore.pending)
 
-    await fetchRecordsData()
+    await recordsStore.fetchRecordsData()
     watch(
       () => route.query,
       async () => {
-        await fetchRecordsData()
+        await recordsStore.fetchRecordsData()
         setTimeout(() => useScrollTo('.page'), 250)
       }
     )
@@ -66,34 +66,6 @@ export default {
     function removeObserver() {
       if (paginationAnchor.value && observer.value instanceof IntersectionObserver) {
         observer.value.unobserve(paginationAnchor.value)
-      }
-    }
-
-    /** Fetch records data */
-    async function fetchRecordsData() {
-      const headers = useRequestHeaders(['cookie'])
-      const cookie = headers.cookie as string
-
-      pending.value = true
-
-      const recordsData = await $fetch<RecordsResponse>('/api/data/records', {
-        method: 'GET',
-        headers: { cookie },
-        query: buildRequestParams(),
-      })
-
-      recordsStore.records = recordsData.data || []
-      recordsStore.totalPages = recordsData.last_page || 0
-      pending.value = false
-    }
-
-    function buildRequestParams(): RecordsRequestParams {
-      return {
-        order: (route.query.order as string) || 'DESC',
-        orderBy: (route.query.orderBy as string) || 'created_at',
-        page: Number(route.query.page) || 1,
-        perPage: Number(route.query.perPage) || 50,
-        show: viewMode || null,
       }
     }
 
