@@ -5,11 +5,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useAuthStore } from '~/store/auth'
-
-const authStore = useAuthStore()
-
 function logout() {
-  authStore.logout()
+  const { signOut } = useSession()
+  signOut({ callbackUrl: '/login' })
 }
 </script>

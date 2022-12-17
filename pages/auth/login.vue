@@ -27,14 +27,13 @@
 
 <script setup lang="ts">
 import { Ref } from 'vue'
-import { useAuthStore } from '~/store/auth'
 
 definePageMeta({
+  auth: false,
   layout: 'auth',
 })
 
-const authStore = useAuthStore()
-const router = useRouter()
+const { signIn } = useSession()
 
 const credentials: Ref<LoginCredentials> = ref({
   name: '',
@@ -43,8 +42,12 @@ const credentials: Ref<LoginCredentials> = ref({
 
 async function handleSubmit() {
   try {
-    await authStore.login(credentials.value)
-    router.push('/')
+    await signIn('credentials', {
+      callbackUrl: '/',
+      redirect: true,
+      name: credentials.value.name,
+      password: credentials.value.password,
+    })
   } catch (error) {}
 }
 </script>

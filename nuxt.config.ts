@@ -39,15 +39,24 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@pinia/nuxt', 'nuxt-icons'],
+  modules: ['@pinia/nuxt', '@sidebase/nuxt-auth', 'nuxt-icons'],
 
   css: ['@/assets/styles/app.scss'],
 
   runtimeConfig: {
+    NUXT_SECRET: process.env.NUXT_SECRET,
+    API_URL: process.env.API_URL,
+
     public: {
       apiUrl: process.env.API_URL,
       staticUrl: process.env.STATIC_URL,
     },
+  },
+
+  auth: {
+    basePath: '/api/auth',
+    enableGlobalAppMiddleware: true,
+    origin: process.env.ORIGIN,
   },
 
   vite: {
@@ -60,7 +69,7 @@ export default defineNuxtConfig({
       },
     },
   },
-  
+
   /* prevent unstyled content flashing on reload */
   experimental: {
     inlineSSRStyles: false,

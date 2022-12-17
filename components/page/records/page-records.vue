@@ -16,7 +16,6 @@
 </template>
 
 <script lang="ts">
-import { useAuthStore } from '~/store/auth'
 import { useRecordsStore } from '~/store/records'
 
 export default {
@@ -30,26 +29,25 @@ export default {
       removeObserver()
     })
 
-    const auth = useAuthStore()
     const recordsStore = useRecordsStore()
-    const config = useRuntimeConfig()
+    const records = computed(() => recordsStore.records)
+    const totalPages = computed(() => recordsStore.totalPages)
+
     const route = useRoute()
-
-    const baseURL = config.public.apiUrl
-    const headers = { Authorization: `Bearer ${auth.token}` }
-
     const viewMode = route.params.view as ViewMode
 
-    function buildRequestParams(): RecordsRequestParams {
-      return {
-        order: (route.query.order as string) || 'DESC',
-        orderBy: (route.query.orderBy as string) || 'created_at',
-        page: Number(route.query.page) || 1,
-        perPage: Number(route.query.perPage) || 50,
-        show: viewMode || null,
-      }
-    }
+    const pending = ref(false)
 
+    await fetchRecordsData()
+    watch(
+      () => route.query,
+      async () => {
+        await fetchRecordsData()
+        setTimeout(() => useScrollTo('.page'), 250)
+      }
+    )
+
+    /** Observe pagination element to hide/show FAB on scroll */
     const observer = ref()
     const paginationAnchor = ref()
     const paginationVisible = ref(false)
@@ -71,25 +69,33 @@ export default {
       }
     }
 
-    const { data, pending, refresh } = await useFetch<RecordsResponse>('records', {
-      baseURL,
-      headers,
-      query: buildRequestParams(),
-    })
+    /** Fetch records data */
+    async function fetchRecordsData() {
+      const headers = useRequestHeaders(['cookie'])
+      const cookie = headers.cookie as string
 
-    recordsStore.records = data.value?.data || []
-    recordsStore.totalPages = data.value?.total || 0
+      pending.value = true
 
-    const records = computed(() => recordsStore.records)
-    const totalPages = computed(() => recordsStore.totalPages)
+      const recordsData = await $fetch<RecordsResponse>('/api/data/records', {
+        method: 'GET',
+        headers: { cookie },
+        query: buildRequestParams(),
+      })
 
-    watch(
-      () => route.query.page,
-      async () => {
-        await refresh()
-        setTimeout(() => useScrollTo('.page'), 250)
+      recordsStore.records = recordsData.data || []
+      recordsStore.totalPages = recordsData.last_page || 0
+      pending.value = false
+    }
+
+    function buildRequestParams(): RecordsRequestParams {
+      return {
+        order: (route.query.order as string) || 'DESC',
+        orderBy: (route.query.orderBy as string) || 'created_at',
+        page: Number(route.query.page) || 1,
+        perPage: Number(route.query.perPage) || 50,
+        show: viewMode || null,
       }
-    )
+    }
 
     return { paginationAnchor, paginationVisible, pending, records, totalPages, viewMode }
   },

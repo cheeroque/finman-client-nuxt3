@@ -15,46 +15,41 @@
 </template>
 
 <script lang="ts">
-import { useAuthStore } from '~/store/auth'
 import { useRecordsStore } from '~/store/records'
 
 export default {
   async setup() {
-    const auth = useAuthStore()
     const recordsStore = useRecordsStore()
-    const config = useRuntimeConfig()
+    const drawerOpen = ref(false)
 
-    const baseURL = config.public.apiUrl
-    const headers = { Authorization: `Bearer ${auth.token}` }
+    try {
+      await fetchGlobalData()
+    } catch (e) {
+      console.log(e)
+    }
 
-    if (auth?.token) {
+    async function fetchGlobalData() {
       const date = new Date()
       const y = date.getFullYear()
       const m = date.getMonth() + 1
 
-      const [
-        { data: balance },
-        { data: categories },
-        { data: firstRecord },
-        { data: monthRecords },
-        { data: snapshot },
-      ] = await Promise.all([
-        useFetch<number>('total', { baseURL, headers }),
-        useFetch<RecordsCategory[]>('categories', { baseURL, headers }),
-        useFetch<RecordsItem>('records/first', { baseURL, headers }),
-        useFetch<{ [key: string]: RecordsItem[] }>(`month/${y}-${m}`, { baseURL, headers }),
-        useFetch<RecordsSnapshot>('revises/latest', { baseURL, headers }),
-      ])
-      recordsStore.balance = balance.value || 0
-      recordsStore.categories = categories.value || []
-      recordsStore.firstRecord = firstRecord.value || {}
-      recordsStore.monthRecords = monthRecords.value || {}
-      recordsStore.snapshot = snapshot.value || {}
-    } else {
-      auth.logout()
-    }
+      const headers = useRequestHeaders(['cookie'])
+      const cookie = headers.cookie as string
+      const params = { method: 'GET', headers: { cookie } }
 
-    const drawerOpen = ref(false)
+      const [balance, categories, firstRecord, monthRecords, snapshot] = await Promise.all([
+        $fetch<number>('/api/data/total', params),
+        $fetch<RecordsCategory[]>('/api/data/categories', params),
+        $fetch<RecordsItem>('/api/data/records/first', params),
+        $fetch<{ [key: string]: RecordsItem[] }>(`/api/data/month/${y}-${m}`, params),
+        $fetch<RecordsSnapshot>('/api/data/revises/latest', params),
+      ])
+      recordsStore.balance = balance || 0
+      recordsStore.categories = categories || []
+      recordsStore.firstRecord = firstRecord || {}
+      recordsStore.monthRecords = monthRecords || {}
+      recordsStore.snapshot = snapshot || {}
+    }
 
     function handleToggleDrawer(): void {
       drawerOpen.value = !drawerOpen.value

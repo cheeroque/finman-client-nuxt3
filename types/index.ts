@@ -70,7 +70,7 @@ declare global {
     data: RecordsItem[]
     first_page_url: string
     from: number
-    last_page: string
+    last_page: number
     last_page_url: string
     links: RecordsResponseLink[]
     next_page_url: string
