@@ -22,11 +22,7 @@ export default {
     const recordsStore = useRecordsStore()
     const drawerOpen = ref(false)
 
-    try {
-      await fetchGlobalData()
-    } catch (e) {
-      console.log(e)
-    }
+    await fetchGlobalData()
 
     async function fetchGlobalData() {
       const date = new Date()
