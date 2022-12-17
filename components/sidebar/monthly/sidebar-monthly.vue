@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRecordsStore } from '@/store/records'
+import { useRecordsStore } from '~/store/records'
 
 const VISIBLE_LIMIT = 5
 const recordsStore = useRecordsStore()

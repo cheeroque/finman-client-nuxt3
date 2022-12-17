@@ -1,4 +1,4 @@
-import * as ru from '@/locales/ru.json'
+import * as ru from '~/locales/ru.json'
 
 type Locale = { [key: string]: string }
 

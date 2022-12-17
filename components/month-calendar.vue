@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { useRecordsStore } from '@/store/records'
+import { useRecordsStore } from '~/store/records'
 
 type CalendarMonth = {
   month: string,

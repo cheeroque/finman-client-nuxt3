@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useRecordsStore } from '@/store/records'
+import { useRecordsStore } from '~/store/records'
 
 const recordsStore = useRecordsStore()
 const categories = recordsStore.categories

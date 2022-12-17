@@ -41,7 +41,7 @@ export default defineNuxtConfig({
 
   modules: ['@pinia/nuxt', '@sidebase/nuxt-auth', 'nuxt-icons'],
 
-  css: ['@/assets/styles/app.scss'],
+  css: ['~/assets/styles/app.scss'],
 
   runtimeConfig: {
     NUXT_SECRET: process.env.NUXT_SECRET,
@@ -64,7 +64,7 @@ export default defineNuxtConfig({
       preprocessorOptions: {
         scss: {
           additionalData:
-            '@use "sass:math"; @use "sass:color"; @import "@/assets/styles/_variables.scss"; @import "@/assets/styles/_mixins.scss"; @import "@/assets/styles/_utilities.scss";',
+            '@use "sass:math"; @use "sass:color"; @import "~/assets/styles/_variables.scss"; @import "~/assets/styles/_mixins.scss"; @import "~/assets/styles/_utilities.scss";',
         },
       },
     },

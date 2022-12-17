@@ -36,7 +36,7 @@
 import { DateTime } from 'luxon'
 import { ErrorObject, useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
-import { useRecordsStore } from '@/store/records'
+import { useRecordsStore } from '~/store/records'
 
 type RecordsForm = {
   category_id: number
