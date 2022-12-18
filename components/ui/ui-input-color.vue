@@ -9,7 +9,7 @@
     :size="size"
     :state="state"
     autocomplete="off"
-    @input="onInput"
+    @input="handleInput"
   >
     <template #append>
       <label
@@ -17,7 +17,7 @@
         :style="{ backgroundColor: bgColor, color: iconColor }"
         class="form-control-icon colorpicker-label"
       >
-        <input v-uid ref="colorInput" :value="modelValue" type="color" class="colorpicker-input" @input="onInput" />
+        <input v-uid ref="colorInput" :value="modelValue" type="color" class="colorpicker-input" @input="handleInput" />
         <UiIcon name="eyedropper-24" aria-hidden="true" />
       </label>
     </template>
@@ -55,7 +55,7 @@ function getContrastColor(bgColor: string): string {
   return lightness >= 165 ? '#000' : '#fff'
 }
 
-function onInput(event: Event) {
+function handleInput(event: Event) {
   const target = event.target as HTMLInputElement
   emit('update:modelValue', target.value)
 }

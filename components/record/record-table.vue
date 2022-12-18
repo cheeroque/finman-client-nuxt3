@@ -20,10 +20,10 @@
         :key="record.id"
         :record="record"
         :view-mode="viewMode"
-        @edit="onRecordEdit(record)"
+        @edit="handleRecordEdit(record)"
       />
     </div>
-    <RecordDialog v-model="dialogVisible" :record="currentRecord" @closed="onDialogClosed" />
+    <RecordDialog v-model="dialogVisible" :record="currentRecord" @closed="handleDialogClosed" />
   </div>
 </template>
 
@@ -36,11 +36,11 @@ const props = defineProps<{
 const currentRecord = ref<RecordsItem>()
 const dialogVisible = ref(false)
 
-function onDialogClosed() {
+function handleDialogClosed() {
   currentRecord.value = undefined
 }
 
-function onRecordEdit(record: RecordsItem) {
+function handleRecordEdit(record: RecordsItem) {
   currentRecord.value = record
   dialogVisible.value = true
 }

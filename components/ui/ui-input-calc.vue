@@ -11,9 +11,9 @@
     placeholder="0"
     prevent-native-input
     @blur="calculate"
-    @focus="onFocus"
-    @input="onInput"
-    @keydown="onKeydown"
+    @focus="handleFocus"
+    @input="handleInput"
+    @keydown="handleKeydown"
   >
     <template #append>
       <slot name="append">
@@ -57,7 +57,7 @@ function calculate(event: FocusEvent | FakeFocusEvent) {
   hasTotal.value = true
 }
 
-function onFocus(event: FocusEvent) {
+function handleFocus(event: FocusEvent) {
   hasTotal.value = false
   /* Move caret to the end on input focus */
   const target = event.target as HTMLInputElement
@@ -68,11 +68,11 @@ function onFocus(event: FocusEvent) {
   }
 }
 
-function onInput() {
+function handleInput() {
   hasTotal.value = false
 }
 
-function onKeydown(event: KeyboardEvent) {
+function handleKeydown(event: KeyboardEvent) {
   const target = event.target as HTMLInputElement
 
   if (!event.key.match(/^[\d+-]$/)) {

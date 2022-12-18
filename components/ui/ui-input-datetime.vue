@@ -12,7 +12,7 @@
         :state="state"
         autocomplete="off"
         @click="show"
-        @input="onInput"
+        @input="handleInput"
       >
         <template #append>
           <UiButton icon="stopwatch-24" variant="link" class="form-control-icon" @click="setNow" />
@@ -53,7 +53,7 @@ const formattedValue = computed(() =>
 )
 const placeholder = computed(() => props.placeholder || DateTime.now().toFormat(format.value))
 
-function onInput(event: Event) {
+function handleInput(event: Event) {
   const target = event.target as HTMLInputElement
   if (!target.value) {
     emit('update:modelValue', null)

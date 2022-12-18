@@ -17,7 +17,7 @@
       @blur="emit('blur', $event)"
       @click="emit('click', $event)"
       @focus="emit('focus', $event)"
-      @input="onInput"
+      @input="handleInput"
     />
     <div v-if="hasAppend" class="form-control-append">
       <slot name="append">
@@ -89,7 +89,7 @@ const componentClasses = computed(() => {
   return classes
 })
 
-function onInput(event: Event) {
+function handleInput(event: Event) {
   const target = event.target as HTMLInputElement
   emit('input', event)
   emit('update:modelValue', target.value)

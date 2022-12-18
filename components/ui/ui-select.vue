@@ -8,7 +8,7 @@
       :required="required"
       autocomplete="off"
       class="form-control-el"
-      @input="onInput"
+      @input="handleInput"
     >
       <option
         v-for="(option, index) in options"
@@ -84,7 +84,7 @@ const componentClasses = computed(() => {
   return classes
 })
 
-function onInput(event: Event) {
+function handleInput(event: Event) {
   const target = event.target as HTMLSelectElement
   emit('input', event)
   emit('update:modelValue', target.value)

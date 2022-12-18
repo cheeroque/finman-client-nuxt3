@@ -12,7 +12,7 @@
       autocomplete="off"
       class="form-check-input"
       type="checkbox"
-      @input="onInput"
+      @input="handleInput"
     />
     <label :for="controlId" class="form-check-label">
       <slot></slot>
@@ -64,7 +64,7 @@ function removeValue(value: CheckboxValue, array: CheckboxValue[]): CheckboxValu
   return array?.filter((el) => el !== value)
 }
 
-function onInput(event: Event) {
+function handleInput(event: Event) {
   let payload
   const target = event.target as CheckboxInputEventTarget
   const checked = target.checked

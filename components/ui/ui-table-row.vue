@@ -7,7 +7,7 @@
         :field="field"
         :index="rowIndex"
         :item="item"
-        :toggle-details="toggleDetails"
+        :toggle-details="handleToggleDetails"
         :value="item[field.key]"
       >
         {{ item[field.key] }}
@@ -16,9 +16,9 @@
   </tr>
   <tr v-if="detailsVisible" class="row-details">
     <td :colspan="fields?.length">
-      <UiCollapse v-model="collapseVisible" @hidden="onHidden">
+      <UiCollapse v-model="collapseVisible" @hidden="handleHidden">
         <div class="row-details-content">
-          <slot name="row-details" :index="rowIndex" :item="item" :toggle-details="toggleDetails" />
+          <slot name="row-details" :index="rowIndex" :item="item" :toggle-details="handleToggleDetails" />
         </div>
       </UiCollapse>
     </td>
@@ -37,11 +37,11 @@ const props = defineProps<{
 const detailsVisible = ref(false)
 const collapseVisible = ref(false)
 
-function onHidden() {
+function handleHidden() {
   detailsVisible.value = false
 }
 
-function toggleDetails() {
+function handleToggleDetails() {
   if (detailsVisible.value) {
     collapseVisible.value = false
   } else {

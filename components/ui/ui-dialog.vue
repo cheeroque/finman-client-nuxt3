@@ -1,10 +1,10 @@
 <template>
   <Teleport to="body">
-    <Transition name="dialog" @after-leave="onAfterLeave">
+    <Transition name="dialog" @after-leave="handleAfterLeave">
       <div v-if="modelValue" :class="dialogClasses">
         <div class="dialog-content">
           <div v-if="hasHeader" class="dialog-header">
-            <slot name="header" :close="close">
+            <slot name="header" :close="handleClose">
               <h5 class="dialog-title">{{ title }}</h5>
               <UiButton
                 :title="useString('close')"
@@ -13,20 +13,20 @@
                 icon-size="16"
                 variant="primary-muted"
                 class="btn-close"
-                @click="close"
+                @click="handleClose"
               />
             </slot>
           </div>
           <div class="dialog-body">
-            <slot :close="close" />
+            <slot :close="handleClose" />
           </div>
           <div v-if="hasFooter" class="dialog-footer">
-            <slot name="footer" :close="close">
-              <UiButton variant="secondary" class="ms-auto" @click="close"> OK </UiButton>
+            <slot name="footer" :close="handleClose">
+              <UiButton variant="secondary" class="ms-auto" @click="handleClose"> OK </UiButton>
             </slot>
           </div>
         </div>
-        <div class="dialog-backdrop" @click="close" />
+        <div class="dialog-backdrop" @click="handleClose" />
       </div>
     </Transition>
   </Teleport>
@@ -51,11 +51,11 @@ if (props.size) {
   dialogClasses.push('dialog-md')
 }
 
-function close() {
-  emit('update:modelValue', false)
+function handleAfterLeave() {
+  emit('closed')
 }
 
-function onAfterLeave() {
-  emit('closed')
+function handleClose() {
+  emit('update:modelValue', false)
 }
 </script>

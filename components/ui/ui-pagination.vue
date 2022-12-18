@@ -8,7 +8,7 @@
           icon="chevron-double-left-24"
           icon-size="24"
           class="pagination-link"
-          @click="onClickFirst"
+          @click="handleClickFirst"
         />
       </li>
       <li v-if="!hidePrevNext" class="pagination-item pagination-item-previous" role="presentation">
@@ -18,7 +18,7 @@
           icon="chevron-left-24"
           icon-size="24"
           class="pagination-link"
-          @click="onClickPrevious"
+          @click="handleClickPrevious"
         />
       </li>
       <li v-for="page in pages" :key="`page-${page}`" class="pagination-item" role="presentation">
@@ -26,7 +26,7 @@
           :to="getLink(page)"
           :class="{ active: page === currentPage }"
           class="pagination-link"
-          @click="onClickPage(page)"
+          @click="handleClickPage(page)"
         >
           {{ page }}
         </UiButton>
@@ -38,7 +38,7 @@
           icon="chevron-right-24"
           icon-size="24"
           class="pagination-link"
-          @click="onClickNext"
+          @click="handleClickNext"
         />
       </li>
       <li v-if="!hideFirstLast" class="pagination-item pagination-item-last" role="presentation">
@@ -48,7 +48,7 @@
           icon="chevron-double-right-24"
           icon-size="24"
           class="pagination-link"
-          @click="onClickLast"
+          @click="handleClickLast"
         />
       </li>
     </ul>
@@ -119,27 +119,27 @@ function getLink(page: number | string): RouteLocationRaw | undefined {
   return { query }
 }
 
-function onClickPage(event: number) {
+function handleClickPage(event: number) {
   emit('update:modelValue', event)
 }
 
-function onClickFirst() {
+function handleClickFirst() {
   emit('update:modelValue', 1)
 }
 
-function onClickPrevious() {
+function handleClickPrevious() {
   if (currentPage.value > 1) {
     emit('update:modelValue', currentPage.value - 1)
   }
 }
 
-function onClickNext() {
+function handleClickNext() {
   if (currentPage.value < totalPages.value) {
     emit('update:modelValue', currentPage.value + 1)
   }
 }
 
-function onClickLast() {
+function handleClickLast() {
   emit('update:modelValue', totalPages.value)
 }
 </script>
