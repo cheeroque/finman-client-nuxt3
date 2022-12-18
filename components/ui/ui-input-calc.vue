@@ -46,7 +46,7 @@ const hasTotal = ref(false)
 
 const size = computed(() => props.size)
 
-function calculate(event: FocusEvent | FakeFocusEvent): void {
+function calculate(event: FocusEvent | FakeFocusEvent) {
   const target = event.target as HTMLInputElement
   const matches: string[] = target.value.match(/([+-]{0,}\d{1,})/gi) || []
   const total = matches.reduce((total, match) => {
@@ -57,7 +57,7 @@ function calculate(event: FocusEvent | FakeFocusEvent): void {
   hasTotal.value = true
 }
 
-function onFocus(event: FocusEvent): void {
+function onFocus(event: FocusEvent) {
   hasTotal.value = false
   /* Move caret to the end on input focus */
   const target = event.target as HTMLInputElement
@@ -68,11 +68,11 @@ function onFocus(event: FocusEvent): void {
   }
 }
 
-function onInput(): void {
+function onInput() {
   hasTotal.value = false
 }
 
-function onKeydown(event: KeyboardEvent): void {
+function onKeydown(event: KeyboardEvent) {
   const target = event.target as HTMLInputElement
 
   if (!event.key.match(/^[\d+-]$/)) {

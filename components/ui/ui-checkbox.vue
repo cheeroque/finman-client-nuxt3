@@ -64,7 +64,7 @@ function removeValue(value: CheckboxValue, array: CheckboxValue[]): CheckboxValu
   return array?.filter((el) => el !== value)
 }
 
-function onInput(event: Event): void {
+function onInput(event: Event) {
   let payload
   const target = event.target as CheckboxInputEventTarget
   const checked = target.checked

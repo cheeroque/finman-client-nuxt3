@@ -51,11 +51,11 @@ if (props.size) {
   dialogClasses.push('dialog-md')
 }
 
-function close(): void {
+function close() {
   emit('update:modelValue', false)
 }
 
-function onAfterLeave(): void {
+function onAfterLeave() {
   emit('closed')
 }
 </script>

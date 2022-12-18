@@ -36,11 +36,11 @@ const props = defineProps<{
 const currentRecord = ref<RecordsItem>()
 const dialogVisible = ref(false)
 
-function onDialogClosed(): void {
+function onDialogClosed() {
   currentRecord.value = undefined
 }
 
-function onRecordEdit(record: RecordsItem): void {
+function onRecordEdit(record: RecordsItem) {
   currentRecord.value = record
   dialogVisible.value = true
 }

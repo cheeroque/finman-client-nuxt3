@@ -1,7 +1,7 @@
 type scrollTarget = string | HTMLElement | null
 type scrollBehavior = 'auto' | 'smooth'
 
-export function useScrollTo(target: scrollTarget = null, top: number = 0, behavior: scrollBehavior = 'smooth'): void {
+export function useScrollTo(target: scrollTarget = null, top: number = 0, behavior: scrollBehavior = 'smooth') {
   if (!process.client) return
 
   let targetEl

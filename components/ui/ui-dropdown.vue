@@ -56,13 +56,13 @@ const localVisible = computed({
   },
 })
 
-function handleClickOutside(event: Event): void {
+function handleClickOutside(event: Event) {
   if (!dropdown.value.contains(event.target)) {
     hide()
   }
 }
 
-function handleUpdate(event: boolean): void {
+function handleUpdate(event: boolean) {
   localVisible.value = event
 }
 

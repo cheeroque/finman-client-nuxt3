@@ -68,7 +68,7 @@ const formData = reactive<RecordsForm>({
   sum: 0,
 })
 
-function initFormData(): void {
+function initFormData() {
   if (props.edit) {
     const { category_id, created_at, note, sum } = props.record as RecordsItem
 

@@ -53,7 +53,7 @@ const formattedValue = computed(() =>
 )
 const placeholder = computed(() => props.placeholder || DateTime.now().toFormat(format.value))
 
-function onInput(event: Event): void {
+function onInput(event: Event) {
   const target = event.target as HTMLInputElement
   if (!target.value) {
     emit('update:modelValue', null)
@@ -65,7 +65,7 @@ function onInput(event: Event): void {
   emit('update:modelValue', datetime.toJSDate())
 }
 
-function setNow(): void {
+function setNow() {
   emit('update:modelValue', new Date())
 }
 </script>

@@ -25,7 +25,7 @@ const emit = defineEmits(['update:modelValue', 'hidden'])
 const collapseClass = props.collapseClass ?? 'collapse'
 const transition = props.transition ?? 'collapse'
 
-function close(): void {
+function close() {
   emit('update:modelValue', false)
 }
 
@@ -37,27 +37,27 @@ function getContentHeight(el: HTMLElement): number {
   return height
 }
 
-function onBeforeEnter(el: HTMLElement): void {
+function onBeforeEnter(el: HTMLElement) {
   el.style.height = '0'
 }
 
-function onEnter(el: HTMLElement): void {
+function onEnter(el: HTMLElement) {
   el.style.height = `${getContentHeight(el)}px`
 }
 
-function onAfterEnter(el: HTMLElement): void {
+function onAfterEnter(el: HTMLElement) {
   el.style.height = ''
 }
 
-function onBeforeLeave(el: HTMLElement): void {
+function onBeforeLeave(el: HTMLElement) {
   el.style.height = `${getContentHeight(el)}px`
 }
 
-function onLeave(el: HTMLElement): void {
+function onLeave(el: HTMLElement) {
   el.style.height = '0'
 }
 
-function onAfterLeave(el: HTMLElement): void {
+function onAfterLeave(el: HTMLElement) {
   el.style.height = ''
   emit('hidden')
 }

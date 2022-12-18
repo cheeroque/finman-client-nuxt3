@@ -27,11 +27,11 @@ export default {
 
     await recordsStore.fetchGlobalData()
 
-    function handleToggleDrawer(): void {
+    function handleToggleDrawer() {
       drawerOpen.value = !drawerOpen.value
     }
 
-    function handleCloseDrawer(): void {
+    function handleCloseDrawer() {
       drawerOpen.value = false
     }
 

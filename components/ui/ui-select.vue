@@ -84,7 +84,7 @@ const componentClasses = computed(() => {
   return classes
 })
 
-function onInput(event: Event): void {
+function onInput(event: Event) {
   const target = event.target as HTMLSelectElement
   emit('input', event)
   emit('update:modelValue', target.value)

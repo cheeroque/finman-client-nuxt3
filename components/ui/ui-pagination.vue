@@ -119,27 +119,27 @@ function getLink(page: number | string): RouteLocationRaw | undefined {
   return { query }
 }
 
-function onClickPage(event: number): void {
+function onClickPage(event: number) {
   emit('update:modelValue', event)
 }
 
-function onClickFirst(): void {
+function onClickFirst() {
   emit('update:modelValue', 1)
 }
 
-function onClickPrevious(): void {
+function onClickPrevious() {
   if (currentPage.value > 1) {
     emit('update:modelValue', currentPage.value - 1)
   }
 }
 
-function onClickNext(): void {
+function onClickNext() {
   if (currentPage.value < totalPages.value) {
     emit('update:modelValue', currentPage.value + 1)
   }
 }
 
-function onClickLast(): void {
+function onClickLast() {
   emit('update:modelValue', totalPages.value)
 }
 </script>

@@ -79,7 +79,7 @@ function formatUnit(unit: number): string {
   return unit.toString().padStart(2, '0')
 }
 
-function setHour(hour: number): void {
+function setHour(hour: number) {
   emit('click:hours')
   currentHour.value = hour
   const clickedLast = currentMinute.value !== undefined && (currentSecond.value !== undefined || !props.showSeconds)
@@ -88,7 +88,7 @@ function setHour(hour: number): void {
   }
 }
 
-function setMinute(minute: number): void {
+function setMinute(minute: number) {
   emit('click:minutes')
   currentMinute.value = minute
   const clickedLast = currentHour.value !== undefined && (currentSecond.value !== undefined || !props.showSeconds)
@@ -97,7 +97,7 @@ function setMinute(minute: number): void {
   }
 }
 
-function setSecond(second: number): void {
+function setSecond(second: number) {
   emit('click:seconds')
   currentSecond.value = second
   const clickedLast = currentHour.value !== undefined && currentMinute.value !== undefined
@@ -106,7 +106,7 @@ function setSecond(second: number): void {
   }
 }
 
-function setValue(): void {
+function setValue() {
   const date = DateTime.fromObject({
     hour: currentHour.value,
     minute: currentMinute.value,

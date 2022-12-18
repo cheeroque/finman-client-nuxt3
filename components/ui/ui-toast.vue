@@ -57,7 +57,7 @@ watch(
   }
 )
 
-function close(): void {
+function close() {
   clearTimeout(timeout)
   emit('update:modelValue', false)
 }

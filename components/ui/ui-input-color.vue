@@ -55,7 +55,7 @@ function getContrastColor(bgColor: string): string {
   return lightness >= 165 ? '#000' : '#fff'
 }
 
-function onInput(event: Event): void {
+function onInput(event: Event) {
   const target = event.target as HTMLInputElement
   emit('update:modelValue', target.value)
 }

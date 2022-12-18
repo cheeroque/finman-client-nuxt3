@@ -14,7 +14,7 @@ const props = defineProps<{
 
 const dialogVisible = ref(false)
 
-function onFabClick(): void {
+function onFabClick() {
   dialogVisible.value = true
 }
 </script>
