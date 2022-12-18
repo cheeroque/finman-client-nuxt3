@@ -1,9 +1,15 @@
 <template>
   <PageContent :title="useString('categories')">
     <div class="categories-grid">
-      <CategoryCard v-for="category in categories" :key="`category-${category.id}`" :category="category" />
-      <CategoryCreate />
+      <CategoryCard
+        v-for="category in categories"
+        :key="`category-${category.id}`"
+        :category="category"
+        @edit="handleCategoryEdit(category)"
+      />
+      <CategoryCreate @click="handleCategoryCreate" />
     </div>
+    <CategoryDialog v-model="dialogVisible" :category="currentCategory" @closed="handleDialogClosed" />
   </PageContent>
 </template>
 
@@ -11,7 +17,24 @@
 import { useRecordsStore } from '~/store/records'
 
 const recordsStore = useRecordsStore()
-const categories = recordsStore.categories
+const categories = computed(() => recordsStore.categories)
+
+const currentCategory = ref<RecordsCategory>()
+const dialogVisible = ref(false)
+
+function handleCategoryCreate() {
+  currentCategory.value = undefined
+  dialogVisible.value = true
+}
+
+function handleCategoryEdit(category: RecordsCategory) {
+  currentCategory.value = category
+  dialogVisible.value = true
+}
+
+function handleDialogClosed() {
+  currentCategory.value = undefined
+}
 </script>
 
 <style lang="scss" scoped>

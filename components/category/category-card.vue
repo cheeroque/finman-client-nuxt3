@@ -9,13 +9,13 @@
     </div>
     <div class="card-footer">
       <UiButton
-        :to="`/categories/${category.slug}/edit`"
         :title="useString('edit')"
         :aria-label="useString('edit')"
         icon="edit-24"
         icon-size="16"
         variant="link"
         class="category-edit"
+        @click="emit('edit')"
       />
     </div>
   </div>
@@ -25,6 +25,8 @@
 const props = defineProps<{
   category: RecordsCategory
 }>()
+
+const emit = defineEmits(['edit'])
 
 const iconColor = computed(() => useContrastColor(props.category.color))
 </script>
