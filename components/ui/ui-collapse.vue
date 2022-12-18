@@ -1,12 +1,12 @@
 <template>
   <Transition
     :name="transition"
-    @before-enter="onBeforeEnter"
-    @enter="onEnter"
-    @after-enter="onAfterEnter"
-    @before-leave="onBeforeLeave"
-    @leave="onLeave"
-    @after-leave="onAfterLeave"
+    @before-enter="handleBeforeEnter"
+    @enter="handleEnter"
+    @after-enter="hanfleAfterEnter"
+    @before-leave="handleBeforeLeave"
+    @leave="handleLeave"
+    @after-leave="handleAfterLeave"
   >
     <div v-if="modelValue" :class="collapseClass">
       <slot :close="close"></slot>
@@ -37,27 +37,27 @@ function getContentHeight(el: HTMLElement): number {
   return height
 }
 
-function onBeforeEnter(el: HTMLElement) {
+function handleBeforeEnter(el: HTMLElement) {
   el.style.height = '0'
 }
 
-function onEnter(el: HTMLElement) {
+function handleEnter(el: HTMLElement) {
   el.style.height = `${getContentHeight(el)}px`
 }
 
-function onAfterEnter(el: HTMLElement) {
+function hanfleAfterEnter(el: HTMLElement) {
   el.style.height = ''
 }
 
-function onBeforeLeave(el: HTMLElement) {
+function handleBeforeLeave(el: HTMLElement) {
   el.style.height = `${getContentHeight(el)}px`
 }
 
-function onLeave(el: HTMLElement) {
+function handleLeave(el: HTMLElement) {
   el.style.height = '0'
 }
 
-function onAfterLeave(el: HTMLElement) {
+function handleAfterLeave(el: HTMLElement) {
   el.style.height = ''
   emit('hidden')
 }
