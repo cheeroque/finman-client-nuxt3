@@ -57,7 +57,7 @@ const dialogTitle = computed(() => useString(isEdit.value ? 'changeRecord' : 'cr
 function handleRecordUpdate(record: RecordsItem, callback?: Function) {
   /* Show confirmation toast */
   toast.value.modelValue = true
-  toast.value.message = useString('recordSaved')
+  toast.value.message = useString('recordSaved', `#${record?.id}`)
   toast.value.variant = 'success'
 
   if (typeof callback === 'function') {
@@ -82,7 +82,7 @@ async function handleRecordDelete() {
 
   /* Show confirmation toast */
   toast.value.modelValue = true
-  toast.value.message = useString('recordDeleted')
+  toast.value.message = useString('recordDeleted', `#${props.record?.id}`)
   toast.value.variant = 'danger'
 
   emit('update:modelValue', false)
