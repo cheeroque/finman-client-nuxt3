@@ -129,14 +129,11 @@ async function onSubmit() {
       query: { id: props.record?.id },
     })
 
-    /** TODO: confirmation toast */
-    console.log(`Record #${record.id} created!`)
-
     /** Refetch stored records */
     await recordsStore.refetchOnRecordsChange()
 
     recordsStore.pending = false
-    emit('success')
+    emit('success', record)
   }
 }
 </script>

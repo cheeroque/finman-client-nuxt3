@@ -31,6 +31,16 @@ $toast-border-radius: 0.25rem;
 
 .toast-body {
   padding: $toast-padding-y $toast-padding-x;
+
+  &.no-header {
+    padding-right: calc(#{$toast-padding-y} + 0.5rem + 16px + #{$border-width * 2});
+  }
+
+  .btn-close {
+    position: absolute;
+    right: calc(#{$toast-padding-y} - 0.25rem);
+    top: calc(#{$toast-padding-y} - 0.25rem);
+  }
 }
 
 @each $variant in $theme-colors {

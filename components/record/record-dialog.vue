@@ -6,7 +6,7 @@
     @update:modelValue="emit('update:modelValue', $event)"
   >
     <template #default="{ close }">
-      <RecordForm v-uid ref="form" :edit="isEdit" :record="record" @success="close" />
+      <RecordForm v-uid ref="form" :edit="isEdit" :record="record" @success="handleRecordUpdate($event, close)" />
     </template>
 
     <template #footer="{ close }">
@@ -26,7 +26,7 @@
           </div>
         </div>
         <div v-if="isEdit" class="col-12 col-md-auto order-md-1">
-          <UiButton variant="danger-muted" block @click="handleRemoveClick">
+          <UiButton variant="danger-muted" block @click="handleRecordDelete">
             {{ useString('remove') }}
           </UiButton>
         </div>
@@ -43,8 +43,10 @@ const props = defineProps<{
   record?: RecordsItem
 }>()
 
-const emit = defineEmits(['closed', 'update:modelValue'])
+const emit = defineEmits(['closed', 'record:delete', 'record:update', 'update:modelValue'])
 const recordsStore = useRecordsStore()
+
+const toast = useToast()
 
 const form = ref()
 const formId = computed(() => form.value?.form.id)
@@ -52,7 +54,18 @@ const isEdit = computed(() => Boolean(props.record?.id))
 
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeRecord' : 'createRecord'))
 
-async function handleRemoveClick() {
+function handleRecordUpdate(record: RecordsItem, callback?: Function) {
+  /* Show confirmation toast */
+  toast.value.modelValue = true
+  toast.value.message = useString('recordSaved')
+  toast.value.variant = 'success'
+
+  if (typeof callback === 'function') {
+    callback()
+  }
+}
+
+async function handleRecordDelete() {
   const headers = useRequestHeaders(['cookie'])
   const cookie = headers.cookie as string
 
@@ -63,13 +76,15 @@ async function handleRemoveClick() {
     query: { id: props.record?.id },
   })
 
-  /** TODO: confirmation toast */
-  console.log(`Record #${props.record?.id} removed!`)
-
   /** Refetch stored records */
   await recordsStore.refetchOnRecordsChange()
-
   recordsStore.pending = false
+
+  /* Show confirmation toast */
+  toast.value.modelValue = true
+  toast.value.message = useString('recordDeleted')
+  toast.value.variant = 'danger'
+
   emit('update:modelValue', false)
 }
 </script>

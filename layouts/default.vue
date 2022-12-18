@@ -10,6 +10,7 @@
       </div>
     </div>
 
+    <UiToast v-bind="toast" @update:model-value="handleToastUpdate" />
     <NavBottom @toggle:drawer="handleToggleDrawer" />
   </div>
 </template>
@@ -22,6 +23,8 @@ export default {
     const recordsStore = useRecordsStore()
     const drawerOpen = ref(false)
 
+    const toast = useToast()
+
     await recordsStore.fetchGlobalData()
 
     function handleToggleDrawer(): void {
@@ -32,7 +35,11 @@ export default {
       drawerOpen.value = false
     }
 
-    return { drawerOpen, handleToggleDrawer, handleCloseDrawer }
+    function handleToastUpdate(event: boolean) {
+      toast.value.modelValue = event
+    }
+
+    return { drawerOpen, handleToastUpdate, handleToggleDrawer, handleCloseDrawer, toast }
   },
 }
 </script>

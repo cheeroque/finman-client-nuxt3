@@ -2,7 +2,7 @@
   <Teleport to="body">
     <Transition name="toast">
       <div v-if="modelValue" :class="toastClasses">
-        <div class="toast-header">
+        <div v-if="hasHeader" class="toast-header">
           <slot name="header" :close="close">
             <h6 class="toast-title">{{ title }}</h6>
             <UiButton class="btn-close" @click="close">
@@ -10,10 +10,13 @@
             </UiButton>
           </slot>
         </div>
-        <div class="toast-body">
+        <div :class="{ 'no-header': !hasHeader }" class="toast-body">
           <slot :close="close">
             {{ message }}
           </slot>
+          <UiButton v-if="!hasHeader" class="btn-close" @click="close">
+            <UiIcon name="close-24" size="16" />
+          </UiButton>
         </div>
       </div>
     </Transition>
@@ -30,10 +33,18 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['update:modelValue'])
 
-const autohide = computed(() => props.autohide ?? 3000)
+const slots = useSlots()
+const hasHeader = computed(() => Boolean(slots.header || props.title))
 
-let toastClasses = ['toast']
-if (props.variant) toastClasses.push(`toast-${props.variant}`)
+const autohide = computed(() => props.autohide ?? 5000)
+
+const toastClasses = computed(() => {
+  let classes = ['toast']
+  if (props.variant) {
+    classes.push(`toast-${props.variant}`)
+  }
+  return classes
+})
 
 let timeout: NodeJS.Timeout
 

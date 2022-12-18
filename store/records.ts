@@ -51,7 +51,6 @@ export const useRecordsStore = defineStore({
     },
 
     async fetchBalance() {
-      console.log('fetch balance')
       const balance = await $fetch<number>('/api/data/total', { method: 'GET', headers: { cookie: getCookie() } })
       this.balance = balance ?? 0
     },
