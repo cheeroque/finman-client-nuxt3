@@ -14,7 +14,7 @@
       type="checkbox"
       @input="handleInput"
     />
-    <label :for="controlId" class="form-check-label">
+    <label v-if="hasLabel" :for="controlId" class="form-check-label">
       <slot></slot>
     </label>
   </div>
@@ -40,6 +40,9 @@ const props = defineProps<{
   value?: CheckboxValue
 }>()
 const emit = defineEmits(['update:modelValue'])
+const slots = useSlots()
+
+const hasLabel = computed(() => Boolean(slots.default))
 
 const checkbox = ref()
 const defaultValue = ref(props.value || true)

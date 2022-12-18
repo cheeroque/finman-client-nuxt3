@@ -283,3 +283,43 @@ $floating-label-height: 1rem;
   transition: $transition;
   transition-property: color;
 }
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: $control-padding-y $control-padding-x;
+  font-size: $font-size-base * 0.875;
+  line-height: $line-height-base * (1 / 0.875);
+}
+
+.form-check-input {
+  display: block;
+  flex: 0 0 auto;
+  align-self: flex-start;
+  width: 1rem;
+  height: 1rem;
+  margin-top: calc(#{$line-height-base * (1 / 0.875)} * 0.5em - 0.5rem);
+  border-radius: $control-border-radius;
+  border: $border-width solid var(--outline);
+  background-color: $checkbox-background-color;
+  background-image: escape-svg($checkbox-background-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  appearance: none;
+  transition: $transition;
+  transition-property: border-color, background-color, box-shadow;
+
+  &:checked {
+    border-color: var(--secondary);
+    background-color: var(--secondary);
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 $control-focus-outline-width var(--secondary-outline);
+  }
+}
+
+.form-check-label {
+  flex: 1 1 auto;
+}
