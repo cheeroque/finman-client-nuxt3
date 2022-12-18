@@ -18,7 +18,7 @@
         class="form-control-icon colorpicker-label"
       >
         <input v-uid ref="colorInput" :value="modelValue" type="color" class="colorpicker-input" @input="handleInput" />
-        <UiIcon name="eyedropper-24" aria-hidden="true" />
+        <UiIcon name="eyedropper-24" size="16" aria-hidden="true" />
       </label>
     </template>
   </UiInput>
