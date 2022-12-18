@@ -289,7 +289,7 @@ $floating-label-height: 1rem;
   align-items: center;
   gap: $control-padding-y $control-padding-x;
   font-size: $font-size-base * 0.875;
-  line-height: $line-height-base * (1 / 0.875);
+  line-height: $line-height-base * math.div(1, 0.875);
 }
 
 .form-check-input {
@@ -298,7 +298,7 @@ $floating-label-height: 1rem;
   align-self: flex-start;
   width: 1rem;
   height: 1rem;
-  margin-top: calc(#{$line-height-base * (1 / 0.875)} * 0.5em - 0.5rem);
+  margin-top: calc(#{$line-height-base * math.div(1, 0.875)} * 0.5em - 0.5rem);
   border-radius: $control-border-radius;
   border: $border-width solid var(--outline);
   background-color: $checkbox-background-color;
