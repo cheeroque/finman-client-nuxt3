@@ -1,6 +1,6 @@
 <template>
-  <PageContent :loading="pending" :title="pageTitle" spinner-variant="primary">
-    <GroupTable :group-label="useString('date')" :items="tableItems" />
+  <PageContent :loading="pending" :title="category.name" spinner-variant="primary">
+    <GroupTable :group-label="useString('date')" :items="tableItems" :loading="pending" />
     <template #footer>
       <UiPagination :disabled="pending" :total-pages="totalPages" hide-prev-next />
     </template>
@@ -36,62 +36,52 @@ if (!category) {
   throw createError({ statusMessage: 'Not found', statusCode: 404 })
 }
 
-const pageTitle = computed(() => `${useString('category')}: ${category.name}`)
+const { data, pending, refresh } = await useAsyncData(
+  `categories/${route.params.slug}/${route.query.page}`,
+  async () => {
+    const headers = useRequestHeaders(['cookie'])
+    const cookie = headers.cookie as string
 
-const pending = ref(false)
-const records = ref<CategoryRecordsByMonth>()
-const totalRows = ref(0)
-const totalPages = ref(0)
+    const perPage = Number(route.query.perPage) || 12
+    const query: CategoryRecordsRequestParams = {
+      id: category?.id,
+      order: (route.query.order as string) || 'DESC',
+      orderBy: (route.query.orderBy as string) || 'created_at',
+      page: Number(route.query.page) || 1,
+      perPage,
+    }
+    const fetchOptions = { method: 'GET', headers: { cookie }, query }
 
-const tableItems = computed(() =>
-  Object.entries(records.value as CategoryRecordsByMonth)
-    .map(([key, value]) => {
-      const date = DateTime.fromFormat(key, 'yyyy-LL')
-      const timestamp = date.valueOf()
-      const group = date.toLocaleString({ month: 'long', year: 'numeric' })
-      const subtotal = value?.reduce((total, { sum }) => (total += sum), 0)
+    const { data, total } = await $fetch<CategoryRecordsResponse>('/api/data/category/records', fetchOptions)
 
-      return { group, timestamp, subtotal, records: value }
-    })
-    .sort(({ timestamp: a }, { timestamp: b }) => b - a)
+    const tableItems = Object.entries(data)
+      .map(([key, value]) => {
+        const date = DateTime.fromFormat(key, 'yyyy-LL')
+        const timestamp = date.valueOf()
+        const group = date.toLocaleString({ month: 'long', year: 'numeric' })
+        const subtotal = value?.reduce((total, { sum }) => (total += sum), 0)
+
+        return { group, timestamp, subtotal, records: value }
+      })
+      .sort(({ timestamp: a }, { timestamp: b }) => b - a)
+
+    const totalPages = Math.ceil(total / perPage)
+
+    return { tableItems, totalPages }
+  },
+  // { lazy: true }
 )
 
-await fetchCategoryRecords()
+const tableItems = computed(() => data?.value?.tableItems || [])
+const totalPages = computed(() => data?.value?.totalPages || 0)
+
 watch(
   () => route.query,
   async () => {
-    await fetchCategoryRecords()
+    await refresh()
     setTimeout(() => useScrollTo('.page'), 250)
   }
 )
-
-async function fetchCategoryRecords() {
-  const headers = useRequestHeaders(['cookie'])
-  const cookie = headers.cookie as string
-
-  const perPage = Number(route.query.perPage) || 12
-
-  const query: CategoryRecordsRequestParams = {
-    id: category?.id,
-    order: (route.query.order as string) || 'DESC',
-    orderBy: (route.query.orderBy as string) || 'created_at',
-    page: Number(route.query.page) || 1,
-    perPage,
-  }
-
-  pending.value = true
-
-  const { data, total } = await $fetch<CategoryRecordsResponse>('/api/data/category/records', {
-    method: 'GET',
-    headers: { cookie },
-    query,
-  })
-
-  records.value = data
-  totalRows.value = total
-  totalPages.value = Math.ceil(total / perPage)
-  pending.value = false
-}
 </script>
 
 <style lang="scss" scoped>
