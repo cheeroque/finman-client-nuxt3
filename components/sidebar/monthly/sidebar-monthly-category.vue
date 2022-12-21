@@ -1,6 +1,6 @@
 <template>
   <NuxtLink
-    :to="`/categories/${category.id}`"
+    :to="`/categories/${category.slug}`"
     :class="{ 'caption-outside': captionOutside, 'caption-visible': mounted }"
     :style="{
       '--category-bar-color': category.color,
