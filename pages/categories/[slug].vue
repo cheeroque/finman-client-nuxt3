@@ -1,6 +1,9 @@
 <template>
-  <PageContent :title="useString('category')">
+  <PageContent :loading="pending" :title="useString('category')" spinner-variant="primary">
     <GroupTable :group-label="useString('date')" :items="tableItems" />
+    <template #footer>
+      <UiPagination :disabled="pending" :total-pages="totalPages" hide-prev-next />
+    </template>
   </PageContent>
 </template>
 
@@ -36,6 +39,7 @@ if (!category) {
 const pending = ref(false)
 const records = ref<CategoryRecordsByMonth>()
 const totalRows = ref(0)
+const totalPages = ref(0)
 
 const tableItems = computed(() =>
   Object.entries(records.value as CategoryRecordsByMonth)
@@ -63,12 +67,14 @@ async function fetchCategoryRecords() {
   const headers = useRequestHeaders(['cookie'])
   const cookie = headers.cookie as string
 
+  const perPage = Number(route.query.perPage) || 12
+
   const query: CategoryRecordsRequestParams = {
     id: category?.id,
     order: (route.query.order as string) || 'DESC',
     orderBy: (route.query.orderBy as string) || 'created_at',
     page: Number(route.query.page) || 1,
-    perPage: Number(route.query.perPage) || 12,
+    perPage,
   }
 
   pending.value = true
@@ -81,6 +87,7 @@ async function fetchCategoryRecords() {
 
   records.value = data
   totalRows.value = total
+  totalPages.value = Math.ceil(total / perPage)
   pending.value = false
 }
 </script>
@@ -88,5 +95,16 @@ async function fetchCategoryRecords() {
 <style lang="scss" scoped>
 :deep(.page-content-body) {
   padding: 0 0 0.5rem;
+}
+
+:deep(.page-content-footer) {
+  display: flex;
+  justify-content: center;
+}
+
+@include media-min-width(lg) {
+  :deep(.page-content-footer) {
+    justify-content: flex-end;
+  }
 }
 </style>
