@@ -1,0 +1,43 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  th {
+    padding: $table-padding-x $table-padding-x;
+    font-family: $font-family-alternate;
+    font-weight: $font-weight-medium;
+    color: var(--primary);
+    vertical-align: top;
+  }
+
+  td {
+    padding: $table-padding-y $table-padding-x;
+    vertical-align: top;
+  }
+
+  thead {
+    th {
+      border-bottom: ($border-width * 2) solid var(--primary-outline);
+    }
+  }
+
+  tbody {
+    tr {
+      &:nth-of-type(odd) {
+        color: var(--on-surface);
+        background-color: var(--surface);
+      }
+    }
+  }
+}
+
+.row-details {
+  & > td {
+    padding: 0;
+  }
+}
+
+.table-fixed {
+  table-layout: fixed;
+}

@@ -1,6 +1,6 @@
 <template>
-  <table class="table">
-    <thead v-if="!hideThead">
+  <table :class="tableClasses">
+    <thead v-if="!hideThead" class="thead">
       <tr>
         <th v-for="(field, index) in normalizedFields" :key="`th-${index}`" :class="field.thClass">
           <slot :name="`head(${field.key})`" :column="field.key" :field="field" :label="field.label">
@@ -35,9 +35,18 @@ export type TableItem = {
 
 const props = defineProps<{
   fields: TableField[] | string[]
+  fixed?: boolean
   hideThead?: boolean
   items: TableItem[]
 }>()
+
+const tableClasses = computed(() => {
+  const classes = ['table']
+  if (props.fixed) {
+    classes.push('table-fixed')
+  }
+  return classes
+})
 
 const normalizedFields = computed(() =>
   props.fields.map((field) => ({
