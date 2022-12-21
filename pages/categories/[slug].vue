@@ -1,5 +1,5 @@
 <template>
-  <PageContent :loading="pending" :title="useString('category')" spinner-variant="primary">
+  <PageContent :loading="pending" :title="pageTitle" spinner-variant="primary">
     <GroupTable :group-label="useString('date')" :items="tableItems" />
     <template #footer>
       <UiPagination :disabled="pending" :total-pages="totalPages" hide-prev-next />
@@ -35,6 +35,8 @@ const category = recordsStore.categories.find(({ slug }) => slug === route.param
 if (!category) {
   throw createError({ statusMessage: 'Not found', statusCode: 404 })
 }
+
+const pageTitle = computed(() => `${useString('category')}: ${category.name}`)
 
 const pending = ref(false)
 const records = ref<CategoryRecordsByMonth>()
