@@ -19,9 +19,15 @@
           {{ DateTime.fromISO(value).toFormat('dd.LL.yyyy') }}
         </template>
         <template #cell(sum)="{ value }"> {{ value }}&nbsp;₽ </template>
+        <template #cell(note)="{ item, value }">
+          <UiButton icon="edit-24" icon-size="24" class="btn-edit" block icon-right @click="handleEdit(item)">
+            <span class="caption">{{ value }}</span>
+          </UiButton>
+        </template>
       </UiTable>
     </template>
   </UiTable>
+  <RecordDialog v-model="dialogVisible" :record="currentRecord" @closed="handleDialogClosed" />
 </template>
 
 <script lang="ts" setup>
@@ -33,6 +39,9 @@ const props = defineProps<{
   groupLabel: string
   items: TableItem[]
 }>()
+
+const currentRecord = ref<RecordsItem>()
+const dialogVisible = ref(false)
 
 const fields: ComputedRef<TableField[]> = computed(() => [
   {
@@ -82,6 +91,15 @@ function handleToggleDetails(event: Event, detailsVisible: boolean, callback: Fu
   }
   callback()
 }
+
+function handleEdit(record: RecordsItem) {
+  currentRecord.value = record
+  dialogVisible.value = true
+}
+
+function handleDialogClosed() {
+  currentRecord.value = undefined
+}
 </script>
 
 <style lang="scss" scoped>
@@ -107,6 +125,10 @@ function handleToggleDetails(event: Event, detailsVisible: boolean, callback: Fu
     width: 40%;
   }
 
+  :deep(td.cell-details-note) {
+    padding: 0;
+  }
+
   :deep(.details-visible) {
     color: var(--secondary-active);
     background-color: var(--secondary-bg);
@@ -126,10 +148,10 @@ function handleToggleDetails(event: Event, detailsVisible: boolean, callback: Fu
   }
 }
 
-.btn-details {
+.btn-details,
+.btn-edit {
   justify-content: initial;
   padding: $table-padding-y $table-padding-x;
-  font-weight: $font-weight-medium;
   text-align: left;
   border-radius: 0;
   border: none;
@@ -141,16 +163,15 @@ function handleToggleDetails(event: Event, detailsVisible: boolean, callback: Fu
       color: inherit;
       background-color: inherit;
     }
-
-    &:hover {
-      color: var(--primary);
-      background-color: inherit;
-    }
   }
 
   .caption {
     flex: 1 1 auto;
   }
+}
+
+.btn-details {
+  font-weight: $font-weight-medium;
 
   :deep(.nuxt-icon) {
     transform: rotate(0);
@@ -158,10 +179,36 @@ function handleToggleDetails(event: Event, detailsVisible: boolean, callback: Fu
     transition-property: transform;
   }
 
+  &:not(:disabled):not(.disabled) {
+    &:hover {
+      color: var(--primary);
+      background-color: inherit;
+    }
+  }
+
   &:not(.collapsed) {
     :deep(.nuxt-icon) {
       transform: rotate(-180deg);
     }
+  }
+}
+
+.btn-edit {
+  &:not(:disabled):not(.disabled) {
+    &:hover {
+      color: var(--secondary);
+      background-color: inherit;
+
+      :deep(.nuxt-icon) {
+        color: var(--secondary);
+      }
+    }
+  }
+
+  :deep(.nuxt-icon) {
+    color: var(--secondary-outline);
+    transition: $transition;
+    transition-property: color;
   }
 }
 </style>
