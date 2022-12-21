@@ -1,15 +1,6 @@
 <template>
   <PageContent :title="useString('category')">
-    <UiTable :fields="tableFields" :items="tableItems">
-      <template #cell(subtotal)="{ toggleDetails, value }">
-        <UiButton icon="caret" icon-size="10" block icon-right @click="toggleDetails">
-          {{ value }}
-        </UiButton>
-      </template>
-      <template #row-details="{ item }">
-        <UiTable :fields="tableDetailsFields" :items="item.records" hide-thead />
-      </template>
-    </UiTable>
+    <GroupTable :group-label="useString('date')" :items="tableItems" />
   </PageContent>
 </template>
 
@@ -35,13 +26,6 @@ type CategoryRecordsRequestParams = {
   perPage?: number
 }
 
-type TableItem = {
-  period: string
-  timestamp: number
-  subtotal: number
-  records: RecordsItem[]
-}
-
 const route = useRoute()
 const recordsStore = useRecordsStore()
 const category = recordsStore.categories.find(({ slug }) => slug === route.params.slug)
@@ -53,26 +37,15 @@ const pending = ref(false)
 const records = ref<CategoryRecordsByMonth>()
 const totalRows = ref(0)
 
-const tableFields = [
-  { key: 'period', label: useString('date') },
-  { key: 'subtotal', label: useString('sum'), tdClass: 'cell-sum' },
-]
-
-const tableDetailsFields = [
-  { key: 'created_at', label: useString('date') },
-  { key: 'sum', label: useString('sum') },
-  { key: 'note', label: useString('note') },
-]
-
 const tableItems = computed(() =>
   Object.entries(records.value as CategoryRecordsByMonth)
     .map(([key, value]) => {
       const date = DateTime.fromFormat(key, 'yyyy-LL')
       const timestamp = date.valueOf()
-      const period = date.toLocaleString({ month: 'long', year: 'numeric' })
+      const group = date.toLocaleString({ month: 'long', year: 'numeric' })
       const subtotal = value?.reduce((total, { sum }) => (total += sum), 0)
 
-      return { period, timestamp, subtotal, records: value }
+      return { group, timestamp, subtotal, records: value }
     })
     .sort(({ timestamp: a }, { timestamp: b }) => b - a)
 )
@@ -111,3 +84,9 @@ async function fetchCategoryRecords() {
   pending.value = false
 }
 </script>
+
+<style lang="scss" scoped>
+:deep(.page-content-body) {
+  padding: 0 0 0.5rem;
+}
+</style>

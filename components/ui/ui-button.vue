@@ -7,7 +7,7 @@
     :href="href"
     :to="to"
     :type="type || 'button'"
-    @click="emit('click')"
+    @click="handleClick"
   >
     <UiIcon v-if="icon && !iconRight" :name="icon" :size="iconSize" class="nuxt-icon-left" />
     <slot></slot>
@@ -33,7 +33,7 @@ const props = defineProps<{
   type?: string
   variant?: string
 }>()
-const emit = defineEmits(['click'])
+const emit = defineEmits(['click', 'click-native'])
 const slots = useSlots()
 
 const isLink = computed(() => Boolean(props.href || props.to))
@@ -50,4 +50,9 @@ const buttonClasses = computed(() => {
 
   return classes
 })
+
+function handleClick(event: Event) {
+  emit('click')
+  emit('click-native', event)
+}
 </script>
