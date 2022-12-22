@@ -9,10 +9,17 @@
         </th>
       </tr>
     </thead>
-    <tbody>
+    <tbody v-if="isEmpty">
+      <tr>
+        <td :colspan="fields.length" class="table-empty">
+          {{ useString('tableEmpty') }}
+        </td>
+      </tr>
+    </tbody>
+    <tbody v-else>
       <template v-for="(row, rowIndex) in items" :key="`row-${rowIndex}`">
         <UiTableRow :fields="normalizedFields" :item="row" :row-index="rowIndex">
-          <template v-for="(_, slot) of $slots" #[slot]="scope">
+          <template v-for="(_, slot) of $slots" #[`${slot}`]="scope">
             <slot :name="slot" v-bind="scope" />
           </template>
         </UiTableRow>
@@ -56,6 +63,8 @@ const normalizedFields = computed(() =>
     thClass: typeof field === 'string' ? '' : field.thClass,
   }))
 )
+
+const isEmpty = computed(() => !props.items.length)
 
 function getFieldKey(field: string | TableField): string {
   if (typeof field === 'string') return field

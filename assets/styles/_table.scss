@@ -41,3 +41,10 @@
 .table-fixed {
   table-layout: fixed;
 }
+
+.table-empty {
+  font-size: $font-size-base * 0.875;
+  text-align: center;
+  color: var(--primary-outline);
+  background-color: var(--background);
+}

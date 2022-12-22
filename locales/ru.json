@@ -56,6 +56,7 @@
   "searchPlaceholder": "Поиск по записям",
   "slug": "Слаг",
   "sum": "Сумма",
+  "tableEmpty": "Нет записей.",
   "thisMonth": "В этом месяце",
   "update": "Обновить",
   "userName": "Имя пользователя",
