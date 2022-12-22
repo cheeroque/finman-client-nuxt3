@@ -296,3 +296,11 @@
 .shadow-24 {
   box-shadow: $shadow-24;
 }
+
+/**
+ ** OVERFLOW
+ **/
+
+.overflow-hidden {
+  overflow: hidden !important;
+}
