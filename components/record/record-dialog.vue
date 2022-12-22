@@ -1,5 +1,6 @@
 <template>
   <UiDialog
+    :loading="pending"
     :model-value="modelValue"
     :title="dialogTitle"
     @closed="emit('closed')"
@@ -45,6 +46,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['closed', 'record:delete', 'record:update', 'update:modelValue'])
 const recordsStore = useRecordsStore()
+const pending = computed(() => recordsStore.pending)
 
 const toast = useToast()
 

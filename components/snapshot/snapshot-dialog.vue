@@ -1,5 +1,6 @@
 <template>
   <UiDialog
+    :loading="pending"
     :model-value="modelValue"
     :title="useString('newSnapshot')"
     @update:modelValue="emit('update:modelValue', $event)"
@@ -26,6 +27,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRecordsStore } from '~/store/records'
+
 const props = defineProps<{
   modelValue?: boolean
 }>()
@@ -36,6 +39,9 @@ const toast = useToast()
 
 const form = ref()
 const formId = computed(() => form.value?.form.id)
+
+const recordsStore = useRecordsStore()
+const pending = computed(() => recordsStore.pending)
 
 function handleUpdate(snapshot: RecordsSnapshot, callback?: Function) {
   /* Show confirmation toast */
