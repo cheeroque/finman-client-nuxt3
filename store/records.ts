@@ -7,7 +7,7 @@ interface State {
   monthRecords: { [key: string]: RecordsItem[] }
   pending: boolean
   records: RecordsItem[] | []
-  snapshot: RecordsSnapshot | {}
+  snapshot?: RecordsSnapshot
   totalPages: number
 }
 
@@ -20,7 +20,7 @@ export const useRecordsStore = defineStore({
     firstRecord: {},
     monthRecords: {},
     pending: false,
-    snapshot: {},
+    snapshot: undefined,
     records: [],
     totalPages: 0,
   }),

@@ -17,7 +17,7 @@
           <h5 class="drawer-heading">{{ useString('actions') }}</h5>
         </li>
         <li v-for="action in drawerActions" :key="`action-${action.key}`" role="presentation">
-          <component :is="action.component" :action="action" />
+          <component :is="action.component" @click="action.handler" />
         </li>
       </ul>
 
@@ -29,6 +29,7 @@
   <Transition name="fade">
     <div v-if="open" class="app-drawer-backdrop" aria-hidden="true" @click="emit('close')" />
   </Transition>
+  <SnapshotDialog v-model="dialogVisible" />
 </template>
 
 <script lang="ts" setup>
@@ -39,7 +40,7 @@ const props = defineProps<{
 const emit = defineEmits(['close', 'toggle'])
 
 const drawerActions: DrawerAction[] = [
-  { key: 'snapshot', component: resolveComponent('NavDrawerSnapshot') },
+  { key: 'snapshot', component: resolveComponent('NavDrawerSnapshot'), handler: handleSnapshotClick },
   { key: 'export', component: resolveComponent('NavDrawerExport') },
   { key: 'logout', component: resolveComponent('NavDrawerLogout') },
 ]
@@ -55,6 +56,12 @@ const drawerClasses = computed(() => {
   if (props.open) classes.push('open')
   return classes
 })
+
+const dialogVisible = ref(false)
+
+function handleSnapshotClick() {
+  dialogVisible.value = true
+}
 </script>
 
 <style lang="scss" scoped>

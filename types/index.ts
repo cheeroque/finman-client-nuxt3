@@ -11,6 +11,7 @@ declare global {
   type DrawerAction = {
     key: string
     component: ConcreteComponent | string
+    handler?: Function
   }
 
   type DrawerPage = {
