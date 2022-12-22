@@ -1,7 +1,7 @@
 <template>
-  <PageContent :loading="pending" :title="category.name" spinner-variant="primary">
+  <PageContent :loading="pending" :title="category.name" spinner-variant="primary" class="overflow-hidden">
     <GroupTable :group-label="useString('date')" :items="tableItems" :loading="pending" />
-    <template #footer>
+    <template #footer v-if="totalPages > 1">
       <UiPagination :disabled="pending" :total-pages="totalPages" hide-prev-next />
     </template>
   </PageContent>
@@ -68,8 +68,7 @@ const { data, pending, refresh } = await useAsyncData(
     const totalPages = Math.ceil(total / perPage)
 
     return { tableItems, totalPages }
-  },
-  // { lazy: true }
+  }
 )
 
 const tableItems = computed(() => data?.value?.tableItems || [])
@@ -86,7 +85,7 @@ watch(
 
 <style lang="scss" scoped>
 :deep(.page-content-body) {
-  padding: 0 0 0.5rem;
+  padding: 0;
 }
 
 :deep(.page-content-footer) {
