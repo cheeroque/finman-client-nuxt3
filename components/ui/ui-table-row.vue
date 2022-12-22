@@ -1,5 +1,5 @@
 <template>
-  <tr>
+  <tr :class="item.trClass">
     <td v-for="(field, index) in fields" :key="`cell-${rowIndex}-${index}`" :class="field.tdClass">
       <slot
         :name="`cell(${field.key})`"
