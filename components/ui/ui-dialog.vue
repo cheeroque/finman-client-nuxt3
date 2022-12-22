@@ -5,7 +5,10 @@
         <div class="dialog-content">
           <div v-if="hasHeader" class="dialog-header">
             <slot name="header" :close="handleClose">
-              <h5 class="dialog-title">{{ title }}</h5>
+              <h5 class="dialog-title">
+                {{ title }}
+                <UiSpinner v-if="loading" variant="primary" />
+              </h5>
               <UiButton
                 :title="useString('close')"
                 :aria-label="useString('close')"
@@ -34,6 +37,7 @@
 
 <script lang="ts" setup>
 const props = defineProps<{
+  loading?: boolean
   modelValue?: boolean
   size?: DialogSize
   title?: string

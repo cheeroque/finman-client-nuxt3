@@ -52,9 +52,18 @@
 }
 
 .dialog-title {
+  display: flex;
+  align-items: center;
   flex: 1 1 auto;
   margin-bottom: 0;
   color: var(--primary);
+
+  .spinner {
+    align-self: flex-start;
+    width: 1em;
+    height: 1em;
+    margin: calc(1em * 0.5 * ($line-height-heading - 1)) 0 0 0.5rem;
+  }
 }
 
 .dialog-body {
