@@ -1,7 +1,8 @@
 <template>
   <UiTable :fields="fields" :items="items" class="group-table" fixed>
-    <template #cell(subtotal)="{ detailsVisible, toggleDetails, value }">
+    <template #cell(subtotal)="{ detailsVisible, item, toggleDetails, value }">
       <UiButton
+        v-if="item.records?.length"
         :class="{ collapsed: !detailsVisible }"
         icon="caret"
         icon-size="10"
@@ -12,6 +13,7 @@
       >
         <span class="caption">{{ value }}&nbsp;₽</span>
       </UiButton>
+      <span v-else class="btn-details">{{ value }}&nbsp;₽</span>
     </template>
     <template #row-details="{ item }">
       <UiTable :fields="detailsFields" :items="item.records" hide-thead fixed>
@@ -150,6 +152,7 @@ function handleDialogClosed() {
 
 .btn-details,
 .btn-edit {
+  display: flex;
   justify-content: initial;
   padding: $table-padding-y $table-padding-x;
   text-align: left;
@@ -171,6 +174,7 @@ function handleDialogClosed() {
 }
 
 .btn-details {
+  font-family: $font-family-alternate;
   font-weight: $font-weight-medium;
 
   :deep(.nuxt-icon) {
@@ -180,9 +184,11 @@ function handleDialogClosed() {
   }
 
   &:not(:disabled):not(.disabled) {
-    &:hover {
-      color: var(--primary);
-      background-color: inherit;
+    &.btn {
+      &:hover {
+        color: var(--primary);
+        background-color: inherit;
+      }
     }
   }
 

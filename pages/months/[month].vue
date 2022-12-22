@@ -1,9 +1,6 @@
 <template>
-  <PageContent :loading="pending" :title="category.name" spinner-variant="primary">
+  <PageContent :loading="pending" :title="monthName" spinner-variant="primary" class="overflow-hidden">
     <GroupTable :group-label="useString('date')" :items="tableItems" :loading="pending" />
-    <template #footer>
-      <UiPagination :disabled="pending" :total-pages="totalPages" hide-prev-next />
-    </template>
   </PageContent>
 </template>
 
@@ -15,68 +12,101 @@ type MonthRecords = {
   [key: string]: RecordsItem[]
 }
 
+type MonthRecordsGroup = {
+  category?: RecordsCategory
+  group?: string
+  subtotal: number
+  trClass?: string
+  records?: RecordsItem[]
+}
+
 const route = useRoute()
 const recordsStore = useRecordsStore()
-// const category = recordsStore.categories.find(({ slug }) => slug === route.params.slug)
-// if (!category) {
-//   throw createError({ statusMessage: 'Not found', statusCode: 404 })
-// }
 
-const { data, pending, refresh } = await useAsyncData(
-  `month/${route.params.month}`,
-  async () => {
-    const headers = useRequestHeaders(['cookie'])
-    const cookie = headers.cookie as string
+const month = route.params.month as string
+const monthName = DateTime.fromFormat(month, 'yyyy-LL').toLocaleString({ month: 'long', year: 'numeric' })
 
-    const perPage = Number(route.query.perPage) || 12
-    const period = route.params.month as string
-    const fetchOptions = { method: 'GET', headers: { cookie }, query: { period } }
+const { data, pending } = await useAsyncData(`month/${month}`, async () => {
+  const headers = useRequestHeaders(['cookie'])
+  const cookie = headers.cookie as string
 
-    const { data, total } = await $fetch<MonthRecords>('/api/data/category/month', fetchOptions)
+  const fetchOptions = { method: 'GET', headers: { cookie }, query: { month } }
 
-    const tableItems = Object.entries(data)
-      .map(([key, value]) => {
-        const date = DateTime.fromFormat(key, 'yyyy-LL')
-        const timestamp = date.valueOf()
-        const group = date.toLocaleString({ month: 'long', year: 'numeric' })
-        const subtotal = value?.reduce((total, { sum }) => (total += sum), 0)
+  const response = await $fetch<MonthRecords>('/api/data/month/records', fetchOptions)
 
-        return { group, timestamp, subtotal, records: value }
-      })
-      .sort(({ timestamp: a }, { timestamp: b }) => b - a)
+  const mappedResponse: MonthRecordsGroup[] = []
+  let totalExpense = 0
+  let totalIncome = 0
 
-    const totalPages = Math.ceil(total / perPage)
+  Object.entries(response).forEach(([key, value]) => {
+    const category = recordsStore.categories.find(({ id }) => `${id}` === key)
+    const isIncome = category?.is_income || 0
+    const group = category?.name
+    const subtotal = value?.reduce((total, { sum }) => (total += sum), 0)
+    const trClass = isIncome ? 'row-income' : undefined
 
-    return { tableItems, totalPages }
+    const index = Number(key) - 1 + Object.entries(response).length * isIncome
+
+    mappedResponse[index] = { category, group, subtotal, trClass, records: value }
+    totalExpense += isIncome ? 0 : subtotal
+    totalIncome += isIncome ? subtotal : 0
+  })
+
+  const balance = totalIncome - totalExpense
+
+  const rowBalance = {
+    group: useString('monthBalance'),
+    subtotal: balance,
+    trClass: `row-balance ${balance > 0 ? 'row-balance-positive' : 'row-balance-negative'}`,
   }
-  // { lazy: true }
-)
+
+  const tableItems = mappedResponse.filter((el) => Boolean(el))
+  tableItems.push(rowBalance)
+
+  return { tableItems }
+})
 
 const tableItems = computed(() => data?.value?.tableItems || [])
-const totalPages = computed(() => data?.value?.totalPages || 0)
-
-watch(
-  () => route.query,
-  async () => {
-    await refresh()
-    setTimeout(() => useScrollTo('.page'), 250)
-  }
-)
 </script>
 
 <style lang="scss" scoped>
 :deep(.page-content-body) {
-  padding: 0 0 0.5rem;
+  padding: 0;
 }
 
-:deep(.page-content-footer) {
-  display: flex;
-  justify-content: center;
-}
+:deep(.table) {
+  .row-income {
+    color: var(--on-success-bg);
+    background-color: var(--success-bg);
 
-@include media-min-width(lg) {
-  :deep(.page-content-footer) {
-    justify-content: flex-end;
+    .btn-details {
+      &:not(:disabled):not(.disabled) {
+        &:hover {
+          color: var(--success-active);
+        }
+      }
+    }
+
+    &.details-visible {
+      color: var(--on-success-bg-active);
+      background-color: var(--success-bg-active);
+    }
+  }
+
+  .row-balance {
+    font-weight: $font-weight-medium;
+    border-top: $border-width solid transparent;
+    background-color: var(--background);
+  }
+
+  .row-balance-positive {
+    color: var(--secondary);
+    border-color: var(--secondary-outline);
+  }
+
+  .row-balance-negative {
+    color: var(--danger);
+    border-color: var(--danger-outline);
   }
 }
 </style>
