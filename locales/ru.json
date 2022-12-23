@@ -58,6 +58,7 @@
   "remove": "Удалить",
   "save": "Сохранить",
   "searchPlaceholder": "Поиск по записям",
+  "searchResults": "Поиск: «%s»",
   "slug": "Слаг",
   "snapshotSaved": "Снапшот %s сохранён",
   "sum": "Сумма",

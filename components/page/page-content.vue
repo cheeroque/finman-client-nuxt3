@@ -64,6 +64,7 @@ const hasFooter = computed(() => Boolean(slots.footer))
 }
 
 .btn-back {
+  align-self: flex-start;
   margin: 0 0.5rem 0 -0.5rem;
   padding: 0.5rem;
 }
