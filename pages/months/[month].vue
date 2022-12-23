@@ -1,6 +1,6 @@
 <template>
   <PageContent :loading="pending" :title="monthName" spinner-variant="primary" class="overflow-hidden">
-    <GroupTable :group-label="useString('date')" :items="tableItems" :loading="pending" />
+    <GroupTable :group-label="useString('category')" :items="tableItems" :loading="pending" />
   </PageContent>
 </template>
 
