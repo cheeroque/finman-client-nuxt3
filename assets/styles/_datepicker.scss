@@ -45,6 +45,7 @@ $datepicker-button-padding-y: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
   padding: $datepicker-button-padding-y $datepicker-button-padding-x;
   text-align: center;
 }
@@ -52,27 +53,37 @@ $datepicker-button-padding-y: 0.75rem;
 .datepicker-day {
   @extend .btn;
 
+  min-width: 0;
   padding: $datepicker-button-padding-y $datepicker-button-padding-x;
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
   color: inherit;
+  transition: none;
 
   &.today {
-    color: var(--on-secondary-bg);
-    background-color: var(--secondary-bg);
+    color: var(--on-secondary);
+    background-color: var(--secondary);
+
+    &:not(:disabled):not(.disabled) {
+      &:hover,
+      &:focus {
+        color: var(--on-secondary);
+        background-color: var(--secondary-active);
+      }
+    }
   }
 
-  &:not(:disabled):not(.disabled) {
-    &.active,
-    &:focus.active {
-      color: var(--on-primary);
-      background-color: var(--primary);
-    }
+  &.active {
+    color: var(--on-primary);
+    background-color: var(--primary);
 
-    &:hover {
-      color: var(--on-primary-bg);
-      background-color: var(--primary-bg);
+    &:not(:disabled):not(.disabled) {
+      &:hover,
+      &:focus {
+        color: var(--on-primary);
+        background-color: var(--primary-active);
+      }
     }
   }
 

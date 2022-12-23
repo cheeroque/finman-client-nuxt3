@@ -16,6 +16,7 @@
 .datetimepicker-panel {
   position: relative;
   flex: 0 0 100%;
+  min-width: 0;
 
   .timepicker {
     display: flex;
