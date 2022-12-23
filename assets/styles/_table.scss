@@ -4,7 +4,7 @@
   text-align: left;
 
   th {
-    padding: $table-padding-x $table-padding-x;
+    padding: $table-padding-x;
     font-family: $font-family-alternate;
     font-weight: $font-weight-medium;
     color: var(--primary);
@@ -47,4 +47,24 @@
   text-align: center;
   color: var(--primary-outline);
   background-color: var(--background);
+}
+
+@include media-max-width(lg) {
+  .table {
+    font-size: $font-size-base * 0.875;
+
+    th {
+      padding: $table-padding-x * 0.875;
+    }
+
+    td {
+      padding: $table-padding-y * 0.875 $table-padding-x * 0.875;
+    }
+  }
+
+  .row-details {
+    & > td {
+      padding: 0;
+    }
+  }
 }

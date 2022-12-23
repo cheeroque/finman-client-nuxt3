@@ -1,35 +1,37 @@
 <template>
-  <UiTable :fields="fields" :items="items" class="group-table" fixed>
-    <template #cell(subtotal)="{ detailsVisible, item, toggleDetails, value }">
-      <UiButton
-        v-if="item.records?.length"
-        :class="{ collapsed: !detailsVisible }"
-        icon="caret"
-        icon-size="10"
-        class="btn-details"
-        block
-        icon-right
-        @click-native="handleToggleDetails($event, detailsVisible, toggleDetails)"
-      >
-        <span class="caption">{{ value }}&nbsp;₽</span>
-      </UiButton>
-      <span v-else class="btn-details">{{ value }}&nbsp;₽</span>
-    </template>
-    <template #row-details="{ item }">
-      <UiTable :fields="detailsFields" :items="item.records" hide-thead fixed>
-        <template #cell(created_at)="{ value }">
-          {{ DateTime.fromISO(value).toFormat('dd.LL.yyyy') }}
-        </template>
-        <template #cell(sum)="{ value }"> {{ value }}&nbsp;₽ </template>
-        <template #cell(note)="{ item, value }">
-          <UiButton icon="edit-24" icon-size="24" class="btn-edit" block icon-right @click="handleEdit(item)">
-            <span class="caption">{{ value }}</span>
-          </UiButton>
-        </template>
-      </UiTable>
-    </template>
-  </UiTable>
-  <RecordDialog v-model="dialogVisible" :record="currentRecord" @closed="handleDialogClosed" />
+  <div class="group-table-wrapper">
+    <UiTable :fields="fields" :items="items" class="group-table" fixed>
+      <template #cell(subtotal)="{ detailsVisible, item, toggleDetails, value }">
+        <UiButton
+          v-if="item.records?.length"
+          :class="{ collapsed: !detailsVisible }"
+          icon="caret"
+          icon-size="10"
+          class="btn-details"
+          block
+          icon-right
+          @click-native="handleToggleDetails($event, detailsVisible, toggleDetails)"
+        >
+          <span class="caption">{{ value }}&nbsp;₽</span>
+        </UiButton>
+        <span v-else class="btn-details">{{ value }}&nbsp;₽</span>
+      </template>
+      <template #row-details="{ item }">
+        <UiTable :fields="detailsFields" :items="item.records" hide-thead fixed>
+          <template #cell(created_at)="{ value }">
+            {{ DateTime.fromISO(value).toFormat('dd.LL.yyyy') }}
+          </template>
+          <template #cell(sum)="{ value }"> {{ value }}&nbsp;₽ </template>
+          <template #cell(note)="{ item, value }">
+            <UiButton icon="edit-24" icon-size="24" class="btn-edit" block icon-right @click="handleEdit(item)">
+              <span class="caption">{{ value }}</span>
+            </UiButton>
+          </template>
+        </UiTable>
+      </template>
+    </UiTable>
+    <RecordDialog v-model="dialogVisible" :record="currentRecord" @closed="handleDialogClosed" />
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -137,10 +139,13 @@ function handleDialogClosed() {
   }
 
   :deep(.row-details-content) {
-    border-bottom: $border-width solid var(--primary-outline);
+    border-bottom: $border-width * 2 solid var(--secondary-outline);
 
     .table tbody {
       tr {
+        color: var(--on-background);
+        background-color: var(--background);
+
         &:nth-of-type(odd) {
           color: var(--on-surface-variant);
           background-color: var(--surface-variant);
@@ -155,6 +160,7 @@ function handleDialogClosed() {
   display: flex;
   justify-content: initial;
   padding: $table-padding-y $table-padding-x;
+  font-size: inherit;
   text-align: left;
   border-radius: 0;
   border: none;
@@ -200,6 +206,8 @@ function handleDialogClosed() {
 }
 
 .btn-edit {
+  font-family: inherit;
+
   &:not(:disabled):not(.disabled) {
     &:hover {
       color: var(--secondary);
@@ -215,6 +223,25 @@ function handleDialogClosed() {
     color: var(--secondary-outline);
     transition: $transition;
     transition-property: color;
+  }
+}
+
+@include media-max-width(lg) {
+  .group-table-wrapper {
+    border-radius: $card-border-radius;
+    background-color: var(--background);
+    overflow: hidden;
+  }
+
+  .btn-details,
+  .btn-edit {
+    padding: $table-padding-y * 0.875 $table-padding-x * 0.875;
+  }
+
+  .btn-edit {
+    :deep(.nuxt-icon) {
+      display: none;
+    }
   }
 }
 </style>
