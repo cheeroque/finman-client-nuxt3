@@ -73,7 +73,7 @@ for (let i = startDate.year; i <= endDate.year; i++) {
   for (let m = 1; m <= 12; m++) {
     const date = new Date()
     date.setMonth(m - 1)
-    const month = date.toLocaleString(undefined, {
+    const month = date.toLocaleString(useLocale(), {
       month: props.numericMonths ? '2-digit' : 'long',
     })
 

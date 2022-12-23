@@ -24,7 +24,10 @@ const route = useRoute()
 const recordsStore = useRecordsStore()
 
 const month = route.params.month as string
-const monthName = DateTime.fromFormat(month, 'yyyy-LL').toLocaleString({ month: 'long', year: 'numeric' })
+const monthName = DateTime.fromFormat(month, 'yyyy-LL').toLocaleString(
+  { month: 'long', year: 'numeric' },
+  { locale: useLocale() }
+)
 
 const { data, pending } = await useAsyncData(`month/${month}`, async () => {
   const headers = useRequestHeaders(['cookie'])

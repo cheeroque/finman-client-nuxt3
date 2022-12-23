@@ -59,7 +59,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits(['click:hours', 'click:minutes', 'click:seconds', 'update:modelValue'])
 
-const locale = props.locale
+const locale = computed(() => props.locale ?? useLocale())
 
 const stepMinutes = computed(() => Math.min(Number(props.stepMinutes ?? 5), 1))
 const stepSeconds = computed(() => Math.min(Number(props.stepSeconds ?? 5), 1))
@@ -69,7 +69,7 @@ const minuteCount = computed(() => Math.round(60 / stepMinutes.value))
 const secondCount = computed(() => Math.round(60 / stepSeconds.value))
 
 const titleFormat = computed(() => `HH:mm${props.showSeconds ? ':ss' : ''}`)
-const title = computed(() => luxonDate.value.toFormat(titleFormat.value, { locale }))
+const title = computed(() => luxonDate.value.toFormat(titleFormat.value, { locale: locale.value }))
 
 const currentHour = ref()
 const currentMinute = ref()

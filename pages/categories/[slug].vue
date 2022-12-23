@@ -58,7 +58,7 @@ const { data, pending, refresh } = await useAsyncData(
       .map(([key, value]) => {
         const date = DateTime.fromFormat(key, 'yyyy-LL')
         const timestamp = date.valueOf()
-        const group = date.toLocaleString({ month: 'short', year: 'numeric' })
+        const group = date.toLocaleString({ month: 'short', year: 'numeric' }, { locale: useLocale() })
         const subtotal = value?.reduce((total, { sum }) => (total += sum), 0)
 
         return { group, timestamp, subtotal, records: value }

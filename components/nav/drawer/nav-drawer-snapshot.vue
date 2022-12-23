@@ -19,7 +19,10 @@ const caption = computed(() => {
   const strings = [`${useNumberFormat(snapshot.balance)} ₽`]
   if (snapshot.created_at) {
     strings.push(
-      DateTime.fromISO(snapshot.created_at).toLocaleString({ day: '2-digit', month: '2-digit', year: 'numeric' })
+      DateTime.fromISO(snapshot.created_at).toLocaleString(
+        { day: '2-digit', month: '2-digit', year: 'numeric' },
+        { locale: useLocale() }
+      )
     )
   }
   return strings.join(', ')
