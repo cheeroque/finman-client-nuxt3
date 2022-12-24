@@ -2,10 +2,17 @@
   display: block;
   width: 1.5rem;
   height: 1.5rem;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
   border-radius: 99rem;
   border: ($border-width * 2) solid var(--outline);
   border-right-color: transparent;
   animation: spinner 0.75s linear infinite;
+
+  &.nuxt-icon {
+    border-color: currentColor;
+    border-right-color: transparent;
+  }
 }
 
 @keyframes spinner {
