@@ -9,9 +9,15 @@
     :type="type || 'button'"
     @click="handleClick"
   >
-    <UiIcon v-if="icon && !iconRight" :name="icon" :size="iconSize" class="nuxt-icon-left" />
+    <template v-if="icon && !iconRight">
+      <UiSpinner v-if="loading" :size="iconSize" class="nuxt-icon nuxt-icon-left" />
+      <UiIcon v-else :name="icon" :size="iconSize" class="nuxt-icon-left" />
+    </template>
     <slot></slot>
-    <UiIcon v-if="icon && iconRight" :name="icon" :size="iconSize" class="nuxt-icon-right" />
+    <template v-if="icon && iconRight">
+      <UiSpinner v-if="loading" :size="iconSize" class="nuxt-icon nuxt-icon-right" />
+      <UiIcon v-else :name="icon" :size="iconSize" class="nuxt-icon-right" />
+    </template>
   </component>
 </template>
 
@@ -26,6 +32,7 @@ const props = defineProps<{
   icon?: string
   iconRight?: boolean
   iconSize?: number | string
+  loading?: boolean
   rel?: string
   size?: ControlSize
   target?: string
