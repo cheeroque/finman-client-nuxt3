@@ -1,5 +1,5 @@
 <template>
-  <UiButton icon="datetime-24" icon-size="24" class="drawer-item" @click="emit('click')">
+  <UiButton icon="datetime-24" icon-size="24" class="drawer-item" @click="emit('action')">
     <span class="caption">{{ caption }}</span>
   </UiButton>
 </template>
@@ -8,7 +8,7 @@
 import { DateTime } from 'luxon'
 import { useRecordsStore } from '~/store/records'
 
-const emit = defineEmits(['click'])
+const emit = defineEmits(['action'])
 
 const recordsStore = useRecordsStore()
 const caption = computed(() => {

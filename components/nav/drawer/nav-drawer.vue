@@ -17,7 +17,7 @@
           <h5 class="drawer-heading">{{ useString('actions') }}</h5>
         </li>
         <li v-for="action in drawerActions" :key="`action-${action.key}`" role="presentation">
-          <component :is="action.component" @click="action.handler" />
+          <component :is="action.component" @action="action.handler" />
         </li>
       </ul>
 
@@ -41,7 +41,7 @@ const emit = defineEmits(['close', 'toggle'])
 
 const drawerActions: DrawerAction[] = [
   { key: 'snapshot', component: resolveComponent('NavDrawerSnapshot'), handler: handleSnapshotClick },
-  { key: 'export', component: resolveComponent('NavDrawerExport') },
+  { key: 'export', component: resolveComponent('NavDrawerExport'), handler: handleExportClick },
   { key: 'logout', component: resolveComponent('NavDrawerLogout') },
 ]
 
@@ -58,6 +58,8 @@ const drawerClasses = computed(() => {
 })
 
 const dialogVisible = ref(false)
+
+function handleExportClick() {}
 
 function handleSnapshotClick() {
   dialogVisible.value = true
@@ -143,6 +145,7 @@ function handleSnapshotClick() {
 
 .drawer-item {
   :deep(.nuxt-icon) {
+    flex: 0 0 auto;
     margin-right: 0.75rem;
   }
 

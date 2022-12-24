@@ -29,6 +29,7 @@
   "expenses": "Расходы",
   "expensesOnly": "Только расходы",
   "exportData": "Экспорт данных",
+  "exportFailed": "Ошибка экспорта",
   "fieldRequired": "Поле необходимо заполнить",
   "hello": "Привет",
   "home": "Главная",
