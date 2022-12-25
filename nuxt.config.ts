@@ -1,3 +1,5 @@
+import { handleNuxtReady } from './hooks/ready'
+
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
   app: {
@@ -43,10 +45,15 @@ export default defineNuxtConfig({
 
   css: ['~/assets/styles/app.scss'],
 
+  hooks: {
+    ready: (nuxt) => handleNuxtReady(nuxt),
+  },
+
   runtimeConfig: {
-    NUXT_SECRET: process.env.NUXT_SECRET,
     API_URL: process.env.API_URL,
+    NUXT_SECRET: process.env.NUXT_SECRET,
     STATIC_URL: process.env.STATIC_URL,
+    THEME_PRIMARY_COLOR: process.env.THEME_PRIMARY_COLOR,
 
     public: {
       apiUrl: process.env.API_URL,

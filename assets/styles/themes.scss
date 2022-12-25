@@ -1,28 +1,18 @@
-/**
- ** LIGHT THEME
- **/
+/* STATIC THEME COLORS */
 
 html,
 :root.theme-light {
-  @include theme-light();
-}
+  --background: var(--on-neutral);
+  --on-background: var(--on-neutral-bg);
 
-@media (prefers-color-scheme: light) {
-  :root {
-    @include theme-light();
-  }
-}
+  --surface: var(--primary-surface);
+  --on-surface: var(--on-primary-surface);
 
-/**
- ** DARK THEME
- **/
+  --surface-variant: var(--secondary-surface);
+  --on-surface-variant: var(--on-secondary-surface);
 
-:root.theme-dark {
-  @include theme-dark();
-}
+  --disabled-bg: var(--neutral-bg);
+  --on-disabled-bg: var(--neutral);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    @include theme-dark();
-  }
+  --outline: var(--neutral);
 }
