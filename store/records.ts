@@ -91,13 +91,18 @@ export const useRecordsStore = defineStore({
     },
 
     async fetchGlobalData() {
-      await Promise.all([
-        this.fetchBalance(),
-        this.fetchCategories(),
-        this.fetchFirstRecord(),
-        this.fetchMonthRecords(),
-        this.fetchSnapshot(),
-      ])
+      const { signOut } = useSession()
+      try {
+        await Promise.all([
+          this.fetchBalance(),
+          this.fetchCategories(),
+          this.fetchFirstRecord(),
+          this.fetchMonthRecords(),
+          this.fetchSnapshot(),
+        ])
+      } catch (error) {
+        signOut({ callbackUrl: '/login' })
+      }
     },
 
     async refetchOnRecordsChange() {
