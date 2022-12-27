@@ -101,7 +101,7 @@ export const useRecordsStore = defineStore({
           this.fetchSnapshot(),
         ])
       } catch (error) {
-        signOut({ callbackUrl: '/login' })
+        signOut({ callbackUrl: '/auth/login' })
       }
     },
 

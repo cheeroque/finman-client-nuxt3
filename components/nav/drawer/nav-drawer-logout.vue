@@ -7,6 +7,6 @@
 <script lang="ts" setup>
 function logout() {
   const { signOut } = useSession()
-  signOut({ callbackUrl: '/login' })
+  signOut({ callbackUrl: '/auth/login' })
 }
 </script>
