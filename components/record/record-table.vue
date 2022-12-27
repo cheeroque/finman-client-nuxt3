@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="record-table-body">
-      <RecordCardEmpty v-if="!records.length" />
+      <RecordCardEmpty v-if="!records?.length" />
 
       <RecordCard
         v-for="record in records"
