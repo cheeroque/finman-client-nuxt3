@@ -43,8 +43,8 @@ const credentials: Ref<LoginCredentials> = ref({
 async function handleSubmit() {
   try {
     await signIn('credentials', {
-      callbackUrl: '/',
-      redirect: true,
+      // callbackUrl: '/',
+      // redirect: true,
       name: credentials.value.name,
       password: credentials.value.password,
     })
