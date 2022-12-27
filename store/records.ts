@@ -11,6 +11,12 @@ interface State {
   totalPages: number
 }
 
+function handleAuthError(error: Error) {
+  console.log('[error caught in records store]', error)
+  const { signOut } = useSession()
+  signOut({ callbackUrl: '/auth/login' })
+}
+
 export const useRecordsStore = defineStore({
   id: 'records',
 
@@ -27,71 +33,94 @@ export const useRecordsStore = defineStore({
 
   actions: {
     async fetchRecordsData() {
-      const route = useRoute()
-      const viewMode = route.params.view as ViewMode
-      const query: RecordsRequestParams = {
-        order: (route.query.order as string) || 'DESC',
-        orderBy: (route.query.orderBy as string) || 'created_at',
-        page: Number(route.query.page) || 1,
-        perPage: Number(route.query.perPage) || 50,
-        show: viewMode || null,
+      try {
+        const route = useRoute()
+        const viewMode = route.params.view as ViewMode
+        const query: RecordsRequestParams = {
+          order: (route.query.order as string) || 'DESC',
+          orderBy: (route.query.orderBy as string) || 'created_at',
+          page: Number(route.query.page) || 1,
+          perPage: Number(route.query.perPage) || 50,
+          show: viewMode || null,
+        }
+
+        this.pending = true
+
+        const recordsData = await $fetch<RecordsResponse>('/api/data/records', {
+          method: 'GET',
+          headers: { cookie: getCookie() },
+          query,
+        })
+
+        this.records = recordsData.data || []
+        this.totalPages = recordsData.last_page || 0
+        this.pending = false
+      } catch (error: any) {
+        handleAuthError(error)
       }
-
-      this.pending = true
-
-      const recordsData = await $fetch<RecordsResponse>('/api/data/records', {
-        method: 'GET',
-        headers: { cookie: getCookie() },
-        query,
-      })
-
-      this.records = recordsData.data || []
-      this.totalPages = recordsData.last_page || 0
-      this.pending = false
     },
 
     async fetchBalance() {
-      const balance = await $fetch<number>('/api/data/total', { method: 'GET', headers: { cookie: getCookie() } })
-      this.balance = balance ?? 0
+      try {
+        const balance = await $fetch<number>('/api/data/total', { method: 'GET', headers: { cookie: getCookie() } })
+        this.balance = balance ?? 0
+      } catch (error: any) {
+        handleAuthError(error)
+      }
     },
 
     async fetchCategories() {
-      const categories = await $fetch<RecordsCategory[]>('/api/data/categories', {
-        method: 'GET',
-        headers: { cookie: getCookie() },
-      })
-      this.categories = categories || []
+      try {
+        const categories = await $fetch<RecordsCategory[]>('/api/data/categories', {
+          method: 'GET',
+          headers: { cookie: getCookie() },
+        })
+        this.categories = categories || []
+      } catch (error: any) {
+        handleAuthError(error)
+      }
     },
 
     async fetchFirstRecord() {
-      const firstRecord = await $fetch<RecordsItem>('/api/data/records/first', {
-        method: 'GET',
-        headers: { cookie: getCookie() },
-      })
-      this.firstRecord = firstRecord || {}
+      try {
+        const firstRecord = await $fetch<RecordsItem>('/api/data/records/first', {
+          method: 'GET',
+          headers: { cookie: getCookie() },
+        })
+        this.firstRecord = firstRecord || {}
+      } catch (error: any) {
+        handleAuthError(error)
+      }
     },
 
     async fetchMonthRecords() {
-      const date = new Date()
-      const y = date.getFullYear()
-      const m = date.getMonth() + 1
-      const monthRecords = await $fetch<{ [key: string]: RecordsItem[] }>(`/api/data/month/${y}-${m}`, {
-        method: 'GET',
-        headers: { cookie: getCookie() },
-      })
-      this.monthRecords = monthRecords || {}
+      try {
+        const date = new Date()
+        const y = date.getFullYear()
+        const m = date.getMonth() + 1
+        const monthRecords = await $fetch<{ [key: string]: RecordsItem[] }>(`/api/data/month/${y}-${m}`, {
+          method: 'GET',
+          headers: { cookie: getCookie() },
+        })
+        this.monthRecords = monthRecords || {}
+      } catch (error: any) {
+        handleAuthError(error)
+      }
     },
 
     async fetchSnapshot() {
-      const snapshot = await $fetch<RecordsSnapshot>('/api/data/revises/latest', {
-        method: 'GET',
-        headers: { cookie: getCookie() },
-      })
-      this.snapshot = snapshot || {}
+      try {
+        const snapshot = await $fetch<RecordsSnapshot>('/api/data/revises/latest', {
+          method: 'GET',
+          headers: { cookie: getCookie() },
+        })
+        this.snapshot = snapshot || {}
+      } catch (error: any) {
+        handleAuthError(error)
+      }
     },
 
     async fetchGlobalData() {
-      const { signOut } = useSession()
       try {
         await Promise.all([
           this.fetchBalance(),
@@ -100,13 +129,17 @@ export const useRecordsStore = defineStore({
           this.fetchMonthRecords(),
           this.fetchSnapshot(),
         ])
-      } catch (error) {
-        signOut({ callbackUrl: '/auth/login' })
+      } catch (error: any) {
+        handleAuthError(error)
       }
     },
 
     async refetchOnRecordsChange() {
-      await Promise.all([this.fetchRecordsData(), this.fetchBalance(), this.fetchMonthRecords()])
+      try {
+        await Promise.all([this.fetchRecordsData(), this.fetchBalance(), this.fetchMonthRecords()])
+      } catch (error: any) {
+        handleAuthError(error)
+      }
     },
   },
 })
