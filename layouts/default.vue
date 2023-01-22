@@ -16,16 +16,11 @@
 </template>
 
 <script lang="ts">
-import { useRecordsStore } from '~/store/records'
-
 export default {
   async setup() {
-    const recordsStore = useRecordsStore()
     const drawerOpen = ref(false)
 
     const toast = useToast()
-
-    await recordsStore.fetchGlobalData()
 
     function handleToggleDrawer() {
       drawerOpen.value = !drawerOpen.value

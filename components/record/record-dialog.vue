@@ -7,7 +7,13 @@
     @update:modelValue="emit('update:modelValue', $event)"
   >
     <template #default="{ close }">
-      <RecordForm v-uid ref="form" :edit="isEdit" :record="record" @success="handleRecordUpdate($event, close)" />
+      <RecordForm
+        v-uid
+        ref="form"
+        :edit="isEdit"
+        :record="record"
+        @success="handleRecordUpdate($event, close)"
+      />
     </template>
 
     <template #footer="{ close }">
@@ -62,6 +68,8 @@ function handleRecordUpdate(record: RecordsItem, callback?: Function) {
   toast.value.message = useString('recordSaved', `#${record?.id}`)
   toast.value.variant = 'success'
 
+  emit('record:update')
+
   if (typeof callback === 'function') {
     callback()
   }
@@ -77,9 +85,6 @@ async function handleRecordDelete() {
     headers: { cookie },
     query: { id: props.record?.id },
   })
-
-  /** Refetch stored records */
-  await recordsStore.refetchOnRecordsChange()
   recordsStore.pending = false
 
   /* Show confirmation toast */
@@ -87,6 +92,7 @@ async function handleRecordDelete() {
   toast.value.message = useString('recordDeleted', `#${props.record?.id}`)
   toast.value.variant = 'danger'
 
+  emit('record:delete')
   emit('update:modelValue', false)
 }
 </script>

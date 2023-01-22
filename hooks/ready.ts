@@ -47,7 +47,7 @@ export const handleNuxtReady = (nuxt: Nuxt) => {
     { name: 'success', h: '140' },
   ]
 
-  const primaryColor = config.THEME_PRIMARY_COLOR || '#6750a4'
+  const primaryColor = config.THEME_PRIMARY_COLOR
 
   const colorVarsDark = themeColors
     .map(({ name, c, h }) => {

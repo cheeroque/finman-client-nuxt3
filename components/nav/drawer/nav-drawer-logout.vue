@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 function logout() {
-  const { signOut } = useSession()
-  signOut({ callbackUrl: '/auth/login' })
+  const { $auth } = useNuxtApp()
+  $auth.logout()
 }
 </script>

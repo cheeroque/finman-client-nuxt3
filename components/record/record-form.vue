@@ -128,10 +128,6 @@ async function onSubmit() {
       headers: { cookie },
       query: { id: props.record?.id },
     })
-
-    /** Refetch stored records */
-    await recordsStore.refetchOnRecordsChange()
-
     recordsStore.pending = false
     emit('success', record)
   }

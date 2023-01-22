@@ -1,20 +1,18 @@
-import { getServerSession, getToken } from '#auth'
+import { useApiError } from '~/composables/useApiError'
 
 export default defineEventHandler(async (event) => {
-  const session = await getServerSession(event)
-  if (!session) {
-    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
-  }
+  const body = await readBody(event)
 
   const config = useRuntimeConfig()
-  const token = await getToken({ event })
-  const body = await readBody(event)
-  const headers = {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token?.accessToken}`,
+  const url = `${config.API_URL}/revises`
+
+  /* Get headers saved in middleware from context */
+  const { headers } = event.context
+
+  try {
+    const response = await $fetch(url, { method: 'POST', body, headers })
+    return response
+  } catch (error) {
+    return useApiError(error)
   }
-
-  const response = await $fetch(`${config.API_URL}/revises`, { method: 'POST', body, headers })
-
-  return response
 })

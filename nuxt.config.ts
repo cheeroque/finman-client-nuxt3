@@ -41,7 +41,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@pinia/nuxt', '@sidebase/nuxt-auth', 'nuxt-icons'],
+  modules: ['@pinia/nuxt', 'nuxt-icons'],
 
   css: ['~/assets/styles/app.scss'],
 
@@ -51,20 +51,14 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     API_URL: process.env.API_URL,
-    NUXT_SECRET: process.env.NUXT_SECRET,
     STATIC_URL: process.env.STATIC_URL,
-    THEME_PRIMARY_COLOR: process.env.THEME_PRIMARY_COLOR,
+    THEME_PRIMARY_COLOR: process.env.THEME_PRIMARY_COLOR || '#6750a4',
+    TOKEN_COOKIE_NAME: process.env.TOKEN_COOKIE_NAME || 'auth_token',
 
     public: {
       apiUrl: process.env.API_URL,
       staticUrl: process.env.STATIC_URL,
     },
-  },
-
-  auth: {
-    basePath: '/api/auth',
-    enableGlobalAppMiddleware: true,
-    origin: process.env.ORIGIN,
   },
 
   vite: {

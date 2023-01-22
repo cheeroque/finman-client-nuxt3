@@ -35,6 +35,7 @@
   "home": "Главная",
   "incomes": "Доходы",
   "incomesOnly": "Только доходы",
+  "invalidCredentials": "Неверный логин или пароль",
   "invalidDate": "Неправильная дата",
   "isIncome": "Доход",
   "loading": "Загрузка",

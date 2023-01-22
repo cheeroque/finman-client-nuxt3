@@ -1,23 +1,20 @@
-import { getServerSession, getToken } from '#auth'
+import { useApiError } from '~/composables/useApiError'
 
 export default defineEventHandler(async (event) => {
-  const session = await getServerSession(event)
-  if (!session) {
-    throw createError({ statusMessage: 'Unauthenticated', statusCode: 403 })
-  }
-
   const config = useRuntimeConfig()
-  const token = await getToken({ event })
-  const query = await getQuery(event)
-
-  /* Get full catched route */
   const endpoint = getRouterParam(event, '_')
+  const url = `${config.API_URL}/${endpoint}`
 
-  const headers = {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${token?.accessToken}`,
+  /* Get headers saved in middleware from context */
+  const { headers } = event.context
+
+  /* Get URL query */
+  const query = getQuery(event)
+
+  try {
+    const response = await $fetch(url, { method: 'GET', headers, query })
+    return response
+  } catch (error) {
+    return useApiError(error)
   }
-
-  const response = await $fetch(`${config.API_URL}/${endpoint}`, { method: 'GET', headers, query })
-  return response
 })
