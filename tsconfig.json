@@ -5,7 +5,8 @@
     "resolveJsonModule": true,
     "types": [
       // https://pinia.vuejs.org/
-      "@pinia/nuxt"
+      "@pinia/nuxt",
+      "node"
     ]
   }
 }
