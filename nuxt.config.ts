@@ -41,7 +41,15 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@pinia/nuxt', 'nuxt-icons'],
+  modules: ['@nuxtjs/apollo', '@pinia/nuxt', 'nuxt-icons'],
+
+  apollo: {
+    clients: {
+      default: {
+        httpEndpoint: process.env.GQL_HOST,
+      },
+    },
+  },
 
   css: ['~/assets/styles/app.scss'],
 
