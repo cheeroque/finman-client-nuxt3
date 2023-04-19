@@ -47,7 +47,18 @@ export default defineNuxtConfig({
     clients: {
       default: {
         httpEndpoint: process.env.GQL_HOST,
+        httpLinkOptions: {
+          credentials: 'include',
+          fetchOptions: {
+            credentials: 'include',
+          },
+        },
       },
+    },
+    cookieAttributes: {
+      httpOnly: false,
+      sameSite: 'Strict',
+      secure: true,
     },
   },
 

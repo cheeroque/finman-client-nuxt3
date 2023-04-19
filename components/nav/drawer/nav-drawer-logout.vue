@@ -5,8 +5,17 @@
 </template>
 
 <script lang="ts" setup>
+import LOGOUT_MUTATION from '@/graphql/Logout.gql'
+
+const { onLogout } = useApollo()
+
 function logout() {
-  const { $auth } = useNuxtApp()
-  $auth.logout()
+  const { mutate } = useMutation(LOGOUT_MUTATION)
+
+  mutate().then(() => {
+    onLogout().then(() => {
+      navigateTo('/auth/login')
+    })
+  })
 }
 </script>

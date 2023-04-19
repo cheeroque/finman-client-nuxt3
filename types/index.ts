@@ -20,11 +20,11 @@ declare global {
   }
 
   type LoginCredentials = {
-    name: string
+    username: string
     password: string
   }
 
-  type LoginResponse = {
+  type LoginOutput = {
     access_token: string
     user: User
   }

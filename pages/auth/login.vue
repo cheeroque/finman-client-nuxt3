@@ -9,7 +9,7 @@
           <div class="card-body">
             <UiFormGroup :label="useString('userName')">
               <UiInput
-                v-model="credentials.name"
+                v-model="credentials.username"
                 :placeholder="useString('userNamePlaceholder')"
                 @input="submitError = undefined"
               />
@@ -33,38 +33,43 @@
 </template>
 
 <script setup lang="ts">
-import { FetchError } from 'ofetch'
-import { Ref } from 'vue'
-import { useAuthStore } from '~/store/auth'
+import LOGIN_MUTATION from '@/graphql/Login.gql'
+
+interface LoginResponseData {
+  login: LoginOutput
+}
+
+interface LoginResponse {
+  data: LoginResponseData
+}
 
 definePageMeta({
   isPublic: true,
   layout: 'auth',
 })
 
-const credentials: Ref<LoginCredentials> = ref({
-  name: '',
+const submitError: Ref<string | undefined> = ref()
+
+const credentials: LoginCredentials = reactive({
+  username: '',
   password: '',
 })
 
-const submitError: Ref<string | undefined> = ref()
+const { onLogin } = useApollo()
 
 async function handleSubmit() {
-  try {
-    const { user } = await $fetch<LoginResponse>('/api/auth/login', {
-      method: 'POST',
-      body: credentials.value,
-    })
+  const { mutate } = useMutation<LoginResponse>(LOGIN_MUTATION)
 
-    /* Save user to store */
-    const authStore = useAuthStore()
-    authStore.user = user
-    navigateTo('/')
-  } catch (error) {
-    submitError.value = useString('errorMessage')
-    if (error instanceof FetchError && error.status === 401) {
-      submitError.value = useString('invalidCredentials')
+  try {
+    const response = await mutate(credentials)
+    const token = response?.data?.login?.access_token
+
+    if (token) {
+      onLogin(token)
+      navigateTo('/')
     }
+  } catch (error) {
+    // Handle auth errors
   }
 }
 </script>
