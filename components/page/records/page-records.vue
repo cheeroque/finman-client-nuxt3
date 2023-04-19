@@ -48,7 +48,7 @@ recordsStore.pending = false
 
 if (error.value instanceof FetchError && error.value.status === 401) {
   /* Force logout on auth error */
-  await $auth.logout()
+  // await $auth.logout()
 }
 
 watch(

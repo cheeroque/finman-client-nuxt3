@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { FetchError } from 'ofetch'
-import { useAuthStore } from '~/store/auth'
+// import { FetchError } from 'ofetch'
+// import { useAuthStore } from '~/store/auth'
 
 interface State {
   balance: number
