@@ -19,30 +19,65 @@
 import { FetchError } from 'ofetch'
 import { useRecordsStore } from '~/store/records'
 
-const { $auth } = useNuxtApp()
+import RECORDS_QUERY from '@/graphql/Records.gql'
+
+interface OrderByClause {
+  column: string
+  order: string
+}
+
+interface WhereHasConditions {
+  column?: string
+  operator?: string
+  value?: string | number | boolean
+}
+
+interface RecordsQueryVariables {
+  first: number
+  hasCategory?: WhereHasConditions
+  orderBy: OrderByClause | OrderByClause[]
+  page: number
+}
+
 const recordsStore = useRecordsStore()
-
 const route = useRoute()
-const viewMode = route.params.view as ViewMode
 
-const query: RecordsRequestParams = {
-  order: (route.query.order as string) || 'DESC',
-  orderBy: (route.query.orderBy as string) || 'created_at',
-  page: Number(route.query.page) || 1,
-  perPage: Number(route.query.perPage) || 50,
-  show: viewMode || null,
+const first = Number(route.query.perPage) || 50
+const orderBy = {
+  column: (route.query.orderBy as string) ?? 'CREATED_AT',
+  order: (route.query.order as string) ?? 'DESC',
+}
+const page = Number(route.query.page) || 1
+const isIncome = route.params.view === 'income'
+
+const variables: RecordsQueryVariables = {
+  first,
+  orderBy,
+  page,
+}
+
+if (route.params.view) {
+  variables.hasCategory = {
+    column: 'IS_INCOME',
+    operator: 'EQ',
+    value: isIncome,
+  }
 }
 
 recordsStore.pending = true
 
-const { data, error, pending, refresh } = await useAsyncData(route.fullPath, () =>
-  useApiFetch('/api/data/records', { method: 'GET', query })
-)
+const { data } = await useAsyncQuery(RECORDS_QUERY, variables)
 
-const recordsData = computed(() => data.value as RecordsResponse)
-const records = computed(() => recordsData.value.data)
-const totalPages = computed(() => recordsData.value.total)
-const loading = computed(() => pending.value || recordsStore.pending)
+console.log(data)
+
+// const { data, error, pending, refresh } = await useAsyncData(route.fullPath, () =>
+//   useApiFetch('/api/data/records', { method: 'GET', query })
+// )
+
+// const recordsData = computed(() => data.value as RecordsResponse)
+// const records = computed(() => recordsData.value.data)
+// const totalPages = computed(() => recordsData.value.total)
+// const loading = computed(() => pending.value || recordsStore.pending)
 
 recordsStore.pending = false
 

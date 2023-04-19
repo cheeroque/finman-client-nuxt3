@@ -1,0 +1,16 @@
+query Records(
+  $first: Int = 50
+  $page: Int = 1
+  $hasCategory: QueryRecordsHasCategoryWhereHasConditions = { column: IS_INCOME, operator: EQ, value: "1" }
+  $orderBy: [QueryRecordsOrderByOrderByClause!] = { column: CREATED_AT, order: DESC }
+) {
+  records(first: $first, page: $page, orderBy: $orderBy, hasCategory: $hasCategory) {
+    data {
+      category {
+        is_income
+        name
+      }
+      sum
+    }
+  }
+}
