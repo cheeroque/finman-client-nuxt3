@@ -7,13 +7,7 @@
     @update:modelValue="emit('update:modelValue', $event)"
   >
     <template #default="{ close }">
-      <RecordForm
-        v-uid
-        ref="form"
-        :edit="isEdit"
-        :record="record"
-        @success="handleRecordUpdate($event, close)"
-      />
+      <RecordForm v-uid ref="form" :edit="isEdit" :record="record" @success="handleRecordUpdate($event, close)" />
     </template>
 
     <template #footer="{ close }">
@@ -43,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import { RecordsItem } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
 const props = defineProps<{

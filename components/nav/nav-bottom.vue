@@ -17,6 +17,8 @@
 </template>
 
 <script lang="ts" setup>
+import { NavLink } from '~~/types/nav'
+
 const emit = defineEmits(['toggle:drawer'])
 
 const route = useRoute()

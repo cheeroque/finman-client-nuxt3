@@ -36,6 +36,8 @@
 </template>
 
 <script setup lang="ts">
+import { RecordsItem } from '~~/types/records'
+
 const props = defineProps<{
   records: RecordsItem[]
   viewMode?: ViewMode

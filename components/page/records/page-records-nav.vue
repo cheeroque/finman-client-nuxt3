@@ -14,6 +14,8 @@
 </template>
 
 <script setup lang="ts">
+import { NavLink } from '~~/types/nav'
+
 const route = useRoute()
 
 const navLinks: NavLink[] = [

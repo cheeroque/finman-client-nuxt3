@@ -36,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+import { RecordsCategory } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
 const VISIBLE_LIMIT = 5

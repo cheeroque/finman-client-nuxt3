@@ -14,6 +14,7 @@
 </template>
 
 <script lang="ts" setup>
+import { RecordsCategory } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
 const recordsStore = useRecordsStore()

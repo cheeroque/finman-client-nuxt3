@@ -43,11 +43,12 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
+import { RecordsItem } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
 type CalendarMonth = {
-  month: string,
-  link: string,
+  month: string
+  link: string
   disabled: boolean
 }
 

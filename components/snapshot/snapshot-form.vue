@@ -32,6 +32,7 @@
 import { DateTime } from 'luxon'
 import { ErrorObject, useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
+import { RecordsSnapshot } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
 type SnapshotForm = {

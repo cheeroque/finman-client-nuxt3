@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { RecordsCategory } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
 const props = defineProps<{

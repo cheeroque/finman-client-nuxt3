@@ -33,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import { LoginCredentials, LoginOutput } from '~~/types/auth'
 import LOGIN_MUTATION from '@/graphql/Login.gql'
 
 interface LoginResponseData {

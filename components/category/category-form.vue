@@ -30,6 +30,7 @@
 <script setup lang="ts">
 import { ErrorObject, useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
+import { RecordsCategory, RecordsItem } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
 type CategoryForm = {

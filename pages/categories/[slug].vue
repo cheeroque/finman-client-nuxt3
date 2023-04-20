@@ -9,6 +9,7 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
+import { RecordsCategory, RecordsItem } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
 type CategoryRecordsByMonth = {

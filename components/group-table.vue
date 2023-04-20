@@ -37,6 +37,7 @@
 <script lang="ts" setup>
 import { DateTime } from 'luxon'
 import { ComputedRef } from 'vue'
+import { RecordsItem } from '~~/types/records'
 import { TableField, TableItem } from '~/components/ui/ui-table.vue'
 
 const props = defineProps<{

@@ -33,6 +33,8 @@
 </template>
 
 <script lang="ts" setup>
+import { DrawerAction, DrawerPage } from '~~/types/drawer'
+
 const props = defineProps<{
   open?: boolean
 }>()

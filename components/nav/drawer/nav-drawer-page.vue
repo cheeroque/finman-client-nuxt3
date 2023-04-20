@@ -5,6 +5,8 @@
 </template>
 
 <script lang="ts" setup>
+import { DrawerPage } from '~~/types/drawer'
+
 const props = defineProps<{
   page: DrawerPage
 }>()

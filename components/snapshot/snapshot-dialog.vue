@@ -27,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import { RecordsSnapshot } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
 const props = defineProps<{
