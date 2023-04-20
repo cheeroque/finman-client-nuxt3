@@ -11,13 +11,17 @@
           variant="link"
           class="btn-back d-lg-none"
         />
+
         <h1 class="h4 card-title">{{ title }}</h1>
       </slot>
     </header>
+
     <div v-if="hasContent" class="page-content-body">
       <slot />
+
       <UiSpinner v-if="loading" :variant="spinnerVariant" />
     </div>
+
     <footer v-if="hasFooter" class="page-content-footer">
       <slot name="footer" />
     </footer>
@@ -30,11 +34,12 @@ const props = defineProps<{
   spinnerVariant?: string
   title?: string
 }>()
+
 const slots = useSlots()
 
-const hasContent = computed(() => Boolean(slots.default))
-const hasHeader = computed(() => Boolean(slots.header || props.title))
-const hasFooter = computed(() => Boolean(slots.footer))
+const hasContent = computed(() => useSlotHasContent(slots.default))
+const hasHeader = computed(() => useSlotHasContent(slots.header) || Boolean(props.title))
+const hasFooter = computed(() => useSlotHasContent(slots.footer))
 </script>
 
 <style lang="scss" scoped>
