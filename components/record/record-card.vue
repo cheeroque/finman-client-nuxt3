@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
+import { RecordsItem } from '~~/types/records'
 
 const props = defineProps<{
   record: RecordsItem
@@ -30,7 +31,7 @@ const categoryLink = computed(() => `/categories/${props.record.category.slug}`)
 const categoryName = computed(() => props.record.category.name)
 
 const monthLink = computed(() => {
-  const date = DateTime.fromISO(props.record.created_at).toJSDate()
+  const date = DateTime.fromFormat(props.record.created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
   const y = date.getFullYear()
   const m = date.getMonth() + 1
   return `/months/${y}-${m.toString().padStart(2, '0')}`

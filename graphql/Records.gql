@@ -1,16 +1,28 @@
 query Records(
   $first: Int = 50
   $page: Int = 1
-  $hasCategory: QueryRecordsHasCategoryWhereHasConditions = { column: IS_INCOME, operator: EQ, value: "1" }
-  $orderBy: [QueryRecordsOrderByOrderByClause!] = { column: CREATED_AT, order: DESC }
+  $hasCategory: QueryRecordsHasCategoryWhereHasConditions = {}
+  $orderBy: [QueryRecordsOrderByOrderByClause!] = [{ column: CREATED_AT, order: DESC }]
 ) {
   records(first: $first, page: $page, orderBy: $orderBy, hasCategory: $hasCategory) {
     data {
       category {
+        color
+        id
         is_income
         name
+        slug
       }
+
+      created_at
+      id
+      note
       sum
+    }
+
+    paginatorInfo {
+      lastPage
+      total
     }
   }
 }

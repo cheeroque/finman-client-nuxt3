@@ -4,8 +4,8 @@
       <PageRecordsHeader />
     </template>
 
-    <RecordTable :records="records" :view-mode="viewMode" @records:update="refresh" />
-    <RecordFab :show="!paginationVisible" @records:update="refresh" />
+    <RecordTable :records="records" :view-mode="viewMode" @records:update="fetchRecords" />
+    <RecordFab :show="!paginationVisible" @records:update="fetchRecords" />
 
     <template #footer>
       <div ref="paginationAnchor">
@@ -17,8 +17,7 @@
 
 <script lang="ts" setup>
 import { FetchError } from 'ofetch'
-import { useRecordsStore } from '~/store/records'
-
+import { RecordsItem } from '~~/types/records'
 import RECORDS_QUERY from '@/graphql/Records.gql'
 
 interface OrderByClause {
@@ -35,63 +34,72 @@ interface WhereHasConditions {
 interface RecordsQueryVariables {
   first: number
   hasCategory?: WhereHasConditions
-  orderBy: OrderByClause | OrderByClause[]
+  orderBy: OrderByClause[]
   page: number
 }
 
-const recordsStore = useRecordsStore()
+interface RecordsQueryResponse {
+  records: RecordsQueryResponseRecords
+}
+
+interface RecordsQueryResponseRecords {
+  data: RecordsItem[]
+  paginatorInfo: PaginatorInfo
+}
+
 const route = useRoute()
+const loading = useState<boolean>('app-loading', () => false)
 
-const first = Number(route.query.perPage) || 50
-const orderBy = {
-  column: (route.query.orderBy as string) ?? 'CREATED_AT',
-  order: (route.query.order as string) ?? 'DESC',
-}
-const page = Number(route.query.page) || 1
-const isIncome = route.params.view === 'income'
+let records = reactive<RecordsItem[]>([])
+const totalPages = ref<number>(1)
+const viewMode = ref<ViewMode>()
 
-const variables: RecordsQueryVariables = {
-  first,
-  orderBy,
-  page,
-}
+async function fetchRecords() {
+  /* Build query variables */
+  const column = (route.query.orderBy as string) ?? 'CREATED_AT'
+  const order = (route.query.order as string) ?? 'DESC'
 
-if (route.params.view) {
-  variables.hasCategory = {
-    column: 'IS_INCOME',
-    operator: 'EQ',
-    value: isIncome,
+  const first = Number(route.query.perPage) || 50
+  const orderBy = [{ column, order }]
+  const page = Number(route.query.page) || 1
+
+  const variables: RecordsQueryVariables = { first, orderBy, page }
+
+  viewMode.value = route.params.view as ViewMode
+
+  const isExpense = viewMode.value === 'expense'
+  const isIncome = viewMode.value === 'income'
+
+  if (isExpense || isIncome) {
+    variables.hasCategory = {
+      column: 'IS_INCOME',
+      operator: 'EQ',
+      value: isIncome,
+    }
   }
-}
 
-recordsStore.pending = true
+  /* Fetch records */
+  loading.value = true
 
-const { data } = await useAsyncQuery(RECORDS_QUERY, variables)
+  const { data, error } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
 
-console.log(data)
+  records = data.value?.records?.data ?? []
+  totalPages.value = data.value?.records?.paginatorInfo.lastPage ?? 1
 
-// const { data, error, pending, refresh } = await useAsyncData(route.fullPath, () =>
-//   useApiFetch('/api/data/records', { method: 'GET', query })
-// )
+  if (error.value?.message === 'Unauthenticated' || (error.value instanceof FetchError && error.value.status === 401)) {
+    // Force logout
+  }
 
-// const recordsData = computed(() => data.value as RecordsResponse)
-// const records = computed(() => recordsData.value.data)
-// const totalPages = computed(() => recordsData.value.total)
-// const loading = computed(() => pending.value || recordsStore.pending)
-
-recordsStore.pending = false
-
-if (error.value instanceof FetchError && error.value.status === 401) {
-  /* Force logout on auth error */
-  // await $auth.logout()
+  loading.value = false
 }
 
 watch(
   () => route.query,
   async () => {
-    await refresh()
+    await fetchRecords()
     setTimeout(() => useScrollTo('.page'), 250)
-  }
+  },
+  { immediate: true }
 )
 
 /** Observe pagination element to hide/show FAB on scroll */

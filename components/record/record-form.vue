@@ -36,6 +36,7 @@
 import { DateTime } from 'luxon'
 import { ErrorObject, useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
+import { RecordsItem } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
 type RecordsForm = {
@@ -73,7 +74,7 @@ function initFormData() {
     const { category_id, created_at, note, sum } = props.record as RecordsItem
 
     formData.category_id = category_id
-    formData.created_at = DateTime.fromISO(created_at).toJSDate()
+    formData.created_at = DateTime.fromFormat(created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
     formData.note = note
     formData.sum = sum
   }

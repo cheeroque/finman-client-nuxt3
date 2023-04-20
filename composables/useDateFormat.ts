@@ -5,5 +5,7 @@ export function useDateFormat(
   options: DateTimeFormatOptions = { dateStyle: 'short' },
   locale?: string
 ): string {
-  return DateTime.fromISO(datestring).toLocaleString(options, { locale: locale ?? useLocale() })
+  return DateTime.fromFormat(datestring, 'yyyy-LL-dd HH:mm:ss').toLocaleString(options, {
+    locale: locale ?? useLocale(),
+  })
 }
