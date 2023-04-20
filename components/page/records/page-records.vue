@@ -5,17 +5,18 @@
     </template>
 
     <RecordTable :records="records" :view-mode="viewMode" @records:update="fetchRecords" />
+
     <RecordFab :show="!paginationVisible" @records:update="fetchRecords" />
 
     <template #footer>
-      <div ref="paginationAnchor">
+      <div ref="paginationAnchor" v-if="totalPages > 1">
         <UiPagination :disabled="loading" :total-pages="totalPages" hide-prev-next />
       </div>
     </template>
   </PageContent>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FetchError } from 'ofetch'
 import { RecordsItem } from '~~/types/records'
 import RECORDS_QUERY from '@/graphql/Records.gql'
@@ -47,26 +48,28 @@ interface RecordsQueryResponseRecords {
   paginatorInfo: PaginatorInfo
 }
 
-const route = useRoute()
 const loading = useState<boolean>('app-loading', () => false)
 
 let records = reactive<RecordsItem[]>([])
 const totalPages = ref<number>(1)
-const viewMode = ref<ViewMode>()
+
+const route = useRoute()
+const viewMode = computed<ViewMode>(() => route.params.view as ViewMode)
 
 async function fetchRecords() {
-  /* Build query variables */
+  /** Build query variables */
   const column = (route.query.orderBy as string) ?? 'CREATED_AT'
   const order = (route.query.order as string) ?? 'DESC'
-
   const first = Number(route.query.perPage) || 50
-  const orderBy = [{ column, order }]
   const page = Number(route.query.page) || 1
 
-  const variables: RecordsQueryVariables = { first, orderBy, page }
+  const variables: RecordsQueryVariables = {
+    first,
+    orderBy: [{ column, order }],
+    page,
+  }
 
-  viewMode.value = route.params.view as ViewMode
-
+  /** Set filter by is_income if needed */
   const isExpense = viewMode.value === 'expense'
   const isIncome = viewMode.value === 'income'
 
@@ -78,7 +81,7 @@ async function fetchRecords() {
     }
   }
 
-  /* Fetch records */
+  /** Fetch records */
   loading.value = true
 
   const { data, error } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
@@ -95,6 +98,7 @@ async function fetchRecords() {
 
 watch(
   () => route.query,
+
   async () => {
     await fetchRecords()
     setTimeout(() => useScrollTo('.page'), 250)
@@ -115,7 +119,7 @@ const paginationAnchor = ref()
 const paginationVisible = ref(false)
 
 function setObserver() {
-  if (!process.client) return
+  if (!process.client || !paginationAnchor.value) return
 
   if ('IntersectionObserver' in window) {
     observer.value = new IntersectionObserver(([{ isIntersecting }]) => {
