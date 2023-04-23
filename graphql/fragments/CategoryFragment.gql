@@ -1,0 +1,7 @@
+fragment CategoryFragment on Category {
+  color
+  id
+  is_income
+  name
+  slug
+}

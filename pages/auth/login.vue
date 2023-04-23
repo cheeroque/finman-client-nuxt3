@@ -61,6 +61,7 @@ async function handleSubmit() {
 
   try {
     await $auth.login(credentials)
+    navigateTo('/')
   } catch (error: any) {
     if (error instanceof AuthError && error.code === '401') {
       submitError.value = useString('invalidCredentials')

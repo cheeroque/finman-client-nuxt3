@@ -1,5 +1,6 @@
 import { useAuthStore } from '~/store/auth'
-import { LoginCredentials, LoginResponseData, User } from '~~/types/auth'
+import { LoginCredentials, LoginResponseData, Me, User } from '~~/types/auth'
+import ME_QUERY from '@/graphql/me.gql'
 import LOGIN_MUTATION from '@/graphql/Login.gql'
 import LOGOUT_MUTATION from '@/graphql/Logout.gql'
 
@@ -19,6 +20,20 @@ export class AuthError extends Error {
 
 export default defineNuxtPlugin(() => {
   const { onLogin, onLogout } = useApollo()
+  const authStore = useAuthStore()
+
+  async function fetchUser() {
+    try {
+      const { data } = await useAsyncQuery<Me>(ME_QUERY)
+      if (data.value?.me) {
+        storeUser(data.value.me)
+      } else {
+        handleAuthError()
+      }
+    } catch (error) {
+      handleAuthError(error)
+    }
+  }
 
   async function login(credentials: LoginCredentials) {
     const { mutate } = useMutation<LoginResponseData>(LOGIN_MUTATION)
@@ -31,19 +46,11 @@ export default defineNuxtPlugin(() => {
 
         storeUser(user)
         onLogin(access_token)
-
-        navigateTo('/')
+      } else {
+        handleAuthError()
       }
     } catch (error: any) {
-      reset()
-
-      if (error?.graphQLErrors?.length) {
-        const message = error?.message ?? 'Unauthenticated'
-        const authError = new AuthError({ code: '401', message })
-        throw authError
-      } else {
-        throw error
-      }
+      handleAuthError(error)
     }
   }
 
@@ -53,18 +60,28 @@ export default defineNuxtPlugin(() => {
     reset()
   }
 
+  function handleAuthError(error?: any) {
+    reset()
+
+    if (error?.graphQLErrors?.length) {
+      const message = error?.message ?? 'Unauthenticated'
+      const authError = new AuthError({ code: '401', message })
+      throw authError
+    } else {
+      throw error
+    }
+  }
+
   function reset() {
     storeUser()
     onLogout()
-    navigateTo('/auth/login')
   }
 
   function storeUser(user?: User) {
-    const authStore = useAuthStore()
     authStore.user = user
   }
 
-  const auth = { login, logout, reset }
+  const auth = { fetchUser, login, logout, reset }
 
   return { provide: { auth } }
 })

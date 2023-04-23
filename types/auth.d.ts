@@ -16,6 +16,10 @@ export interface LoginOutput {
   user: User
 }
 
+export interface Me {
+  me: User
+}
+
 export interface User {
   id: number
   name: string

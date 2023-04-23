@@ -1,3 +1,5 @@
+#import "@/graphql/fragments/CategoryFragment.gql"
+
 query Records(
   $first: Int = 50
   $page: Int = 1
@@ -7,11 +9,7 @@ query Records(
   records(first: $first, page: $page, orderBy: $orderBy, hasCategory: $hasCategory) {
     data {
       category {
-        color
-        id
-        is_income
-        name
-        slug
+        ...CategoryFragment
       }
 
       created_at

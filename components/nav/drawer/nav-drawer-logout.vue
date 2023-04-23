@@ -5,8 +5,10 @@
 </template>
 
 <script lang="ts" setup>
-function logout() {
+async function logout() {
   const { $auth } = useNuxtApp()
-  $auth.logout()
+  await $auth.logout()
+
+  navigateTo('/auth/login')
 }
 </script>
