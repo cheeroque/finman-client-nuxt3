@@ -6,6 +6,7 @@
           <div class="card-header">
             <h3 class="card-title text-center">{{ useString('login') }}</h3>
           </div>
+
           <div class="card-body">
             <UiFormGroup :label="useString('userName')">
               <UiInput
@@ -14,16 +15,19 @@
                 @input="submitError = undefined"
               />
             </UiFormGroup>
+
             <UiFormGroup :label="useString('password')" class="mb-0">
               <UiInput v-model="credentials.password" type="password" @input="submitError = undefined" />
             </UiFormGroup>
           </div>
+
           <div class="card-footer text-right">
             <UiButton type="submit" variant="secondary" class="px-24">
               {{ useString('login') }}
             </UiButton>
           </div>
         </form>
+
         <Transition name="fade" mode="out-in">
           <p v-if="submitError" :key="submitError" class="form-feedback form-feedback-invalid">{{ submitError }}</p>
         </Transition>
@@ -33,45 +37,39 @@
 </template>
 
 <script setup lang="ts">
-import { LoginCredentials, LoginOutput } from '~~/types/auth'
-import LOGIN_MUTATION from '@/graphql/Login.gql'
-
-interface LoginResponseData {
-  login: LoginOutput
-}
-
-interface LoginResponse {
-  data: LoginResponseData
-}
+import { AuthError } from '~/plugins/auth'
+import { LoginCredentials } from '~~/types/auth'
 
 definePageMeta({
   isPublic: true,
   layout: 'auth',
 })
 
-const submitError: Ref<string | undefined> = ref()
-
-const credentials: LoginCredentials = reactive({
+const credentials = reactive<LoginCredentials>({
   username: '',
   password: '',
 })
 
-const { onLogin } = useApollo()
+const loading = ref(false)
+
+const submitError: Ref<string | undefined> = ref()
 
 async function handleSubmit() {
-  const { mutate } = useMutation<LoginResponse>(LOGIN_MUTATION)
+  const { $auth } = useNuxtApp()
+
+  loading.value = true
 
   try {
-    const response = await mutate(credentials)
-    const token = response?.data?.login?.access_token
-
-    if (token) {
-      onLogin(token)
-      navigateTo('/')
+    await $auth.login(credentials)
+  } catch (error: any) {
+    if (error instanceof AuthError && error.code === '401') {
+      submitError.value = useString('invalidCredentials')
+    } else {
+      submitError.value = useString('errorMessage')
     }
-  } catch (error) {
-    // Handle auth errors
   }
+
+  loading.value = false
 }
 </script>
 

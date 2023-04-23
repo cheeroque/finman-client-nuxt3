@@ -3,6 +3,14 @@ export interface LoginCredentials {
   password: string
 }
 
+export interface LoginResponse {
+  data: LoginResponseData
+}
+
+export interface LoginResponseData {
+  login: LoginOutput
+}
+
 export interface LoginOutput {
   access_token: string
   user: User
