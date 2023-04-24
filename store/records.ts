@@ -1,16 +1,22 @@
+import { DateTime } from 'luxon'
 import { defineStore } from 'pinia'
 import { RecordsCategory, RecordsItem, RecordsSnapshot } from '~~/types/records'
 import CATEGORIES_QUERY from '@/graphql/Categories.gql'
 import FIRST_RECORD_QUERY from '@/graphql/FirstRecord.gql'
+import RECORDS_QUERY from '@/graphql/Records.gql'
 import RECORDS_TOTAL_QUERY from '@/graphql/RecordsTotal.gql'
 // import { FetchError } from 'ofetch'
 // import { useAuthStore } from '~/store/auth'
+
+interface MonthRecords {
+  [key: string]: RecordsItem[]
+}
 
 interface RecordsState {
   balance: number
   categories: RecordsCategory[]
   firstRecord?: RecordsItem
-  monthRecords?: { [key: string]: RecordsItem[] }
+  monthRecords?: MonthRecords
   pending: boolean
   records: RecordsItem[]
   snapshot?: RecordsSnapshot
@@ -32,6 +38,15 @@ interface FirstRecordQueryResponse {
 
 interface FirstRecordQueryResponseRecords {
   data: RecordsItem[]
+}
+
+interface RecordsQueryResponse {
+  records: RecordsQueryResponseRecords
+}
+
+interface RecordsQueryResponseRecords {
+  data: RecordsItem[]
+  paginatorInfo: PaginatorInfo
 }
 
 interface RecordsTotalResponse {
@@ -118,17 +133,42 @@ export const useRecordsStore = defineStore({
     },
 
     async fetchMonthRecords() {
-      try {
-        const date = new Date()
-        const y = date.getFullYear()
-        const m = date.getMonth() + 1
-        const monthRecords = (await useApiFetch(`/api/data/month/${y}-${m}`, {
-          method: 'GET',
-        })) as { [key: string]: RecordsItem[] }
-        this.monthRecords = monthRecords || {}
-      } catch (error) {
-        handleAuthError(error)
+      this.pending = true
+
+      const now = DateTime.now()
+      /* 00:00:00, first day of current month */
+      const from = now.set({ hour: 0, minute: 0, second: 0, day: 1 })
+      /* 23:59:59, last day of current month */
+      const to = from.plus({ month: 1 }).minus({ second: 1 })
+
+      const variables = {
+        where: {
+          AND: [
+            { column: 'CREATED_AT', operator: 'GTE', value: from.toFormat('yyyy-LL-dd HH:mm:ss') },
+            { column: 'CREATED_AT', operator: 'LTE', value: to.toFormat('yyyy-LL-dd HH:mm:ss') },
+          ],
+        },
       }
+
+      try {
+        const { data } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
+
+        if (data.value?.records?.data) {
+          /* Group records by category id */
+          this.monthRecords = data.value.records.data.reduce((acc: MonthRecords, cur) => {
+            const categoryId: string = String(cur.category?.id)
+
+            if (categoryId) {
+              acc[categoryId] = acc[categoryId] ?? []
+              acc[categoryId].push(cur)
+            }
+
+            return acc
+          }, {})
+        }
+      } catch (error) {}
+
+      this.pending = false
     },
 
     async fetchSnapshot() {

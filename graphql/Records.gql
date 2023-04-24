@@ -5,8 +5,9 @@ query Records(
   $page: Int = 1
   $hasCategory: QueryRecordsHasCategoryWhereHasConditions = {}
   $orderBy: [QueryRecordsOrderByOrderByClause!] = [{ column: CREATED_AT, order: DESC }]
+  $where: QueryRecordsWhereWhereConditions = {}
 ) {
-  records(first: $first, page: $page, orderBy: $orderBy, hasCategory: $hasCategory) {
+  records(first: $first, page: $page, orderBy: $orderBy, hasCategory: $hasCategory, where: $where) {
     data {
       category {
         ...CategoryFragment

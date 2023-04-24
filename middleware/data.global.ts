@@ -8,7 +8,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const recordsStore = useRecordsStore()
 
     if (authStore.user) {
-      await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchCategories(), recordsStore.fetchFirstRecord()])
+      await Promise.all([
+        recordsStore.fetchBalance(),
+        recordsStore.fetchCategories(),
+        recordsStore.fetchFirstRecord(),
+        recordsStore.fetchMonthRecords(),
+      ])
     }
   }
 })
