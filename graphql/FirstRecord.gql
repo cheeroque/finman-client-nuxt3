@@ -1,0 +1,16 @@
+#import "@/graphql/fragments/CategoryFragment.gql"
+
+query FirstRecord {
+  records(first: 1, orderBy: [{ column: CREATED_AT, order: ASC }]) {
+    data {
+      category {
+        ...CategoryFragment
+      }
+
+      created_at
+      id
+      note
+      sum
+    }
+  }
+}

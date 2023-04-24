@@ -1,0 +1,4 @@
+query RecordsTotal {
+  expensesTotal: recordsAggregate(hasCategory: { column: IS_INCOME, operator: EQ, value: "0" })
+  incomesTotal: recordsAggregate(hasCategory: { column: IS_INCOME, operator: EQ, value: "1" })
+}

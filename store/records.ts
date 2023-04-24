@@ -1,36 +1,55 @@
 import { defineStore } from 'pinia'
+import { RecordsCategory, RecordsItem, RecordsSnapshot } from '~~/types/records'
+import CATEGORIES_QUERY from '@/graphql/Categories.gql'
+import FIRST_RECORD_QUERY from '@/graphql/FirstRecord.gql'
+import RECORDS_TOTAL_QUERY from '@/graphql/RecordsTotal.gql'
 // import { FetchError } from 'ofetch'
 // import { useAuthStore } from '~/store/auth'
 
-interface State {
+interface RecordsState {
   balance: number
-  categories: RecordsCategory[] | []
-  firstRecord: RecordsItem | {}
-  monthRecords: { [key: string]: RecordsItem[] }
+  categories: RecordsCategory[]
+  firstRecord?: RecordsItem
+  monthRecords?: { [key: string]: RecordsItem[] }
   pending: boolean
-  records: RecordsItem[] | []
+  records: RecordsItem[]
   snapshot?: RecordsSnapshot
   totalPages: number
 }
 
-async function handleAuthError(error: unknown) {
-  // if (error instanceof FetchError && error.status === 401) {
-  //   const authStore = useAuthStore()
-  //   await authStore.logout()
-  // }
+interface CategoriesQueryResponse {
+  categories: CategoriesQueryResponseCategories
+}
+
+interface CategoriesQueryResponseCategories {
+  data: RecordsCategory[]
+  paginatorInfo: PaginatorInfo
+}
+
+interface FirstRecordQueryResponse {
+  records: FirstRecordQueryResponseRecords
+}
+
+interface FirstRecordQueryResponseRecords {
+  data: RecordsItem[]
+}
+
+interface RecordsTotalResponse {
+  expensesTotal: number
+  incomesTotal: number
 }
 
 export const useRecordsStore = defineStore({
   id: 'records',
 
-  state: (): State => ({
+  state: (): RecordsState => ({
     balance: 0,
     categories: [],
-    firstRecord: {},
-    monthRecords: {},
+    firstRecord: undefined,
+    monthRecords: undefined,
     pending: false,
-    snapshot: undefined,
     records: [],
+    snapshot: undefined,
     totalPages: 0,
   }),
 
@@ -56,30 +75,46 @@ export const useRecordsStore = defineStore({
     // },
 
     async fetchBalance() {
+      this.pending = true
+
       try {
-        const balance = (await useApiFetch('/api/data/total', { method: 'GET' })) as number
-        this.balance = balance ?? 0
-      } catch (error) {
-        handleAuthError(error)
-      }
+        const { data } = await useAsyncQuery<RecordsTotalResponse>(RECORDS_TOTAL_QUERY)
+
+        if (data.value) {
+          const { expensesTotal, incomesTotal } = data.value
+          this.balance = incomesTotal - expensesTotal
+        }
+      } catch (error) {}
+
+      this.pending = false
     },
 
     async fetchCategories() {
+      this.pending = true
+
       try {
-        const categories = (await useApiFetch('/api/data/categories', { method: 'GET' })) as RecordsCategory[]
-        this.categories = categories || []
-      } catch (error) {
-        handleAuthError(error)
-      }
+        const { data } = await useAsyncQuery<CategoriesQueryResponse>(CATEGORIES_QUERY)
+
+        if (data.value?.categories) {
+          this.categories = data.value.categories.data
+        }
+      } catch (error) {}
+
+      this.pending = false
     },
 
     async fetchFirstRecord() {
+      this.pending = true
+
       try {
-        const firstRecord = (await useApiFetch('/api/data/records/first', { method: 'GET' })) as RecordsItem
-        this.firstRecord = firstRecord || {}
-      } catch (error) {
-        handleAuthError(error)
-      }
+        const { data } = await useAsyncQuery<FirstRecordQueryResponse>(FIRST_RECORD_QUERY)
+
+        if (data.value?.records) {
+          this.firstRecord = data.value.records.data[0]
+        }
+      } catch (error) {}
+
+      this.pending = false
     },
 
     async fetchMonthRecords() {

@@ -1,3 +1,5 @@
+import { User } from '~~/types/auth'
+
 export interface RecordsCategory {
   color?: string
   created_at: string
@@ -10,13 +12,12 @@ export interface RecordsCategory {
 
 export interface RecordsItem {
   category: RecordsCategory
-  category_id: number
   created_at: string
   id: number
   note?: string
   sum: number
   updated_at?: string
-  user_id?: number
+  user?: User
 }
 
 export interface RecordsSnapshot {
