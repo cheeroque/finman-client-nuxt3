@@ -6,7 +6,6 @@ import FIRST_RECORD_QUERY from '@/graphql/FirstRecord.gql'
 import RECORDS_QUERY from '@/graphql/Records.gql'
 import RECORDS_TOTAL_QUERY from '@/graphql/RecordsTotal.gql'
 import SNAPSHOTS_QUERY from '@/graphql/Snapshots.gql'
-// import { FetchError } from 'ofetch'
 // import { useAuthStore } from '~/store/auth'
 
 interface MonthRecords {
@@ -16,6 +15,7 @@ interface MonthRecords {
 interface RecordsState {
   balance: number
   categories: RecordsCategory[]
+  error?: string
   firstRecord?: RecordsItem
   monthRecords?: MonthRecords
   pending: boolean
@@ -70,6 +70,7 @@ export const useRecordsStore = defineStore({
   state: (): RecordsState => ({
     balance: 0,
     categories: [],
+    error: undefined,
     firstRecord: undefined,
     monthRecords: undefined,
     pending: false,
@@ -83,13 +84,17 @@ export const useRecordsStore = defineStore({
       this.pending = true
 
       try {
-        const { data } = await useAsyncQuery<RecordsTotalResponse>(RECORDS_TOTAL_QUERY)
+        const { data, error } = await useAsyncQuery<RecordsTotalResponse>(RECORDS_TOTAL_QUERY)
+
+        if (error.value) throw error.value
 
         if (data.value) {
           const { expensesTotal, incomesTotal } = data.value
           this.balance = incomesTotal - expensesTotal
         }
-      } catch (error) {}
+      } catch (error) {
+        this.handleError(error)
+      }
 
       this.pending = false
     },
@@ -98,12 +103,16 @@ export const useRecordsStore = defineStore({
       this.pending = true
 
       try {
-        const { data } = await useAsyncQuery<CategoriesQueryResponse>(CATEGORIES_QUERY)
+        const { data, error } = await useAsyncQuery<CategoriesQueryResponse>(CATEGORIES_QUERY)
+
+        if (error.value) throw error.value
 
         if (data.value?.categories) {
           this.categories = data.value.categories.data
         }
-      } catch (error) {}
+      } catch (error) {
+        this.handleError(error)
+      }
 
       this.pending = false
     },
@@ -112,12 +121,16 @@ export const useRecordsStore = defineStore({
       this.pending = true
 
       try {
-        const { data } = await useAsyncQuery<FirstRecordQueryResponse>(FIRST_RECORD_QUERY)
+        const { data, error } = await useAsyncQuery<FirstRecordQueryResponse>(FIRST_RECORD_QUERY)
+
+        if (error.value) throw error.value
 
         if (data.value?.records) {
           this.firstRecord = data.value.records.data[0]
         }
-      } catch (error) {}
+      } catch (error) {
+        this.handleError(error)
+      }
 
       this.pending = false
     },
@@ -141,7 +154,9 @@ export const useRecordsStore = defineStore({
       }
 
       try {
-        const { data } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
+        const { data, error } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
+
+        if (error.value) throw error.value
 
         if (data.value?.records?.data) {
           /* Group records by category id */
@@ -156,7 +171,9 @@ export const useRecordsStore = defineStore({
             return acc
           }, {})
         }
-      } catch (error) {}
+      } catch (error) {
+        this.handleError(error)
+      }
 
       this.pending = false
     },
@@ -167,19 +184,40 @@ export const useRecordsStore = defineStore({
       const variables = { first: 1 }
 
       try {
-        const { data } = await useAsyncQuery<SnapshotsQueryResponse>(SNAPSHOTS_QUERY, variables)
+        const { data, error } = await useAsyncQuery<SnapshotsQueryResponse>(SNAPSHOTS_QUERY, variables)
+
+        if (error.value) throw error.value
 
         if (data.value?.snapshots?.data) {
           this.snapshot = data.value.snapshots.data[0]
         }
-      } catch (error) {}
+      } catch (error) {
+        this.handleError(error)
+      }
     },
 
     async refetchOnRecordsChange() {
       try {
         await Promise.all([this.fetchBalance(), this.fetchMonthRecords()])
       } catch (error) {
-        handleAuthError(error)
+        this.handleError(error)
+      }
+    },
+
+    handleError(error: any) {
+      const { $auth } = useNuxtApp()
+
+      const isAuthError = error?.message === 'Unauthenticated.'
+
+      if (isAuthError) {
+        this.error = useString('errorMessageAuth')
+
+        $auth.reset()
+
+        const router = useRouter()
+        router.replace('/auth/login')
+      } else {
+        this.error = typeof error?.toJSON === 'function' ? error.toJSON() : useString('errorMessage')
       }
     },
   },

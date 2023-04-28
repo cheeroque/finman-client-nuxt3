@@ -25,6 +25,7 @@
   "errorMessage": "Неизвестная ошибка",
   "errorMessage404": "Страница не существует",
   "errorMessage500": "Ошибка сервера",
+  "errorMessageAuth": "Ошибка аутентификации",
   "expand": "Развернуть",
   "expenses": "Расходы",
   "expensesOnly": "Только расходы",

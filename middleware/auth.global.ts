@@ -1,4 +1,5 @@
 import { useAuthStore } from '~/store/auth'
+import { AuthError } from '~/plugins/auth'
 
 export default defineNuxtRouteMiddleware(async (to) => {
   /* Guard only pages that are not public */
@@ -17,8 +18,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
       try {
         await $auth.fetchUser()
-      } catch (error) {
-        return navigateTo('/auth/login')
+      } catch (error: any) {
+        if (error?.code instanceof AuthError) {
+          $auth.reset()
+          return navigateTo('/auth/login')
+        }
       }
     }
   }
