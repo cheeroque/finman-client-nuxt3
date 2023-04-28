@@ -53,7 +53,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['closed', 'category:delete', 'category:update', 'update:modelValue'])
 const recordsStore = useRecordsStore()
-const pending = computed(() => recordsStore.pending)
+const pending = computed(() => recordsStore.loading)
 
 const toast = useToast()
 
@@ -78,7 +78,7 @@ async function handleCategoryDelete() {
   const headers = useRequestHeaders(['cookie'])
   const cookie = headers.cookie as string
 
-  recordsStore.pending = true
+  recordsStore.pending++
   await $fetch<RecordsCategory>('/api/data/category', {
     method: 'DELETE',
     headers: { cookie },
@@ -87,7 +87,7 @@ async function handleCategoryDelete() {
 
   /** Refetch stored categories */
   await recordsStore.fetchCategories()
-  recordsStore.pending = false
+  recordsStore.pending--
 
   /* Show confirmation toast */
   toast.value.modelValue = true

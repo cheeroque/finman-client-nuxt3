@@ -18,7 +18,7 @@ interface RecordsState {
   error?: string
   firstRecord?: RecordsItem
   monthRecords?: MonthRecords
-  pending: boolean
+  pending: number
   records: RecordsItem[]
   snapshot?: RecordsSnapshot
   totalPages: number
@@ -50,6 +50,13 @@ interface RecordsQueryResponseRecords {
   paginatorInfo: PaginatorInfo
 }
 
+interface RecordsQueryVariables {
+  first: number
+  hasCategory?: WhereHasConditions
+  orderBy: OrderByClause[]
+  page: number
+}
+
 interface RecordsTotalResponse {
   expensesTotal: number
   incomesTotal: number
@@ -73,15 +80,19 @@ export const useRecordsStore = defineStore({
     error: undefined,
     firstRecord: undefined,
     monthRecords: undefined,
-    pending: false,
+    pending: 0,
     records: [],
     snapshot: undefined,
     totalPages: 0,
   }),
 
+  getters: {
+    loading: (state) => Boolean(state.pending),
+  },
+
   actions: {
     async fetchBalance() {
-      this.pending = true
+      this.pending++
 
       try {
         const { data, error } = await useAsyncQuery<RecordsTotalResponse>(RECORDS_TOTAL_QUERY)
@@ -96,11 +107,11 @@ export const useRecordsStore = defineStore({
         this.handleError(error)
       }
 
-      this.pending = false
+      this.pending--
     },
 
     async fetchCategories() {
-      this.pending = true
+      this.pending++
 
       try {
         const { data, error } = await useAsyncQuery<CategoriesQueryResponse>(CATEGORIES_QUERY)
@@ -114,11 +125,11 @@ export const useRecordsStore = defineStore({
         this.handleError(error)
       }
 
-      this.pending = false
+      this.pending--
     },
 
     async fetchFirstRecord() {
-      this.pending = true
+      this.pending++
 
       try {
         const { data, error } = await useAsyncQuery<FirstRecordQueryResponse>(FIRST_RECORD_QUERY)
@@ -132,11 +143,11 @@ export const useRecordsStore = defineStore({
         this.handleError(error)
       }
 
-      this.pending = false
+      this.pending--
     },
 
     async fetchMonthRecords() {
-      this.pending = true
+      this.pending++
 
       const now = DateTime.now()
       /* 00:00:00, first day of current month */
@@ -175,11 +186,58 @@ export const useRecordsStore = defineStore({
         this.handleError(error)
       }
 
-      this.pending = false
+      this.pending--
+    },
+
+    async fetchRecords() {
+      this.pending++
+
+      const route = useRoute()
+      const viewMode = route.params.view as ViewMode
+
+      /** Build query variables */
+      const column = (route.query.orderBy as string) ?? 'CREATED_AT'
+      const order = (route.query.order as string) ?? 'DESC'
+      const first = Number(route.query.perPage) || 50
+      const page = Number(route.query.page) || 1
+
+      const variables: RecordsQueryVariables = {
+        first,
+        orderBy: [{ column, order }],
+        page,
+      }
+
+      /** Set filter by is_income if needed */
+      const isExpense = viewMode === 'expense'
+      const isIncome = viewMode === 'income'
+
+      if (isExpense || isIncome) {
+        variables.hasCategory = {
+          column: 'IS_INCOME',
+          operator: 'EQ',
+          value: isIncome,
+        }
+      }
+
+      /** Fetch records */
+      try {
+        const { data, error } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
+
+        if (error.value) throw error.value
+
+        if (data.value?.records?.data) {
+          this.records = data.value.records.data
+          this.totalPages = data.value.records.paginatorInfo?.lastPage ?? 1
+        }
+      } catch (error) {
+        this.handleError(error)
+      }
+
+      this.pending--
     },
 
     async fetchSnapshot() {
-      this.pending = true
+      this.pending++
 
       const variables = { first: 1 }
 
@@ -194,14 +252,20 @@ export const useRecordsStore = defineStore({
       } catch (error) {
         this.handleError(error)
       }
+
+      this.pending--
     },
 
     async refetchOnRecordsChange() {
+      this.pending++
+
       try {
         await Promise.all([this.fetchBalance(), this.fetchMonthRecords()])
       } catch (error) {
         this.handleError(error)
       }
+
+      this.pending--
     },
 
     handleError(error: any) {

@@ -113,8 +113,6 @@ const rules = computed(() => ({
 const v$ = useVuelidate<RecordsForm>(rules, formData, { $lazy: true })
 
 /* Submit form */
-const pending = computed(() => recordsStore.pending)
-
 async function onSubmit() {
   v$.value.$validate()
   if (!v$.value.$error) {
@@ -122,14 +120,14 @@ async function onSubmit() {
     const cookie = headers.cookie as string
     const method = props.edit ? 'PUT' : 'POST'
 
-    recordsStore.pending = true
+    recordsStore.pending++
     const record = await $fetch<RecordsItem>('/api/data/record', {
       method,
       body: formData,
       headers: { cookie },
       query: { id: props.record?.id },
     })
-    recordsStore.pending = false
+    recordsStore.pending--
     emit('success', record)
   }
 }

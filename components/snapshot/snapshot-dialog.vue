@@ -42,7 +42,7 @@ const form = ref()
 const formId = computed(() => form.value?.form.id)
 
 const recordsStore = useRecordsStore()
-const pending = computed(() => recordsStore.pending)
+const pending = computed(() => recordsStore.loading)
 
 function handleUpdate(snapshot: RecordsSnapshot, callback?: Function) {
   /* Show confirmation toast */

@@ -81,8 +81,6 @@ const rules = computed(() => ({
 const v$ = useVuelidate<SnapshotForm>(rules, formData, { $lazy: true })
 
 /* Submit form */
-const pending = computed(() => recordsStore.pending)
-
 async function onSubmit() {
   v$.value.$validate()
   if (!v$.value.$error) {
@@ -90,7 +88,7 @@ async function onSubmit() {
     const cookie = headers.cookie as string
     const method = 'POST'
 
-    recordsStore.pending = true
+    recordsStore.pending++
     const snapshot = await $fetch<RecordsSnapshot>('/api/data/revise', {
       method,
       body: formData,
@@ -98,7 +96,7 @@ async function onSubmit() {
     })
 
     recordsStore.snapshot = snapshot
-    recordsStore.pending = false
+    recordsStore.pending--
     emit('success', snapshot)
   }
 }

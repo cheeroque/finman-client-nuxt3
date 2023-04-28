@@ -1,106 +1,34 @@
 <template>
-  <PageContent :loading="loading" spinner-variant="primary" class="page-records">
+  <PageContent :loading="recordsStore.loading" spinner-variant="primary" class="page-records">
     <template #header>
       <PageRecordsHeader />
     </template>
 
-    <RecordTable :records="records" :view-mode="viewMode" @records:update="fetchRecords" />
+    <RecordTable :records="recordsStore.records" :view-mode="viewMode" @records:update="recordsStore.fetchRecords" />
 
-    <RecordFab :show="!paginationVisible" @records:update="fetchRecords" />
+    <RecordFab :show="!paginationVisible" @records:update="recordsStore.fetchRecords" />
 
     <template #footer>
-      <div ref="paginationAnchor" v-if="totalPages > 1">
-        <UiPagination :disabled="loading" :total-pages="totalPages" hide-prev-next />
+      <div ref="paginationAnchor" v-if="recordsStore.totalPages > 1">
+        <UiPagination :disabled="recordsStore.loading" :total-pages="recordsStore.totalPages" hide-prev-next />
       </div>
     </template>
   </PageContent>
 </template>
 
 <script setup lang="ts">
-import { FetchError } from 'ofetch'
-import { RecordsItem } from '~~/types/records'
-import RECORDS_QUERY from '@/graphql/Records.gql'
+import { useRecordsStore } from '~/store/records'
 
-interface OrderByClause {
-  column: string
-  order: string
-}
-
-interface WhereHasConditions {
-  column?: string
-  operator?: string
-  value?: string | number | boolean
-}
-
-interface RecordsQueryVariables {
-  first: number
-  hasCategory?: WhereHasConditions
-  orderBy: OrderByClause[]
-  page: number
-}
-
-interface RecordsQueryResponse {
-  records: RecordsQueryResponseRecords
-}
-
-interface RecordsQueryResponseRecords {
-  data: RecordsItem[]
-  paginatorInfo: PaginatorInfo
-}
-
-const loading = useState<boolean>('app-loading', () => false)
-
-let records = reactive<RecordsItem[]>([])
-const totalPages = ref<number>(1)
+const recordsStore = useRecordsStore()
 
 const route = useRoute()
 const viewMode = computed<ViewMode>(() => route.params.view as ViewMode)
-
-async function fetchRecords() {
-  /** Build query variables */
-  const column = (route.query.orderBy as string) ?? 'CREATED_AT'
-  const order = (route.query.order as string) ?? 'DESC'
-  const first = Number(route.query.perPage) || 50
-  const page = Number(route.query.page) || 1
-
-  const variables: RecordsQueryVariables = {
-    first,
-    orderBy: [{ column, order }],
-    page,
-  }
-
-  /** Set filter by is_income if needed */
-  const isExpense = viewMode.value === 'expense'
-  const isIncome = viewMode.value === 'income'
-
-  if (isExpense || isIncome) {
-    variables.hasCategory = {
-      column: 'IS_INCOME',
-      operator: 'EQ',
-      value: isIncome,
-    }
-  }
-
-  /** Fetch records */
-  loading.value = true
-
-  const { data, error } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
-
-  records = data.value?.records?.data ?? []
-  totalPages.value = data.value?.records?.paginatorInfo.lastPage ?? 1
-
-  if (error.value?.message === 'Unauthenticated' || (error.value instanceof FetchError && error.value.status === 401)) {
-    // Force logout
-  }
-
-  loading.value = false
-}
 
 watch(
   () => route.query,
 
   async () => {
-    await fetchRecords()
+    await recordsStore.fetchRecords()
     setTimeout(() => useScrollTo('.page'), 250)
   },
   { immediate: true }
@@ -110,6 +38,7 @@ watch(
 onMounted(() => {
   setObserver()
 })
+
 onUnmounted(() => {
   removeObserver()
 })

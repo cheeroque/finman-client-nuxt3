@@ -47,7 +47,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['closed', 'record:delete', 'record:update', 'update:modelValue'])
 const recordsStore = useRecordsStore()
-const pending = computed(() => recordsStore.pending)
+const pending = computed(() => recordsStore.loading)
 
 const toast = useToast()
 
@@ -74,13 +74,13 @@ async function handleRecordDelete() {
   const headers = useRequestHeaders(['cookie'])
   const cookie = headers.cookie as string
 
-  recordsStore.pending = true
+  recordsStore.pending++
   await $fetch<RecordsItem>('/api/data/record', {
     method: 'DELETE',
     headers: { cookie },
     query: { id: props.record?.id },
   })
-  recordsStore.pending = false
+  recordsStore.pending--
 
   /* Show confirmation toast */
   toast.value.modelValue = true

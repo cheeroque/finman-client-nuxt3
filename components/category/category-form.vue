@@ -94,8 +94,6 @@ const rules = computed(() => ({
 const v$ = useVuelidate<CategoryForm>(rules, formData, { $lazy: true })
 
 /* Submit form */
-const pending = computed(() => recordsStore.pending)
-
 async function onSubmit() {
   v$.value.$validate()
   if (!v$.value.$error) {
@@ -103,7 +101,7 @@ async function onSubmit() {
     const cookie = headers.cookie as string
     const method = props.edit ? 'PUT' : 'POST'
 
-    recordsStore.pending = true
+    recordsStore.pending++
     const category = await $fetch<RecordsItem>('/api/data/category', {
       method,
       body: formData,
@@ -114,7 +112,7 @@ async function onSubmit() {
     /** Refetch stored categories */
     await recordsStore.fetchCategories()
 
-    recordsStore.pending = false
+    recordsStore.pending--
     emit('success', category)
   }
 }
