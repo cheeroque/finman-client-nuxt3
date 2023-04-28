@@ -1,0 +1,7 @@
+mutation RecordCreate($data: CreateRecordInput!) {
+  result: createRecord(data: $data) {
+    id
+    note
+    sum
+  }
+}

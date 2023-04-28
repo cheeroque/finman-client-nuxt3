@@ -1,0 +1,7 @@
+mutation RecordUpdate($data: UpdateRecordInput!) {
+  result: updateRecord(data: $data) {
+    id
+    note
+    sum
+  }
+}
