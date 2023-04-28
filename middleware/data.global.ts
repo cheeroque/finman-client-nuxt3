@@ -13,6 +13,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
         recordsStore.fetchCategories(),
         recordsStore.fetchFirstRecord(),
         recordsStore.fetchMonthRecords(),
+        recordsStore.fetchSnapshot(),
       ])
     }
   }

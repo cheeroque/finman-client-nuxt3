@@ -5,6 +5,7 @@ import CATEGORIES_QUERY from '@/graphql/Categories.gql'
 import FIRST_RECORD_QUERY from '@/graphql/FirstRecord.gql'
 import RECORDS_QUERY from '@/graphql/Records.gql'
 import RECORDS_TOTAL_QUERY from '@/graphql/RecordsTotal.gql'
+import SNAPSHOTS_QUERY from '@/graphql/Snapshots.gql'
 // import { FetchError } from 'ofetch'
 // import { useAuthStore } from '~/store/auth'
 
@@ -54,6 +55,15 @@ interface RecordsTotalResponse {
   incomesTotal: number
 }
 
+interface SnapshotsQueryResponse {
+  snapshots: SnapshotsQueryResponseSnapshots
+}
+
+interface SnapshotsQueryResponseSnapshots {
+  data: RecordsSnapshot[]
+  paginatorInfo: PaginatorInfo
+}
+
 export const useRecordsStore = defineStore({
   id: 'records',
 
@@ -69,26 +79,6 @@ export const useRecordsStore = defineStore({
   }),
 
   actions: {
-    // async fetchRecordsData() {
-    //   const route = useRoute()
-    //   const viewMode = route.params.view as ViewMode
-    //   const query: RecordsRequestParams = {
-    //     order: (route.query.order as string) || 'DESC',
-    //     orderBy: (route.query.orderBy as string) || 'created_at',
-    //     page: Number(route.query.page) || 1,
-    //     perPage: Number(route.query.perPage) || 50,
-    //     show: viewMode || null,
-    //   }
-
-    //   this.pending = true
-
-    //   const recordsData = (await useApiFetch('/api/data/records', { method: 'GET', query })) as RecordsResponse
-
-    //   this.records = recordsData.data || []
-    //   this.totalPages = recordsData.last_page || 0
-    //   this.pending = false
-    // },
-
     async fetchBalance() {
       this.pending = true
 
@@ -172,12 +162,17 @@ export const useRecordsStore = defineStore({
     },
 
     async fetchSnapshot() {
+      this.pending = true
+
+      const variables = { first: 1 }
+
       try {
-        const snapshot = (await useApiFetch('/api/data/revises/latest', { method: 'GET' })) as RecordsSnapshot
-        this.snapshot = snapshot || {}
-      } catch (error) {
-        handleAuthError(error)
-      }
+        const { data } = await useAsyncQuery<SnapshotsQueryResponse>(SNAPSHOTS_QUERY, variables)
+
+        if (data.value?.snapshots?.data) {
+          this.snapshot = data.value.snapshots.data[0]
+        }
+      } catch (error) {}
     },
 
     async refetchOnRecordsChange() {
