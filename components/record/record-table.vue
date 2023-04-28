@@ -14,17 +14,19 @@
         {{ useString('note') }}
       </div>
     </div>
+
     <div class="record-table-body">
-      <RecordCardEmpty v-if="!records?.length" />
+      <RecordCardEmpty v-if="isEmpty" />
 
       <RecordCard
         v-for="record in records"
-        :key="record.id"
+        :key="`record-${record.id}`"
         :record="record"
         :view-mode="viewMode"
         @edit="handleRecordEdit(record)"
       />
     </div>
+
     <RecordDialog
       v-model="dialogVisible"
       :record="currentRecord"
@@ -47,6 +49,8 @@ const emit = defineEmits(['records:update'])
 
 const currentRecord = ref<RecordsItem>()
 const dialogVisible = ref(false)
+
+const isEmpty = computed(() => !props.records.length)
 
 function handleDialogClosed() {
   currentRecord.value = undefined

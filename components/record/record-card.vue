@@ -3,12 +3,15 @@
     <NuxtLink :to="monthLink" class="record-date">
       {{ useDateFormat(record.created_at, { dateStyle: 'long', timeStyle: 'short' }) }}
     </NuxtLink>
+
     <UiButton variant="link" class="record-sum" @click="emit('edit')">
       {{ useNumberFormat(record.sum) }}&nbsp;₽
     </UiButton>
+
     <NuxtLink :to="categoryLink" class="record-category">
       {{ categoryName }}
     </NuxtLink>
+
     <p class="record-note">
       <span class="caption">{{ record.note }}</span>
       <UiButton icon="edit-24" icon-size="24" variant="link" class="record-edit" @click="emit('edit')" />
@@ -30,19 +33,19 @@ const emit = defineEmits(['edit'])
 const categoryLink = computed(() => `/categories/${props.record.category.slug}`)
 const categoryName = computed(() => props.record.category.name)
 
-const monthLink = computed(() => {
-  const date = DateTime.fromFormat(props.record.created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
-  const y = date.getFullYear()
-  const m = date.getMonth() + 1
-  return `/months/${y}-${m.toString().padStart(2, '0')}`
-})
-
 const cardClasses = computed(() => {
   const classes = ['record-card']
   if (!props.viewMode && props.record.category.is_income) {
     classes.push('record-card-income')
   }
   return classes
+})
+
+const monthLink = computed(() => {
+  const date = DateTime.fromFormat(props.record.created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
+  const y = date.getFullYear()
+  const m = date.getMonth() + 1
+  return `/months/${y}-${m.toString().padStart(2, '0')}`
 })
 </script>
 

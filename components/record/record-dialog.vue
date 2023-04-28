@@ -19,6 +19,7 @@
                 {{ useString('cancel') }}
               </UiButton>
             </div>
+
             <div class="col-6 col-md-auto">
               <UiButton :form="formId" type="submit" variant="primary" block>
                 {{ useString(isEdit ? 'update' : 'save') }}
@@ -26,6 +27,7 @@
             </div>
           </div>
         </div>
+
         <div v-if="isEdit" class="col-12 col-md-auto order-md-1">
           <UiButton variant="danger-muted" block @click="handleRecordDelete">
             {{ useString('remove') }}
@@ -40,12 +42,25 @@
 import { RecordsItem } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
+import RECORD_DELETE_MUTATION from '@/graphql/RecordDelete.gql'
+
+interface RecordDeleteResponseData {
+  result: RecordDeleteOutput
+}
+
+interface RecordDeleteOutput {
+  id: number
+  note: string
+  sum: number
+}
+
 const props = defineProps<{
   modelValue?: boolean
   record?: RecordsItem
 }>()
 
 const emit = defineEmits(['closed', 'record:delete', 'record:update', 'update:modelValue'])
+
 const recordsStore = useRecordsStore()
 const pending = computed(() => recordsStore.loading)
 
@@ -56,6 +71,31 @@ const formId = computed(() => form.value?.form.id)
 const isEdit = computed(() => Boolean(props.record?.id))
 
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeRecord' : 'createRecord'))
+
+async function handleRecordDelete() {
+  if (!props.record) return
+
+  recordsStore.pending++
+
+  const { id } = props.record
+  const { mutate } = useMutation<RecordDeleteResponseData>(RECORD_DELETE_MUTATION)
+
+  try {
+    const response = await mutate({ id })
+
+    if (response?.data?.result) {
+      /* Show confirmation toast */
+      toast.value.modelValue = true
+      toast.value.message = useString('recordDeleted', `#${props.record?.id}`)
+      toast.value.variant = 'danger'
+
+      emit('record:delete')
+      emit('update:modelValue', false)
+    }
+  } catch (error: any) {}
+
+  recordsStore.pending--
+}
 
 function handleRecordUpdate(record: RecordsItem, callback?: Function) {
   /* Show confirmation toast */
@@ -68,26 +108,5 @@ function handleRecordUpdate(record: RecordsItem, callback?: Function) {
   if (typeof callback === 'function') {
     callback()
   }
-}
-
-async function handleRecordDelete() {
-  const headers = useRequestHeaders(['cookie'])
-  const cookie = headers.cookie as string
-
-  recordsStore.pending++
-  await $fetch<RecordsItem>('/api/data/record', {
-    method: 'DELETE',
-    headers: { cookie },
-    query: { id: props.record?.id },
-  })
-  recordsStore.pending--
-
-  /* Show confirmation toast */
-  toast.value.modelValue = true
-  toast.value.message = useString('recordDeleted', `#${props.record?.id}`)
-  toast.value.variant = 'danger'
-
-  emit('record:delete')
-  emit('update:modelValue', false)
 }
 </script>

@@ -1,0 +1,7 @@
+mutation RecordDelete($id: ID!) {
+  result: deleteRecord(id: $id) {
+    id
+    note
+    sum
+  }
+}

@@ -3,10 +3,6 @@ export interface LoginCredentials {
   password: string
 }
 
-export interface LoginResponse {
-  data: LoginResponseData
-}
-
 export interface LoginResponseData {
   login: LoginOutput
 }
