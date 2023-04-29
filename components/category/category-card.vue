@@ -2,11 +2,14 @@
   <div :style="{ '--icon-bg': category.color, '--icon-color': iconColor }" class="card card-category">
     <div class="card-body">
       <NuxtLink :to="`/categories/${category.slug}`" class="h5 card-title">{{ category.name }}</NuxtLink>
+
       <p class="category-slug">{{ category.slug }}</p>
+
       <p :class="`category-type-${category.is_income ? 'income' : 'expense'}`" class="category-type">
         {{ useString(category.is_income ? 'incomes' : 'expenses') }}
       </p>
     </div>
+
     <div class="card-footer">
       <UiButton
         :title="useString('edit')"

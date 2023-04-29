@@ -4,7 +4,7 @@ export interface RecordsCategory {
   color?: string
   created_at: string
   id: number
-  is_income: 0 | 1
+  is_income: boolean
   name: string
   slug: string
   updated_at?: string

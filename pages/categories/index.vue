@@ -2,25 +2,27 @@
   <PageContent :title="useString('categories')">
     <div class="categories-grid">
       <CategoryCard
-        v-for="category in categories"
+        v-for="category in recordsStore.categories"
         :key="`category-${category.id}`"
         :category="category"
         @edit="handleCategoryEdit(category)"
       />
+
       <CategoryCreate @click="handleCategoryCreate" />
     </div>
+
     <CategoryDialog v-model="dialogVisible" :category="currentCategory" @closed="handleDialogClosed" />
   </PageContent>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { RecordsCategory } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
 const recordsStore = useRecordsStore()
-const categories = computed(() => recordsStore.categories)
 
 const currentCategory = ref<RecordsCategory>()
+
 const dialogVisible = ref(false)
 
 function handleCategoryCreate() {

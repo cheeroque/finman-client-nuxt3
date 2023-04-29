@@ -1,27 +1,30 @@
 <template>
   <form ref="form" class="record-form" @submit.prevent="onSubmit">
     <UiFormGroup
-      :label="useString('name')"
       :invalid-feedback="formatErrors(v$.name.$errors)"
+      :label="useString('name')"
       :state="v$.name.$error ? false : null"
     >
       <UiInput v-model="formData.name" name="name" />
     </UiFormGroup>
+
     <UiFormGroup
-      :label="useString('slug')"
       :invalid-feedback="formatErrors(v$.slug.$errors)"
+      :label="useString('slug')"
       :state="v$.slug.$error ? false : null"
     >
       <UiInput v-model="formData.slug" name="slug" />
     </UiFormGroup>
+
     <UiFormGroup
-      :label="useString('color')"
       :invalid-feedback="formatErrors(v$.color.$errors)"
+      :label="useString('color')"
       :state="v$.color.$error ? false : null"
     >
       <UiInputColor v-model="formData.color" name="color" />
     </UiFormGroup>
-    <UiCheckbox v-model="formData.is_income" :unchecked-value="0" :value="1" name="is_income">
+
+    <UiCheckbox v-model="formData.is_income" name="is_income">
       {{ useString('isIncome') }}
     </UiCheckbox>
   </form>
@@ -30,14 +33,21 @@
 <script setup lang="ts">
 import { ErrorObject, useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
-import { RecordsCategory, RecordsItem } from '~~/types/records'
+import { RecordsCategory } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
-type CategoryForm = {
+import CATEGORY_CREATE_MUTATION from '@/graphql/CategoryCreate.gql'
+import CATEGORY_UPDATE_MUTATION from '@/graphql/CategoryUpdate.gql'
+
+interface CategoryForm {
   color?: string
-  is_income: 0 | 1
+  is_income: boolean
   name: string
   slug: string
+}
+
+interface CategoryUpsertResponse {
+  result: RecordsCategory
 }
 
 const props = defineProps<{
@@ -56,14 +66,14 @@ defineExpose({ form })
 /* Initialize form & watch for record changes */
 const formData = reactive<CategoryForm>({
   color: '#fff',
-  is_income: 0,
+  is_income: false,
   name: '',
   slug: '',
 })
 
 function initFormData() {
-  if (props.edit) {
-    const { color, is_income, name, slug } = props.category as RecordsCategory
+  if (props.edit && props.category) {
+    const { color, is_income, name, slug } = props.category
 
     formData.color = color
     formData.is_income = is_income
@@ -72,13 +82,9 @@ function initFormData() {
   }
 }
 
-initFormData()
-watch(
-  () => props.category?.id,
-  () => {
-    initFormData()
-  }
-)
+watchEffect(() => {
+  initFormData()
+})
 
 /* Form validation */
 function formatErrors(errors: ErrorObject[]): string {
@@ -96,24 +102,36 @@ const v$ = useVuelidate<CategoryForm>(rules, formData, { $lazy: true })
 /* Submit form */
 async function onSubmit() {
   v$.value.$validate()
+
   if (!v$.value.$error) {
-    const headers = useRequestHeaders(['cookie'])
-    const cookie = headers.cookie as string
-    const method = props.edit ? 'PUT' : 'POST'
+    const { color, is_income, name, slug } = formData
+
+    const data = {
+      color,
+      id: props.category?.id,
+      is_income,
+      name,
+      slug,
+    }
+
+    const mutation = props.edit ? CATEGORY_UPDATE_MUTATION : CATEGORY_CREATE_MUTATION
 
     recordsStore.pending++
-    const category = await $fetch<RecordsItem>('/api/data/category', {
-      method,
-      body: formData,
-      headers: { cookie },
-      query: { id: props.category?.id },
-    })
 
-    /** Refetch stored categories */
-    await recordsStore.fetchCategories()
+    const { mutate } = useMutation<CategoryUpsertResponse>(mutation)
+
+    try {
+      const response = await mutate({ data })
+
+      if (response?.data?.result) {
+        emit('success', response.data.result)
+
+        /** Refetch stored categories */
+        await recordsStore.fetchCategories()
+      }
+    } catch (error: any) {}
 
     recordsStore.pending--
-    emit('success', category)
   }
 }
 </script>

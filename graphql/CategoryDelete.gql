@@ -1,0 +1,8 @@
+mutation CategoryDelete($id: ID!) {
+  result: deleteCategory(id: $id) {
+    id
+    is_income
+    name
+    slug
+  }
+}
