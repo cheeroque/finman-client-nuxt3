@@ -9,7 +9,9 @@
         icon-size="24"
         @click="setYearPrevious"
       />
+
       <span class="calendar-title">{{ currentYear }}</span>
+
       <UiButton
         :title="useString('nextYear')"
         :aria-label="useString('nextYear')"
@@ -19,13 +21,15 @@
         @click="setYearNext"
       />
     </header>
+
     <div :style="{ transform: `translateX(${yearOffset * 100}%)` }" class="calendar-body">
-      <nav v-for="item in calendarItems" :key="`year-${item.year}`" class="calendar-year">
+      <nav v-for="item in calendarYears" :key="`year-${item.year}`" class="calendar-year">
         <ul class="list-unstyled calendar-months">
           <li v-for="month in item.months" :key="`${month}-${item.year}`" class="calendar-month">
             <span v-if="month.disabled" class="calendar-link disabled">
               {{ month.month }}
             </span>
+
             <NuxtLink
               v-else
               :to="`/months/${month.link}`"
@@ -43,18 +47,17 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { RecordsItem } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
-type CalendarMonth = {
-  month: string
+interface CalendarMonth {
+  disabled?: boolean
   link: string
-  disabled: boolean
+  month: string
 }
 
-type CalendarItem = {
-  year: number | string
+interface CalendarYear {
   months: CalendarMonth[]
+  year: number
 }
 
 const props = defineProps<{
@@ -63,30 +66,36 @@ const props = defineProps<{
 }>()
 
 const recordsStore = useRecordsStore()
-const firstRecord = recordsStore.firstRecord as RecordsItem
 
-const startDate = DateTime.fromISO(firstRecord.created_at)
+const calendarYears: CalendarYear[] = []
+
+const startDate = recordsStore.firstRecord
+  ? DateTime.fromFormat(recordsStore.firstRecord.created_at, 'yyyy-LL-dd HH:mm:ss')
+  : DateTime.now()
+
 const endDate = DateTime.now()
 
-const calendarItems: CalendarItem[] = []
-for (let i = startDate.year; i <= endDate.year; i++) {
-  const months: CalendarMonth[] = []
-  for (let m = 1; m <= 12; m++) {
-    const date = new Date()
-    date.setMonth(m - 1)
-    const month = date.toLocaleString(useLocale(), {
-      month: props.numericMonths ? '2-digit' : 'long',
-    })
+const monthFormat = props.numericMonths ? '2-digit' : 'long'
 
-    const link = `${i}-${m.toString().padStart(2, '0')}`
+for (let y = startDate.year; y <= endDate.year; y++) {
+  const months: CalendarMonth[] = []
+
+  for (let m = 1; m <= 12; m++) {
+    const date = DateTime.fromObject({ month: m, year: y })
+    const month = date.toLocaleString({ month: monthFormat }, { locale: useLocale() })
+    const link = date.toFormat('yyyy-LL')
+
+    const isTooEarly = y <= startDate.year && m < startDate.month
+    const isTooLate = y >= endDate.year && m > endDate.month
 
     months.push({
       month,
       link,
-      disabled: (i <= startDate.year && m < startDate.month) || (i >= endDate.year && m > endDate.month),
+      disabled: isTooEarly || isTooLate,
     })
   }
-  calendarItems.push({ year: i, months })
+
+  calendarYears.push({ year: y, months })
 }
 
 const currentDate = props.date || new Date()
@@ -99,9 +108,7 @@ const yearOffset = computed(() => startDate.year - currentYear.value)
 
 const activeMonthLink = computed(() => {
   if (!props.date) return
-  const y = props.date.getFullYear()
-  const m = props.date.getMonth() + 1
-  return `${y}-${m.toString().padStart(2, '0')}`
+  return DateTime.fromJSDate(props.date).toFormat('yyyy-LL')
 })
 
 function setYearNext() {
