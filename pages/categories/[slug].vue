@@ -40,7 +40,8 @@ const recordsStore = useRecordsStore()
 const category = recordsStore.categories.find(({ slug }) => slug === route.params.slug)
 
 if (!category) {
-  throw createError({ statusMessage: 'Not found', statusCode: 404 })
+  const message = useString('errorMessage404')
+  throw createError({ fatal: true, message, statusCode: 404 })
 }
 
 const perPage = ref<number>()
