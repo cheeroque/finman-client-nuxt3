@@ -1,6 +1,6 @@
 import { useAuthStore } from '~/store/auth'
 import { LoginCredentials, LoginResponseData, Me, User } from '~~/types/auth'
-import ME_QUERY from '@/graphql/me.gql'
+import ME_QUERY from '@/graphql/Me.gql'
 import LOGIN_MUTATION from '@/graphql/Login.gql'
 import LOGOUT_MUTATION from '@/graphql/Logout.gql'
 
