@@ -2,7 +2,7 @@ import { User } from '~~/types/auth'
 
 export interface RecordsCategory {
   color?: string
-  created_at: string
+  created_at?: string
   id: number
   is_income: boolean
   name: string

@@ -14,29 +14,40 @@
         >
           <span class="caption">{{ value }}&nbsp;₽</span>
         </UiButton>
+
         <span v-else class="btn-details">{{ value }}&nbsp;₽</span>
       </template>
+
       <template #row-details="{ item }">
         <UiTable :fields="detailsFields" :items="item.records" hide-thead fixed>
           <template #cell(created_at)="{ value }">
-            {{ DateTime.fromISO(value).toFormat('dd.LL.yyyy') }}
+            {{ formatDate(value) }}
           </template>
+
           <template #cell(sum)="{ value }"> {{ value }}&nbsp;₽ </template>
+
           <template #cell(note)="{ item, value }">
-            <UiButton icon="edit-24" icon-size="24" class="btn-edit" block icon-right @click="handleEdit(item)">
+            <UiButton
+              icon="edit-24"
+              icon-size="24"
+              class="btn-edit"
+              block
+              icon-right
+              @click="handleEdit(item as RecordsItem)"
+            >
               <span class="caption">{{ value }}</span>
             </UiButton>
           </template>
         </UiTable>
       </template>
     </UiTable>
+
     <RecordDialog v-model="dialogVisible" :record="currentRecord" @closed="handleDialogClosed" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { DateTime } from 'luxon'
-import { ComputedRef } from 'vue'
 import { RecordsItem } from '~~/types/records'
 import { TableField, TableItem } from '~/components/ui/ui-table.vue'
 
@@ -48,7 +59,7 @@ const props = defineProps<{
 const currentRecord = ref<RecordsItem>()
 const dialogVisible = ref(false)
 
-const fields: ComputedRef<TableField[]> = computed(() => [
+const fields = computed<TableField[]>(() => [
   {
     key: 'group',
     label: props.groupLabel,
@@ -84,9 +95,14 @@ const detailsFields = [
   },
 ]
 
+function formatDate(datestring: string): string {
+  return DateTime.fromFormat(datestring, 'yyyy-LL-dd HH:mm:ss').toFormat('dd.LL.yyyy')
+}
+
 function handleToggleDetails(event: Event, detailsVisible: boolean, callback: Function) {
   const target = event.target as Element
   const row = target?.closest('tr')
+
   if (row) {
     if (!detailsVisible) {
       row.classList.add('details-visible')
