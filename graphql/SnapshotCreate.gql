@@ -1,0 +1,8 @@
+mutation SnapshotCreate($data: CreateReviseInput!) {
+  result: createRevise(data: $data) {
+    balance
+    created_at
+    id
+    note
+  }
+}

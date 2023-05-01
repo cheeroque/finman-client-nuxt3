@@ -1,25 +1,28 @@
 <template>
-  <form ref="form" class="record-form" @submit.prevent="onSubmit">
+  <form ref="form" class="record-form" @submit.prevent="handleSubmit">
     <UiFormGroup :label="useString('previousBalance')">
       <UiInputCalc :model-value="previousBalance" name="previous_balance" disabled />
     </UiFormGroup>
+
     <UiFormGroup
-      :label="useString('currentBalance')"
       :invalid-feedback="formatErrors(v$.balance.$errors)"
+      :label="useString('currentBalance')"
       :state="v$.balance.$error ? false : null"
     >
       <UiInputCalc v-model="formData.balance" name="balance" />
     </UiFormGroup>
+
     <UiFormGroup
-      :label="useString('dateTime')"
       :invalid-feedback="formatErrors(v$.created_at.$errors)"
+      :label="useString('dateTime')"
       :state="v$.created_at.$error ? false : null"
     >
       <UiInputDatetime v-model="formData.created_at" name="created_at" />
     </UiFormGroup>
+
     <UiFormGroup
-      :label="useString('note')"
       :invalid-feedback="formatErrors(v$.note.$errors)"
+      :label="useString('note')"
       :state="v$.note.$error ? false : null"
       class="mb-0"
     >
@@ -35,10 +38,16 @@ import { helpers, minValue, required } from '@vuelidate/validators'
 import { RecordsSnapshot } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
-type SnapshotForm = {
+import SNAPSHOT_CREATE_MUTATION from '@/graphql/SnapshotCreate.gql'
+
+interface SnapshotForm {
   balance: number
   created_at: Date
   note?: string
+}
+
+interface SnapshotCreateResponse {
+  result: RecordsSnapshot
 }
 
 const emit = defineEmits(['success'])
@@ -81,23 +90,32 @@ const rules = computed(() => ({
 const v$ = useVuelidate<SnapshotForm>(rules, formData, { $lazy: true })
 
 /* Submit form */
-async function onSubmit() {
+async function handleSubmit() {
   v$.value.$validate()
+
   if (!v$.value.$error) {
-    const headers = useRequestHeaders(['cookie'])
-    const cookie = headers.cookie as string
-    const method = 'POST'
+    const { balance, created_at, note } = formData
+
+    const data = {
+      balance,
+      created_at: DateTime.fromJSDate(created_at).toFormat('yyyy-LL-dd HH:mm:ss'),
+      note,
+    }
 
     recordsStore.pending++
-    const snapshot = await $fetch<RecordsSnapshot>('/api/data/revise', {
-      method,
-      body: formData,
-      headers: { cookie },
-    })
 
-    recordsStore.snapshot = snapshot
+    const { mutate } = useMutation<SnapshotCreateResponse>(SNAPSHOT_CREATE_MUTATION)
+
+    try {
+      const response = await mutate({ data })
+
+      if (response?.data?.result) {
+        recordsStore.snapshot = response.data.result
+        emit('success', response.data.result)
+      }
+    } catch (error: any) {}
+
     recordsStore.pending--
-    emit('success', snapshot)
   }
 }
 </script>
