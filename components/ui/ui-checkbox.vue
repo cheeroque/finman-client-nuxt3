@@ -20,7 +20,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 type CheckboxValue = number | string | boolean | null
 
 interface CheckboxInputEventTarget extends EventTarget {

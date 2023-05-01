@@ -15,27 +15,21 @@
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  async setup() {
-    const drawerOpen = ref(false)
+<script setup lang="ts">
+const toast = useToast()
 
-    const toast = useToast()
+const drawerOpen = ref(false)
 
-    function handleToggleDrawer() {
-      drawerOpen.value = !drawerOpen.value
-    }
+function handleToggleDrawer() {
+  drawerOpen.value = !drawerOpen.value
+}
 
-    function handleCloseDrawer() {
-      drawerOpen.value = false
-    }
+function handleCloseDrawer() {
+  drawerOpen.value = false
+}
 
-    function handleToastUpdate(event: boolean) {
-      toast.value.modelValue = event
-    }
-
-    return { drawerOpen, handleToastUpdate, handleToggleDrawer, handleCloseDrawer, toast }
-  },
+function handleToastUpdate(event: boolean) {
+  toast.value.modelValue = event
 }
 </script>
 

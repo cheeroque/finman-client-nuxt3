@@ -8,14 +8,14 @@
     @click="emit('click')"
   >
     <span class="drawer-toggle-icon">
-      <span></span>
-      <span></span>
-      <span></span>
+      <span />
+      <span />
+      <span />
     </span>
   </UiButton>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 const props = defineProps<{
   open?: boolean
 }>()

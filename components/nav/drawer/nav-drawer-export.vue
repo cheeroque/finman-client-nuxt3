@@ -4,7 +4,7 @@
   </UiButton>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 const loading = ref(false)
 
 async function handleClick() {

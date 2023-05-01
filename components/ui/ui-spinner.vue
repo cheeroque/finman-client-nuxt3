@@ -8,7 +8,7 @@
   />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 const props = defineProps<{
   size?: number | string
   variant?: string
@@ -16,7 +16,9 @@ const props = defineProps<{
 
 const parsedSize = computed(() => {
   if (!props.size) return
+
   const isNumber = typeof props.size === 'number' || `${props.size}` === `${parseInt(props.size || '')}`
+
   return isNumber ? `${props.size}px` : props.size
 })
 </script>

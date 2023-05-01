@@ -13,6 +13,7 @@
         {{ text }}
       </UiButton>
     </slot>
+
     <UiCollapse
       :modelValue="localVisible"
       transition="dropdown"
@@ -22,14 +23,14 @@
     >
       <template #default="{ close }">
         <div class="dropdown-content">
-          <slot :close="close"></slot>
+          <slot :close="close" />
         </div>
       </template>
     </UiCollapse>
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 const props = defineProps<{
   block?: boolean
   disabled?: boolean
@@ -40,14 +41,17 @@ const props = defineProps<{
   text?: string
   variant?: string
 }>()
+
 const emit = defineEmits(['update:modelValue', 'hidden'])
 
 const dropdown = ref()
 
 const localVisible = computed({
   get: () => props.modelValue ?? false,
+
   set: (event) => {
     emit('update:modelValue', event)
+
     if (event) {
       document.addEventListener('click', handleClickOutside)
     } else {

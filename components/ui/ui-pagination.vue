@@ -11,6 +11,7 @@
           @click="handleClickFirst"
         />
       </li>
+
       <li v-if="!hidePrevNext" class="pagination-item pagination-item-previous" role="presentation">
         <UiButton
           :disabled="isBeginning"
@@ -21,6 +22,7 @@
           @click="handleClickPrevious"
         />
       </li>
+
       <li v-for="page in pages" :key="`page-${page}`" class="pagination-item" role="presentation">
         <UiButton
           :to="getLink(page)"
@@ -31,6 +33,7 @@
           {{ page }}
         </UiButton>
       </li>
+
       <li v-if="!hidePrevNext" class="pagination-item pagination-item-next" role="presentation">
         <UiButton
           :disabled="isEnd"
@@ -41,6 +44,7 @@
           @click="handleClickNext"
         />
       </li>
+
       <li v-if="!hideFirstLast" class="pagination-item pagination-item-last" role="presentation">
         <UiButton
           :to="getLink(totalPages)"
@@ -55,7 +59,7 @@
   </nav>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { RouteLocationRaw } from 'vue-router'
 
 const props = defineProps<{
@@ -68,6 +72,7 @@ const props = defineProps<{
   size?: string
   totalPages?: number | string
 }>()
+
 const emit = defineEmits(['update:modelValue'])
 
 const currentPage = computed(() => {
@@ -75,14 +80,18 @@ const currentPage = computed(() => {
   const routePage = Number(route.query.page || 1)
   return Number(props.modelValue ?? routePage ?? 1)
 })
+
 const limit = computed(() => Number(props.limit ?? 5))
+
 const totalPages = computed(() => Number(props.totalPages ?? 1))
 
 const isBeginning = computed(() => currentPage.value <= 1)
+
 const isEnd = computed(() => currentPage.value >= totalPages.value)
 
 const pages = computed(() => {
   const pages = []
+
   let start = 1
   let end = Math.min(limit.value, totalPages.value)
 
@@ -106,16 +115,24 @@ const pages = computed(() => {
 
 function getLink(page: number | string): RouteLocationRaw | undefined {
   if (props.noLinks) return
+
   let newPage = page
+
   if (newPage === 'next') {
     newPage = Math.min(currentPage.value + 1, totalPages.value)
   } else if (newPage === 'previous') {
     newPage = Math.max(currentPage.value - 1, 1)
   }
+
   const route = useRoute()
   const query = { ...route.query }
-  if (newPage > 1) query.page = `${newPage}`
-  else delete query.page
+
+  if (Number(newPage) > 1) {
+    query.page = `${newPage}`
+  } else {
+    delete query.page
+  }
+
   return { query }
 }
 

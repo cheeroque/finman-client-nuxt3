@@ -9,6 +9,7 @@
         </th>
       </tr>
     </thead>
+
     <tbody v-if="isEmpty">
       <tr>
         <td :colspan="fields.length" class="table-empty">
@@ -16,6 +17,7 @@
         </td>
       </tr>
     </tbody>
+
     <tbody v-else>
       <template v-for="(row, rowIndex) in items" :key="`row-${rowIndex}`">
         <UiTableRow :fields="normalizedFields" :item="row" :row-index="rowIndex">
@@ -28,15 +30,15 @@
   </table>
 </template>
 
-<script lang="ts" setup>
-export type TableField = {
+<script setup lang="ts">
+export interface TableField {
   key: string
   label?: string
   tdClass?: string
   thClass?: string
 }
 
-export type TableItem = {
+export interface TableItem {
   [key: string]: any
 }
 
@@ -49,9 +51,11 @@ const props = defineProps<{
 
 const tableClasses = computed(() => {
   const classes = ['table']
+
   if (props.fixed) {
     classes.push('table-fixed')
   }
+
   return classes
 })
 

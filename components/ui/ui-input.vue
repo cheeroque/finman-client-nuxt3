@@ -1,7 +1,6 @@
 <template>
   <div :class="componentClasses">
     <input
-      :value="modelValue"
       :id="id"
       :autocomplete="autocomplete"
       :disabled="disabled"
@@ -13,6 +12,7 @@
       :required="required"
       :step="step"
       :type="type"
+      :value="modelValue"
       class="form-control-el"
       @blur="emit('blur', $event)"
       @click="emit('click', $event)"
@@ -29,7 +29,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ComputedRef } from 'vue'
 
 const props = defineProps<{
@@ -48,15 +48,19 @@ const props = defineProps<{
   step?: number | string
   type?: string
 }>()
-const slots = useSlots()
+
 const emit = defineEmits(['blur', 'click', 'focus', 'input', 'update:modelValue'])
 
+const slots = useSlots()
+
 /* Injects from parent */
-const id: ComputedRef<string> | undefined = inject('controlId', undefined)
+const id = inject<ComputedRef<string> | undefined>('controlId', undefined)
+
 const parentDisabled = inject(
   'disabled',
   computed(() => false)
 )
+
 const parentState = inject(
   'state',
   computed(() => null)
@@ -71,6 +75,7 @@ const hasAppend = computed(() => Boolean(props.append || slots.append))
 
 const componentClasses = computed(() => {
   const classes = ['form-control']
+
   if (disabled.value) {
     classes.push('disabled')
   }
@@ -86,11 +91,13 @@ const componentClasses = computed(() => {
   if (state.value === false) {
     classes.push('is-invalid')
   }
+
   return classes
 })
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement
+
   emit('input', event)
   emit('update:modelValue', target.value)
 }

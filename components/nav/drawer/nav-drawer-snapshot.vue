@@ -4,19 +4,23 @@
   </UiButton>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { DateTime } from 'luxon'
 import { useRecordsStore } from '~/store/records'
 
 const emit = defineEmits(['action'])
 
 const recordsStore = useRecordsStore()
+
 const caption = computed(() => {
   const snapshot = recordsStore.snapshot
+
   if (!snapshot?.balance) {
     return useString('createSnapshot')
   }
+
   const strings = [`${useNumberFormat(snapshot.balance)} ₽`]
+
   if (snapshot.created_at) {
     strings.push(
       DateTime.fromISO(snapshot.created_at).toLocaleString(
@@ -25,6 +29,7 @@ const caption = computed(() => {
       )
     )
   }
+
   return strings.join(', ')
 })
 </script>

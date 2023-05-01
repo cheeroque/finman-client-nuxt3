@@ -46,7 +46,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { DateTime } from 'luxon'
 import { RecordsItem } from '~~/types/records'
 import { TableField, TableItem } from '~/components/ui/ui-table.vue'

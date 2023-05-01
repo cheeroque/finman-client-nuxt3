@@ -5,17 +5,21 @@
         <li role="presentation">
           <h5 class="drawer-heading">{{ useString('pages') }}</h5>
         </li>
+
         <li role="presentation" class="d-none d-lg-block">
           <NavDrawerToggle :open="open" @click="emit('toggle')" />
         </li>
+
         <li v-for="page in drawerPages" :key="`link-${page.key}`" role="presentation">
           <NavDrawerPage :page="page" @click="emit('close')" />
         </li>
       </ul>
+
       <ul class="drawer-group list-unstyled">
         <li role="presentation">
           <h5 class="drawer-heading">{{ useString('actions') }}</h5>
         </li>
+
         <li v-for="action in drawerActions" :key="`action-${action.key}`" role="presentation">
           <component :is="action.component" @action="action.handler" />
         </li>
@@ -26,13 +30,15 @@
       </div>
     </nav>
   </div>
+
   <Transition name="fade">
     <div v-if="open" class="app-drawer-backdrop" aria-hidden="true" @click="emit('close')" />
   </Transition>
+
   <SnapshotDialog v-model="dialogVisible" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { DrawerAction, DrawerPage } from '~~/types/drawer'
 
 const props = defineProps<{

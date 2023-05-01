@@ -15,17 +15,21 @@
             <UiIcon name="chevron-double-left-24" size="24" />
           </slot>
         </UiButton>
+
         <UiButton class="datepicker-nav btn-prev-month" @click="setPrevMonth">
           <slot name="btn-prev-month">
             <UiIcon name="chevron-left-24" size="24" />
           </slot>
         </UiButton>
+
         <span class="datepicker-title">{{ title }}</span>
+
         <UiButton class="datepicker-nav btn-next-month" @click="setNextMonth">
           <slot name="btn-next-month">
             <UiIcon name="chevron-right-24" size="24" />
           </slot>
         </UiButton>
+
         <UiButton class="datepicker-nav btn-next-year" @click="setNextYear">
           <slot name="btn-next-year">
             <UiIcon name="chevron-double-right-24" size="24" />
@@ -33,6 +37,7 @@
         </UiButton>
       </slot>
     </div>
+
     <div class="datepicker-body">
       <div class="datepicker-weekdays">
         <div
@@ -43,6 +48,7 @@
           {{ weekday }}
         </div>
       </div>
+
       <div class="datepicker-month">
         <button
           v-for="(day, index) in monthdays"
@@ -58,7 +64,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { DateTime, Info } from 'luxon'
 
 const props = defineProps<{
@@ -66,6 +72,7 @@ const props = defineProps<{
   modelValue?: Date
   titleFormat?: string
 }>()
+
 const emit = defineEmits(['click:day', 'update:modelValue'])
 
 const locale = computed(() => props.locale ?? useLocale())
@@ -82,38 +89,48 @@ const title = computed(() => luxonDate.value.toFormat(titleFormat.value, { local
 
 const monthdays = computed(() => {
   let days = []
+
   const leftPad = luxonDate.value.weekday - 1
   const rightPad = 7 - luxonDate.value.plus({ months: 1 }).minus({ days: 1 }).weekday
   const monthLength = luxonDate.value.daysInMonth
+
   for (let i = -leftPad; i < monthLength + rightPad; i++) {
     days.push(luxonDate.value.plus({ days: i }))
   }
+
   return days
 })
 
 function getDayClasses(day: DateTime): string[] {
   const classes = ['datepicker-day']
+
   if (day.day === selectedDay.value && day.month === selectedMonth.value) {
     classes.push('active')
   }
+
   if (day.month !== selectedMonth.value) {
     classes.push('not-current-month')
   }
+
   if (day.day === DateTime.now().day && day.month === DateTime.now().month) {
     classes.push('today')
   }
+
   return classes
 }
 
 function setNextMonth() {
   luxonDate.value = luxonDate.value.plus({ months: 1 })
 }
+
 function setNextYear() {
   luxonDate.value = luxonDate.value.plus({ years: 1 })
 }
+
 function setPrevMonth() {
   luxonDate.value = luxonDate.value.minus({ months: 1 })
 }
+
 function setPrevYear() {
   luxonDate.value = luxonDate.value.minus({ years: 1 })
 }

@@ -4,7 +4,7 @@
   </UiButton>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 async function logout() {
   const { $auth } = useNuxtApp()
   await $auth.logout()

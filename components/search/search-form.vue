@@ -1,5 +1,5 @@
 <template>
-  <form action="/search" method="get" class="search-form">
+  <form action="/search" method="get" class="search-form" @submit.prevent="handleSubmit">
     <UiInput v-model="q" :placeholder="useString('searchPlaceholder')" name="q" size="lg" type="search">
       <template #append>
         <UiButton icon="search-24" icon-size="24" type="submit" variant="link" class="form-control-icon" />
@@ -8,8 +8,15 @@
   </form>
 </template>
 
-<script lang="ts" setup>
-const q = ref()
+<script setup lang="ts">
+const q = ref('')
+
+function handleSubmit() {
+  if (!q.value.length) return
+
+  const router = useRouter()
+  router.push({ path: '/search', query: { q: q.value } })
+}
 </script>
 
 <style lang="scss" scoped>

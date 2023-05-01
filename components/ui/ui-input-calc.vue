@@ -25,8 +25,8 @@
   </UiInput>
 </template>
 
-<script lang="ts" setup>
-type FakeFocusEvent = {
+<script setup lang="ts">
+interface FakeFocusEvent {
   target: HTMLInputElement
 }
 
@@ -39,6 +39,7 @@ const props = defineProps<{
   size?: ControlSize
   state?: ControlState
 }>()
+
 const emit = defineEmits(['update:modelValue'])
 
 const input = ref(null)
@@ -46,21 +47,27 @@ const hasTotal = ref(false)
 
 const size = computed(() => props.size)
 
-function calculate(event: FocusEvent | FakeFocusEvent) {
+function calculate(event: Event | FakeFocusEvent) {
   const target = event.target as HTMLInputElement
+
   const matches: string[] = target.value.match(/([+-]{0,}\d{1,})/gi) || []
+
   const total = matches.reduce((total, match) => {
     total += Number(match)
     return total
   }, 0)
+
   emit('update:modelValue', total)
+
   hasTotal.value = true
 }
 
-function handleFocus(event: FocusEvent) {
+function handleFocus(event: Event) {
   hasTotal.value = false
+
   /* Move caret to the end on input focus */
   const target = event.target as HTMLInputElement
+
   if (target.selectionEnd) {
     setTimeout(() => {
       target.setSelectionRange(target.selectionEnd, target.selectionEnd)
@@ -72,7 +79,9 @@ function handleInput() {
   hasTotal.value = false
 }
 
-function handleKeydown(event: KeyboardEvent) {
+function handleKeydown(event: Event) {
+  if (!(event instanceof KeyboardEvent)) return
+
   const target = event.target as HTMLInputElement
 
   if (!event.key.match(/^[\d+-]$/)) {
@@ -86,7 +95,9 @@ function handleKeydown(event: KeyboardEvent) {
   if (event.key === 'Enter') {
     if (!hasTotal.value) {
       event.preventDefault()
+
       calculate({ target })
+
       /* Force input value update (for +0 situations) */
       target.value = props.modelValue?.toString() || ''
     }

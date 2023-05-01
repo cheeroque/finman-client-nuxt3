@@ -1,25 +1,26 @@
 <template>
   <Transition
     :name="transition"
-    @before-enter="handleBeforeEnter"
-    @enter="handleEnter"
     @after-enter="hanfleAfterEnter"
-    @before-leave="handleBeforeLeave"
-    @leave="handleLeave"
     @after-leave="handleAfterLeave"
+    @before-enter="handleBeforeEnter"
+    @before-leave="handleBeforeLeave"
+    @enter="handleEnter"
+    @leave="handleLeave"
   >
     <div v-if="modelValue" :class="collapseClass">
-      <slot :close="close"></slot>
+      <slot :close="close" />
     </div>
   </Transition>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 const props = defineProps<{
   collapseClass?: string
   modelValue?: boolean
   transition?: string
 }>()
+
 const emit = defineEmits(['update:modelValue', 'hidden'])
 
 const collapseClass = props.collapseClass ?? 'collapse'
@@ -29,36 +30,51 @@ function close() {
   emit('update:modelValue', false)
 }
 
-function getContentHeight(el: HTMLElement): number {
+function getContentHeight(el: Element): number {
   let height = 0
+
   for (let i = 0; i < el.children.length; i++) {
     height += (el.children[i] as HTMLElement).offsetHeight
   }
+
   return height
 }
 
-function handleBeforeEnter(el: HTMLElement) {
-  el.style.height = '0'
+function handleBeforeEnter(el: Element) {
+  if (el instanceof HTMLElement) {
+    el.style.height = '0'
+  }
 }
 
-function handleEnter(el: HTMLElement) {
-  el.style.height = `${getContentHeight(el)}px`
+function handleEnter(el: Element) {
+  if (el instanceof HTMLElement) {
+    el.style.height = `${getContentHeight(el)}px`
+  }
 }
 
-function hanfleAfterEnter(el: HTMLElement) {
-  el.style.height = ''
+function hanfleAfterEnter(el: Element) {
+  if (el instanceof HTMLElement) {
+    el.style.height = ''
+  }
 }
 
-function handleBeforeLeave(el: HTMLElement) {
-  el.style.height = `${getContentHeight(el)}px`
+function handleBeforeLeave(el: Element) {
+  if (el instanceof HTMLElement) {
+    el.style.height = `${getContentHeight(el)}px`
+  }
 }
 
-function handleLeave(el: HTMLElement) {
-  el.style.height = '0'
+function handleLeave(el: Element) {
+  if (el instanceof HTMLElement) {
+    el.style.height = '0'
+  }
 }
 
-function handleAfterLeave(el: HTMLElement) {
-  el.style.height = ''
+function handleAfterLeave(el: Element) {
+  if (el instanceof HTMLElement) {
+    el.style.height = ''
+  }
+
   emit('hidden')
 }
 </script>

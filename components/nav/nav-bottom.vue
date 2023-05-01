@@ -3,6 +3,7 @@
     <UiButton icon="menu-24" icon-size="24" class="navbar-link" @click="emit('toggle:drawer')">
       {{ useString('menu') }}
     </UiButton>
+
     <UiButton
       v-for="(link, index) in menuLinks"
       :key="`menu-link-${index}`"
@@ -16,7 +17,7 @@
   </nav>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { NavLink } from '~~/types/nav'
 
 const emit = defineEmits(['toggle:drawer'])

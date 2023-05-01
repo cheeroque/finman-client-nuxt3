@@ -46,10 +46,10 @@ const categories = recordsStore.categories
 const records = recordsStore.monthRecords
 
 const groupedExpenses = computed(() =>
-  Object.keys(records)
+  Object.keys(records ?? {})
     .map((key) => {
       const category = categories?.find(({ id }) => String(id) === key) as RecordsCategory
-      const total = records[key].reduce((total, { sum }) => (total += sum), 0)
+      const total = records?.[key].reduce((total, { sum }) => (total += sum), 0)
       return { category, total }
     })
     .sort(({ total: totalA }, { total: totalB }) => totalB - totalA)

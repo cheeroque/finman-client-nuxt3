@@ -14,6 +14,7 @@
       </slot>
     </td>
   </tr>
+
   <tr v-if="detailsVisible" class="row-details">
     <td :colspan="fields?.length">
       <UiCollapse v-model="collapseVisible" @hidden="handleHidden">
@@ -25,7 +26,7 @@
   </tr>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { TableField, TableItem } from '~/components/ui/ui-table.vue'
 
 const props = defineProps<{

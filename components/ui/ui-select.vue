@@ -21,6 +21,7 @@
         </slot>
       </option>
     </select>
+
     <div class="form-control-append">
       <span class="form-select-indicator" aria-hidden="true">
         <UiIcon name="select-indicator" />
@@ -29,12 +30,12 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ComputedRef } from 'vue'
 
 type SelectValue = number | string | null
 
-type SelectOption = {
+interface SelectOption {
   disabled?: boolean
   text: string
   value: SelectValue
@@ -53,11 +54,13 @@ const props = defineProps<{
 const emit = defineEmits(['input', 'update:modelValue'])
 
 /* Injects from parent */
-const id: ComputedRef<string> | undefined = inject('controlId', undefined)
+const id = inject<ComputedRef<string> | undefined>('controlId', undefined)
+
 const parentDisabled = inject(
   'disabled',
   computed(() => false)
 )
+
 const parentState = inject(
   'state',
   computed(() => null)
@@ -69,23 +72,29 @@ const state = computed(() => props.state ?? parentState.value)
 
 const componentClasses = computed(() => {
   const classes = ['form-control form-control-select']
+
   if (disabled.value) {
     classes.push('disabled')
   }
+
   if (size.value) {
     classes.push(`form-control-${size.value}`)
   }
+
   if (state.value === true) {
     classes.push('is-valid')
   }
+
   if (state.value === false) {
     classes.push('is-invalid')
   }
+
   return classes
 })
 
 function handleInput(event: Event) {
   const target = event.target as HTMLSelectElement
+
   emit('input', event)
   emit('update:modelValue', target.value)
 }

@@ -19,6 +19,7 @@
         </template>
       </UiInput>
     </template>
+
     <template #default="{ close }">
       <UiInputDatetimeDropdown
         :model-value="modelValue"
@@ -29,7 +30,7 @@
   </UiDropdown>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { DateTime } from 'luxon'
 
 const props = defineProps<{
@@ -43,25 +44,31 @@ const props = defineProps<{
   size?: ControlSize
   state?: ControlState
 }>()
+
 const emit = defineEmits(['update:modelValue'])
 
 const dropdownVisible = ref(false)
 
 const format = computed(() => props.format || 'dd.LL.yyyy HH:mm')
+
 const formattedValue = computed(() =>
   props.modelValue ? DateTime.fromJSDate(props.modelValue).toFormat(format.value) : undefined
 )
+
 const placeholder = computed(() => props.placeholder || DateTime.now().toFormat(format.value))
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement
+
   if (!target.value) {
     emit('update:modelValue', null)
     return
   }
 
   const datetime = DateTime.fromFormat(target.value, format.value)
+
   if (!datetime.isValid) return
+
   emit('update:modelValue', datetime.toJSDate())
 }
 

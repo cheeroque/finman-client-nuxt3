@@ -5,15 +5,18 @@
         <div v-if="hasHeader" class="toast-header">
           <slot name="header" :close="close">
             <h6 class="toast-title">{{ title }}</h6>
+
             <UiButton class="btn-close" @click="close">
               <UiIcon name="close-24" size="16" />
             </UiButton>
           </slot>
         </div>
+
         <div :class="{ 'no-header': !hasHeader }" class="toast-body">
           <slot :close="close">
             {{ message }}
           </slot>
+
           <UiButton v-if="!hasHeader" class="btn-close" @click="close">
             <UiIcon name="close-24" size="16" />
           </UiButton>
@@ -23,7 +26,7 @@
   </Teleport>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 const props = defineProps<{
   autohide?: boolean | number | string
   message?: string
@@ -31,18 +34,22 @@ const props = defineProps<{
   title?: string
   variant?: string
 }>()
+
 const emit = defineEmits(['update:modelValue'])
 
 const slots = useSlots()
+
 const hasHeader = computed(() => Boolean(slots.header || props.title))
 
 const autohide = computed(() => props.autohide ?? 5000)
 
 const toastClasses = computed(() => {
   let classes = ['toast']
+
   if (props.variant) {
     classes.push(`toast-${props.variant}`)
   }
+
   return classes
 })
 

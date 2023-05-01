@@ -5,6 +5,7 @@
         {{ title }}
       </slot>
     </div>
+
     <div class="timepicker-body">
       <div class="timepicker-hours">
         <button
@@ -18,6 +19,7 @@
           {{ formatUnit(hourIndex - 1) }}
         </button>
       </div>
+
       <div class="timepicker-minutes">
         <button
           v-for="minuteIndex in minuteCount"
@@ -30,6 +32,7 @@
           {{ formatUnit((minuteIndex - 1) * stepMinutes) }}
         </button>
       </div>
+
       <div v-if="showSeconds" class="timepicker-seconds">
         <button
           v-for="secondIndex in secondCount"
@@ -46,7 +49,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { DateTime } from 'luxon'
 
 const props = defineProps<{
@@ -57,6 +60,7 @@ const props = defineProps<{
   stepMinutes?: number | string
   stepSeconds?: number | string
 }>()
+
 const emit = defineEmits(['click:hours', 'click:minutes', 'click:seconds', 'update:modelValue'])
 
 const locale = computed(() => props.locale ?? useLocale())
@@ -81,8 +85,10 @@ function formatUnit(unit: number): string {
 
 function setHour(hour: number) {
   emit('click:hours')
+
   currentHour.value = hour
   const clickedLast = currentMinute.value !== undefined && (currentSecond.value !== undefined || !props.showSeconds)
+
   if (clickedLast) {
     setValue()
   }
@@ -90,7 +96,9 @@ function setHour(hour: number) {
 
 function setMinute(minute: number) {
   emit('click:minutes')
+
   currentMinute.value = minute
+
   const clickedLast = currentHour.value !== undefined && (currentSecond.value !== undefined || !props.showSeconds)
   if (clickedLast) {
     setValue()
@@ -99,7 +107,9 @@ function setMinute(minute: number) {
 
 function setSecond(second: number) {
   emit('click:seconds')
+
   currentSecond.value = second
+
   const clickedLast = currentHour.value !== undefined && currentMinute.value !== undefined
   if (clickedLast) {
     setValue()
@@ -112,7 +122,9 @@ function setValue() {
     minute: currentMinute.value,
     second: currentSecond.value,
   }).toJSDate()
+
   emit('update:modelValue', date)
+
   currentHour.value = undefined
   currentMinute.value = undefined
   currentSecond.value = undefined
