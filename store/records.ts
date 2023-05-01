@@ -1,12 +1,18 @@
 import { DateTime } from 'luxon'
 import { defineStore } from 'pinia'
-import { RecordsCategory, RecordsItem, RecordsSnapshot } from '~~/types/records'
+import {
+  RecordsCategory,
+  RecordsItem,
+  RecordsQueryResponse,
+  RecordsQueryVariables,
+  RecordsSnapshot,
+} from '~~/types/records'
+
 import CATEGORIES_QUERY from '@/graphql/Categories.gql'
 import FIRST_RECORD_QUERY from '@/graphql/FirstRecord.gql'
 import RECORDS_QUERY from '@/graphql/Records.gql'
 import RECORDS_TOTAL_QUERY from '@/graphql/RecordsTotal.gql'
 import SNAPSHOTS_QUERY from '@/graphql/Snapshots.gql'
-// import { useAuthStore } from '~/store/auth'
 
 interface MonthRecords {
   [key: string]: RecordsItem[]
@@ -39,22 +45,6 @@ interface FirstRecordQueryResponse {
 
 interface FirstRecordQueryResponseRecords {
   data: RecordsItem[]
-}
-
-interface RecordsQueryResponse {
-  records: RecordsQueryResponseRecords
-}
-
-interface RecordsQueryResponseRecords {
-  data: RecordsItem[]
-  paginatorInfo: PaginatorInfo
-}
-
-interface RecordsQueryVariables {
-  first: number
-  hasCategory?: WhereHasConditions
-  orderBy: OrderByClause[]
-  page: number
 }
 
 interface RecordsTotalResponse {

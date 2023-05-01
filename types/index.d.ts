@@ -19,7 +19,7 @@ declare global {
     total: number
   }
 
-  interface WhereHasConditions {
+  interface WhereConditions {
     column?: string
     operator?: string
     value?: string | number | boolean
