@@ -76,8 +76,8 @@ export default defineNuxtConfig({
     TOKEN_COOKIE_NAME: process.env.TOKEN_COOKIE_NAME || 'auth_token',
 
     public: {
-      apiUrl: process.env.API_URL,
-      staticUrl: process.env.STATIC_URL,
+      API_URL: process.env.API_URL,
+      STATIC_URL: process.env.STATIC_URL,
     },
   },
 

@@ -5,22 +5,45 @@
 </template>
 
 <script setup lang="ts">
+import RECORDS_EXPORT_MUTATION from '@/graphql/RecordsExport.gql'
+
+interface RecordsExportData {
+  result: RecordsExportDataOutput
+}
+
+interface RecordsExportDataOutput {
+  file: RecordsExportDataOutputFile
+}
+
+interface RecordsExportDataOutputFile {
+  path: string
+  size: number
+}
+
 const loading = ref(false)
 
 async function handleClick() {
-  const headers = useRequestHeaders(['cookie'])
-  const cookie = headers.cookie as string
-  const fetchOptions = { method: 'GET', headers: { cookie } }
-
   loading.value = true
 
+  const config = useRuntimeConfig()
+
+  const { mutate } = useMutation<RecordsExportData>(RECORDS_EXPORT_MUTATION)
+
   try {
-    const filePath = await $fetch<string>('/api/data/export', fetchOptions)
-    const link = document.createElement('a')
-    link.href = filePath
-    link.target = '_blank'
-    document.body.appendChild(link)
-    link.click()
+    const response = await mutate()
+
+    if (response?.data?.result) {
+      const filePath = response.data.result.file.path
+      const link = document.createElement('a')
+
+      link.href = `${config.public.STATIC_URL}${filePath}`
+      link.target = '_blank'
+
+      document.body.appendChild(link)
+      link.click()
+    } else {
+      throw new Error(useString('exportFailed'))
+    }
   } catch (error) {
     const toast = useToast()
     toast.value.modelValue = true
