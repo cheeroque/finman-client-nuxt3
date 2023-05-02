@@ -35,17 +35,17 @@ const categoryName = computed(() => props.record.category.name)
 
 const cardClasses = computed(() => {
   const classes = ['record-card']
+
   if (!props.viewMode && props.record.category.is_income) {
     classes.push('record-card-income')
   }
+
   return classes
 })
 
 const monthLink = computed(() => {
-  const date = DateTime.fromFormat(props.record.created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
-  const y = date.getFullYear()
-  const m = date.getMonth() + 1
-  return `/months/${y}-${m.toString().padStart(2, '0')}`
+  const date = DateTime.fromFormat(props.record.created_at, 'yyyy-LL-dd HH:mm:ss').toFormat('yyyy-LL')
+  return `/months/${date}`
 })
 </script>
 
