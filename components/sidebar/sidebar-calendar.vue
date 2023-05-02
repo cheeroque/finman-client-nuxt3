@@ -5,6 +5,8 @@
 </template>
 
 <script setup lang="ts">
+import { DateTime } from 'luxon'
+
 const route = useRoute()
 
 const activeDate = computed(() => {
@@ -13,9 +15,7 @@ const activeDate = computed(() => {
   const routeDate = route.params.month as string
 
   if (routeDate) {
-    const routeYear = Number(routeDate.split('-')[0])
-    const routeMonth = Number(routeDate.split('-')[1])
-    date = new Date(routeYear, routeMonth - 1)
+    date = DateTime.fromFormat(routeDate, 'yyyy-LL').toJSDate()
   }
 
   return date
