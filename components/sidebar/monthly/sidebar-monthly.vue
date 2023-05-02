@@ -10,6 +10,7 @@
         <SidebarMonthlyCategory :category="group.category" :max-total="maxTotal" :total="group.total" />
       </li>
     </ul>
+
     <UiCollapse v-if="hasCollapse" v-model="collapseOpen">
       <ul class="list-unstyled pt-8">
         <li
@@ -22,6 +23,7 @@
         </li>
       </ul>
     </UiCollapse>
+
     <UiButton
       v-if="hasCollapse"
       :title="useString(collapseOpen ? 'collapse' : 'expand')"
@@ -39,27 +41,38 @@
 import { RecordsCategory } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
+interface CategoryWithTotal {
+  category: RecordsCategory
+  total: number
+}
+
 const VISIBLE_LIMIT = 5
+
 const recordsStore = useRecordsStore()
-
-const categories = recordsStore.categories
-const records = recordsStore.monthRecords
-
-const groupedExpenses = computed(() =>
-  Object.keys(records ?? {})
-    .map((key) => {
-      const category = categories?.find(({ id }) => String(id) === key) as RecordsCategory
-      const total = records?.[key].reduce((total, { sum }) => (total += sum), 0)
-      return { category, total }
-    })
-    .sort(({ total: totalA }, { total: totalB }) => totalB - totalA)
-    .filter(({ category }) => !Boolean(category?.is_income))
-)
 
 const collapseOpen = ref(false)
 
+const groupedExpenses = computed(() => {
+  const categories: CategoryWithTotal[] = []
+
+  Object.entries(recordsStore.monthRecords ?? {}).forEach(([categoryId, records]) => {
+    const category = records?.[0]?.category
+    const total = records?.reduce((total, record) => (total += record.sum), 0)
+
+    if (!category.is_income) {
+      categories.push({ category, total })
+    }
+  })
+
+  categories.sort((a, b) => b.total - a.total)
+
+  return categories
+})
+
 const visibleCategories = computed(() => groupedExpenses.value.slice(0, VISIBLE_LIMIT))
+
 const hiddenCategories = computed(() => groupedExpenses.value.slice(VISIBLE_LIMIT))
+
 const hasCollapse = Boolean(hiddenCategories.value.length)
 
 const maxTotal = computed(() => groupedExpenses.value[0].total)

@@ -28,12 +28,12 @@ const props = defineProps<{
 }>()
 
 const textColor = computed(() => useContrastColor(props.category.color))
-const widthRatio = computed(() => `${Math.round((props.total * 10000) / props.maxTotal) / 100}%`)
 
-const mounted = ref(false)
+const widthRatio = computed(() => `${Math.round((props.total * 10000) / props.maxTotal) / 100}%`)
 
 const caption = ref()
 const captionOutside = ref(false)
+const mounted = ref(false)
 
 onMounted(() => {
   const el = caption.value
@@ -53,6 +53,7 @@ onMounted(() => {
   align-items: center;
   height: 3rem;
   width: var(--category-bar-width);
+  max-width: 100%;
   font-size: $font-size-base * 0.875;
   line-height: 1.2;
   border-radius: 0.25rem;
