@@ -24,6 +24,7 @@ const props = defineProps<{
 const emit = defineEmits(['update:modelValue', 'hidden'])
 
 const collapseClass = props.collapseClass ?? 'collapse'
+
 const transition = props.transition ?? 'collapse'
 
 function close() {

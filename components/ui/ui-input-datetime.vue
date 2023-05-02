@@ -49,13 +49,13 @@ const emit = defineEmits(['update:modelValue'])
 
 const dropdownVisible = ref(false)
 
-const format = computed(() => props.format || 'dd.LL.yyyy HH:mm')
+const format = computed(() => props.format ?? 'dd.LL.yyyy HH:mm')
 
 const formattedValue = computed(() =>
   props.modelValue ? DateTime.fromJSDate(props.modelValue).toFormat(format.value) : undefined
 )
 
-const placeholder = computed(() => props.placeholder || DateTime.now().toFormat(format.value))
+const placeholder = computed(() => props.placeholder ?? DateTime.now().toFormat(format.value))
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement

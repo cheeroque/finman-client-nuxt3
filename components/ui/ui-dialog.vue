@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <Transition name="dialog" @after-leave="handleAfterLeave">
-      <div v-if="modelValue" :class="dialogClasses">
+      <div v-if="modelValue" :class="componentClasses">
         <div class="dialog-content">
           <div v-if="hasHeader" class="dialog-header">
             <slot name="header" :close="handleClose">
@@ -51,16 +51,20 @@ const emit = defineEmits(['closed', 'update:modelValue'])
 
 const slots = useSlots()
 
-const hasHeader = computed(() => Boolean(props.title || slots.header))
-const hasFooter = computed(() => Boolean(slots.footer))
+const hasHeader = computed(() => useSlotHasContent(slots.header) || Boolean(props.title))
+const hasFooter = computed(() => useSlotHasContent(slots.footer))
 
-let dialogClasses = ['dialog']
+const componentClasses = computed(() => {
+  const classes = ['dialog']
 
-if (props.size) {
-  dialogClasses.push(`dialog-${props.size}`)
-} else {
-  dialogClasses.push('dialog-md')
-}
+  if (props.size) {
+    classes.push(`dialog-${props.size}`)
+  } else {
+    classes.push('dialog-md')
+  }
+
+  return classes
+})
 
 function handleAfterLeave() {
   emit('closed')

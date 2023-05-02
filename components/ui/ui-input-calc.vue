@@ -45,8 +45,6 @@ const emit = defineEmits(['update:modelValue'])
 const input = ref(null)
 const hasTotal = ref(false)
 
-const size = computed(() => props.size)
-
 function calculate(event: Event | FakeFocusEvent) {
   const target = event.target as HTMLInputElement
 

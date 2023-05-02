@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <Transition name="toast">
-      <div v-if="modelValue" :class="toastClasses">
+      <div v-if="modelValue" :class="componentClasses">
         <div v-if="hasHeader" class="toast-header">
           <slot name="header" :close="close">
             <h6 class="toast-title">{{ title }}</h6>
@@ -39,11 +39,13 @@ const emit = defineEmits(['update:modelValue'])
 
 const slots = useSlots()
 
-const hasHeader = computed(() => Boolean(slots.header || props.title))
+const timeout = ref()
+
+const hasHeader = computed(() => useSlotHasContent(slots.header) || Boolean(props.title))
 
 const autohide = computed(() => props.autohide ?? 5000)
 
-const toastClasses = computed(() => {
+const componentClasses = computed(() => {
   let classes = ['toast']
 
   if (props.variant) {
@@ -53,19 +55,19 @@ const toastClasses = computed(() => {
   return classes
 })
 
-let timeout: NodeJS.Timeout
-
 watch(
   () => props.modelValue,
   (event) => {
     if (event && autohide.value) {
-      timeout = setTimeout(() => close(), Number(autohide.value))
+      timeout.value = setTimeout(() => close(), Number(autohide.value))
     }
   }
 )
 
 function close() {
-  clearTimeout(timeout)
+  if (timeout.value) {
+    clearTimeout(timeout.value)
+  }
   emit('update:modelValue', false)
 }
 </script>

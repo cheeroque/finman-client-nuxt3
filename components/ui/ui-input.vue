@@ -71,7 +71,7 @@ const size = computed(() => props.size)
 const state = computed(() => props.state ?? parentState.value)
 const type = computed(() => props.type ?? 'text')
 
-const hasAppend = computed(() => Boolean(props.append || slots.append))
+const hasAppend = computed(() => useSlotHasContent(slots.append) || Boolean(props.append))
 
 const componentClasses = computed(() => {
   const classes = ['form-control']

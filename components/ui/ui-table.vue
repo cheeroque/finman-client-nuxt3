@@ -1,5 +1,5 @@
 <template>
-  <table :class="tableClasses">
+  <table :class="componentClasses">
     <thead v-if="!hideThead" class="thead">
       <tr>
         <th v-for="(field, index) in normalizedFields" :key="`th-${index}`" :class="field.thClass">
@@ -49,7 +49,7 @@ const props = defineProps<{
   items: TableItem[]
 }>()
 
-const tableClasses = computed(() => {
+const componentClasses = computed(() => {
   const classes = ['table']
 
   if (props.fixed) {

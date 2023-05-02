@@ -31,12 +31,14 @@ const formGroup = ref()
 /* Provided to children */
 const controlId = computed(() => `${formGroup?.value?.id}-control`)
 provide('controlId', controlId)
+
 const disabled = computed(() => props.disabled)
 provide('disabled', disabled)
+
 const state = computed(() => props.state)
 provide('state', state)
 
-const hasLabel = computed(() => Boolean(props.label || slots.label))
+const hasLabel = computed(() => useSlotHasContent(slots.label) || Boolean(props.label))
 
 const componentClasses = computed(() => {
   const classes = ['form-group']

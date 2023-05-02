@@ -1,11 +1,11 @@
 <template>
   <div :class="componentClasses">
     <select
-      :value="modelValue"
       :id="id"
       :disabled="disabled"
       :name="name"
       :required="required"
+      :value="modelValue"
       autocomplete="off"
       class="form-control-el"
       @input="handleInput"

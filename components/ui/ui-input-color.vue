@@ -41,9 +41,9 @@ const emit = defineEmits(['update:modelValue'])
 
 const colorInput = ref()
 
-const bgColor = computed(() => props.modelValue || 'transparent')
+const bgColor = computed(() => props.modelValue ?? 'transparent')
 const iconColor = computed(() => (props.modelValue ? useContrastColor(props.modelValue) : 'inherit'))
-const placeholder = computed(() => props.placeholder || '#')
+const placeholder = computed(() => props.placeholder ?? '#')
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement

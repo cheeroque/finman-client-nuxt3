@@ -81,4 +81,8 @@ function show() {
 function toggle() {
   handleUpdate(!localVisible.value)
 }
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>

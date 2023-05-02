@@ -1,21 +1,26 @@
 <template>
   <component
     :is="tagName"
-    :class="buttonClasses"
+    :class="componentClasses"
     :disabled="disabled"
     :form="form"
-    :href="href"
+    :rel="rel"
+    :target="target"
     :to="to"
-    :type="type || 'button'"
+    :type="type"
     @click="handleClick"
   >
     <template v-if="icon && !iconRight">
       <UiSpinner v-if="loading" :size="iconSize" class="nuxt-icon nuxt-icon-left" />
+
       <UiIcon v-else :name="icon" :size="iconSize" class="nuxt-icon-left" />
     </template>
-    <slot></slot>
+
+    <slot />
+
     <template v-if="icon && iconRight">
       <UiSpinner v-if="loading" :size="iconSize" class="nuxt-icon nuxt-icon-right" />
+
       <UiIcon v-else :name="icon" :size="iconSize" class="nuxt-icon-right" />
     </template>
   </component>
@@ -28,7 +33,6 @@ const props = defineProps<{
   block?: boolean
   disabled?: boolean
   form?: string
-  href?: string
   icon?: string
   iconRight?: boolean
   iconSize?: number | string
@@ -40,23 +44,29 @@ const props = defineProps<{
   type?: string
   variant?: string
 }>()
+
 const emit = defineEmits(['click', 'click-native'])
+
 const slots = useSlots()
 
-const isLink = computed(() => Boolean(props.href || props.to))
+const isLink = computed(() => Boolean(props.to))
+
 const tagName = computed(() => (isLink.value ? resolveComponent('NuxtLink') : 'button'))
 
-const buttonClasses = computed(() => {
+const componentClasses = computed(() => {
   let classes = ['btn']
 
   if (props.block) classes.push('btn-block')
   if (props.disabled) classes.push('disabled')
   if (props.size) classes.push(`btn-${props.size}`)
   if (props.variant) classes.push(`btn-${props.variant}`)
-  if (!slots.default) classes.push('btn-icon')
+
+  if (!useSlotHasContent(slots.default)) classes.push('btn-icon')
 
   return classes
 })
+
+const type = computed(() => props.type ?? 'button')
 
 function handleClick(event: Event) {
   emit('click')

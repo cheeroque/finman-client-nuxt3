@@ -78,6 +78,7 @@ const emit = defineEmits(['update:modelValue'])
 const currentPage = computed(() => {
   const route = useRoute()
   const routePage = Number(route.query.page || 1)
+
   return Number(props.modelValue ?? routePage ?? 1)
 })
 
