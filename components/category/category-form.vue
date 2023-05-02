@@ -89,7 +89,9 @@ watchEffect(() => {
 /* Form validation */
 const rules = computed(() => ({
   color: { required: helpers.withMessage(useString('fieldRequired'), required) },
+
   name: { required: helpers.withMessage(useString('fieldRequired'), required) },
+
   slug: { required: helpers.withMessage(useString('fieldRequired'), required) },
 }))
 

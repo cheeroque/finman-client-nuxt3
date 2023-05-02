@@ -3,6 +3,7 @@
     <h1 class="page-records-title">
       <NuxtLink to="/"> {{ useNumberFormat(recordsStore.balance) }}&nbsp;₽ </NuxtLink>
     </h1>
+
     <PageRecordsNav />
   </div>
 </template>

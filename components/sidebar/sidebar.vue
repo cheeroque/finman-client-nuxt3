@@ -1,7 +1,9 @@
 <template>
   <aside class="sidebar">
     <SearchForm class="mb-24" />
+
     <SidebarMonthly class="mb-24" />
+
     <Transition name="fade" mode="out-in">
       <SidebarCalendar />
     </Transition>

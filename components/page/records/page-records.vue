@@ -22,6 +22,7 @@ import { useRecordsStore } from '~/store/records'
 const recordsStore = useRecordsStore()
 
 const route = useRoute()
+
 const viewMode = computed<ViewMode>(() => route.params.view as ViewMode)
 
 watch(

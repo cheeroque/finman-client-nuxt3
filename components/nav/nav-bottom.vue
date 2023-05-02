@@ -32,9 +32,11 @@ const menuLinks: NavLink[] = [
 
 function getLinkClasses(link: NavLink): string[] {
   const classes = ['navbar-link']
+
   if ((link.link === '/' && route.path === '/') || (link.link !== '/' && route.path.startsWith(link.link))) {
     classes.push('active')
   }
+
   return classes
 }
 </script>

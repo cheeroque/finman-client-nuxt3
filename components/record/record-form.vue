@@ -101,11 +101,14 @@ function isValidDate(value: Date): boolean {
 
 const rules = computed(() => ({
   category_id: { required: helpers.withMessage(useString('fieldRequired'), required) },
+
   created_at: {
     required: helpers.withMessage(useString('fieldRequired'), required),
     isValidDate: helpers.withMessage(useString('invalidDate'), isValidDate),
   },
+
   note: { required: helpers.withMessage(useString('fieldRequired'), required) },
+
   sum: {
     minValue: helpers.withMessage(({ $params }) => `${useString('fieldMinimumValue')} ${$params.min}`, minValue(0)),
     required: helpers.withMessage(useString('fieldRequired'), required),
