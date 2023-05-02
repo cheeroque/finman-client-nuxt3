@@ -1,33 +1,33 @@
 <template>
   <form ref="form" class="record-form" @submit.prevent="handleSubmit">
     <UiFormGroup
-      :invalid-feedback="formatErrors(v$.category_id.$errors)"
+      :invalid-feedback="useValidationErrors(v$, 'category_id')"
       :label="useString('category')"
-      :state="v$.category_id.$error ? false : null"
+      :state="useValidationState(v$, 'category_id')"
     >
       <UiSelect v-model="formData.category_id" :options="categories" name="category_id" />
     </UiFormGroup>
 
     <UiFormGroup
-      :invalid-feedback="formatErrors(v$.sum.$errors)"
+      :invalid-feedback="useValidationErrors(v$, 'sum')"
       :label="useString('sum')"
-      :state="v$.sum.$error ? false : null"
+      :state="useValidationState(v$, 'sum')"
     >
       <UiInputCalc v-model="formData.sum" name="sum" />
     </UiFormGroup>
 
     <UiFormGroup
-      :invalid-feedback="formatErrors(v$.created_at.$errors)"
+      :invalid-feedback="useValidationErrors(v$, 'created_at')"
       :label="useString('dateTime')"
-      :state="v$.created_at.$error ? false : null"
+      :state="useValidationState(v$, 'created_at')"
     >
       <UiInputDatetime v-model="formData.created_at" name="created_at" />
     </UiFormGroup>
 
     <UiFormGroup
-      :invalid-feedback="formatErrors(v$.note.$errors)"
+      :invalid-feedback="useValidationErrors(v$, 'note')"
       :label="useString('note')"
-      :state="v$.note.$error ? false : null"
+      :state="useValidationState(v$, 'note')"
       class="mb-0"
     >
       <UiInput v-model="formData.note" :placeholder="useString('notePlaceholder')" name="note" />
@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { ErrorObject, useVuelidate } from '@vuelidate/core'
+import { useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
 import { RecordsItem } from '~~/types/records'
 import { useAuthStore } from '~/store/auth'
@@ -97,10 +97,6 @@ watchEffect(() => {
 /* Form validation */
 function isValidDate(value: Date): boolean {
   return DateTime.fromJSDate(value).isValid
-}
-
-function formatErrors(errors: ErrorObject[]): string {
-  return errors.map(({ $message }) => $message).join(' ')
 }
 
 const rules = computed(() => ({

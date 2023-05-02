@@ -1,25 +1,25 @@
 <template>
   <form ref="form" class="record-form" @submit.prevent="onSubmit">
     <UiFormGroup
-      :invalid-feedback="formatErrors(v$.name.$errors)"
+      :invalid-feedback="useValidationErrors(v$, 'name')"
       :label="useString('name')"
-      :state="v$.name.$error ? false : null"
+      :state="useValidationState(v$, 'name')"
     >
       <UiInput v-model="formData.name" name="name" />
     </UiFormGroup>
 
     <UiFormGroup
-      :invalid-feedback="formatErrors(v$.slug.$errors)"
+      :invalid-feedback="useValidationErrors(v$, 'slug')"
       :label="useString('slug')"
-      :state="v$.slug.$error ? false : null"
+      :state="useValidationState(v$, 'slug')"
     >
       <UiInput v-model="formData.slug" name="slug" />
     </UiFormGroup>
 
     <UiFormGroup
-      :invalid-feedback="formatErrors(v$.color.$errors)"
+      :invalid-feedback="useValidationErrors(v$, 'color')"
       :label="useString('color')"
-      :state="v$.color.$error ? false : null"
+      :state="useValidationState(v$, 'color')"
     >
       <UiInputColor v-model="formData.color" name="color" />
     </UiFormGroup>
@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ErrorObject, useVuelidate } from '@vuelidate/core'
+import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
 import { RecordsCategory } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
@@ -87,10 +87,6 @@ watchEffect(() => {
 })
 
 /* Form validation */
-function formatErrors(errors: ErrorObject[]): string {
-  return errors.map(({ $message }) => $message).join(' ')
-}
-
 const rules = computed(() => ({
   color: { required: helpers.withMessage(useString('fieldRequired'), required) },
   name: { required: helpers.withMessage(useString('fieldRequired'), required) },
