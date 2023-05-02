@@ -1,5 +1,9 @@
 <template>
   <SidebarWidget :title="useString('thisMonth')" class="sidebar-widget-monthly">
+    <p v-if="isEmpty" class="text-center text-neutral mb-0">
+      {{ useString('tableEmpty') }}
+    </p>
+
     <ul class="list-unstyled">
       <li
         v-for="(group, index) in visibleCategories"
@@ -73,7 +77,9 @@ const visibleCategories = computed(() => groupedExpenses.value.slice(0, VISIBLE_
 
 const hiddenCategories = computed(() => groupedExpenses.value.slice(VISIBLE_LIMIT))
 
-const hasCollapse = Boolean(hiddenCategories.value.length)
+const hasCollapse = computed(() => Boolean(hiddenCategories.value.length))
+
+const isEmpty = computed(() => !groupedExpenses.value.length)
 
 const maxTotal = computed(() => groupedExpenses.value[0].total)
 
