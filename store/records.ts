@@ -246,18 +246,6 @@ export const useRecordsStore = defineStore({
       this.pending--
     },
 
-    async refetchOnRecordsChange() {
-      this.pending++
-
-      try {
-        await Promise.all([this.fetchBalance(), this.fetchMonthRecords()])
-      } catch (error) {
-        this.handleError(error)
-      }
-
-      this.pending--
-    },
-
     handleError(error: any) {
       const { $auth } = useNuxtApp()
 
