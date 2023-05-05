@@ -105,12 +105,16 @@ async function handleSubmit() {
     const { mutate } = useMutation<SnapshotCreateResponse>(SNAPSHOT_CREATE_MUTATION)
 
     try {
+      /* Create snapshot */
       const response = await mutate({ data })
 
       if (response?.data?.result) {
         recordsStore.snapshot = response.data.result
         emit('success', response.data.result)
       }
+
+      /* Refresh stored snapshot */
+      await recordsStore.fetchSnapshot()
     } catch (error: any) {}
 
     recordsStore.pending--

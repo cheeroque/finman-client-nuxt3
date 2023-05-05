@@ -1,5 +1,11 @@
 <template>
-  <UiButton icon="datetime-24" icon-size="24" class="drawer-item" @click="emit('action')">
+  <UiButton
+    :loading="pending || recordsStore.loading"
+    icon="datetime-24"
+    icon-size="24"
+    class="drawer-item"
+    @click="emit('action')"
+  >
     <span class="caption">{{ caption }}</span>
   </UiButton>
 </template>
@@ -23,7 +29,7 @@ const caption = computed(() => {
 
   if (snapshot.created_at) {
     strings.push(
-      DateTime.fromISO(snapshot.created_at).toLocaleString(
+      DateTime.fromFormat(snapshot.created_at, 'yyyy-LL-dd HH:mm:ss').toLocaleString(
         { day: '2-digit', month: '2-digit', year: 'numeric' },
         { locale: useLocale() }
       )
@@ -32,4 +38,6 @@ const caption = computed(() => {
 
   return strings.join(', ')
 })
+
+const { pending } = await useAsyncData('latest-snapshot', () => recordsStore.fetchSnapshot())
 </script>

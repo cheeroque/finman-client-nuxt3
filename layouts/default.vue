@@ -31,7 +31,6 @@ const { pending } = await useAsyncData('global-data', () =>
     recordsStore.fetchCategories(),
     recordsStore.fetchFirstRecord(),
     recordsStore.fetchMonthRecords(),
-    recordsStore.fetchSnapshot(),
   ])
 )
 
