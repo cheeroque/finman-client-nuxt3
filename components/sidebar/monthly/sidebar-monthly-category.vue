@@ -29,8 +29,6 @@ const props = defineProps<{
 
 const textColor = computed(() => useContrastColor(props.category.color))
 
-const widthRatio = computed(() => `${Math.round((props.total * 10000) / props.maxTotal) / 100}%`)
-
 const barWidth = ref('100%')
 
 const caption = ref()
