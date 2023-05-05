@@ -142,11 +142,15 @@ async function handleSubmit() {
     const { mutate } = useMutation<RecordUpsertResponse>(mutation)
 
     try {
+      /* Upsert record */
       const response = await mutate({ data })
 
       if (response?.data?.result) {
         emit('success', response.data.result)
       }
+
+      /* Refetch everything that changes after record upsert */
+      await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchMonthRecords(), recordsStore.fetchRecords()])
     } catch (error: any) {}
 
     recordsStore.pending--

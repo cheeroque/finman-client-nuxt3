@@ -81,6 +81,7 @@ async function handleRecordDelete() {
   const { mutate } = useMutation<RecordDeleteResponseData>(RECORD_DELETE_MUTATION)
 
   try {
+    /* Delete record */
     const response = await mutate({ id })
 
     if (response?.data?.result) {
@@ -92,6 +93,9 @@ async function handleRecordDelete() {
       emit('record:delete')
       emit('update:modelValue', false)
     }
+
+    /* Refetch everything that changes after record upsert */
+    await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchMonthRecords(), recordsStore.fetchRecords()])
   } catch (error: any) {}
 
   recordsStore.pending--
