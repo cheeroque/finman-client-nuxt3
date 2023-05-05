@@ -1,4 +1,5 @@
 #import "@/graphql/fragments/CategoryFragment.gql"
+#import "@/graphql/fragments/RecordFragment.gql"
 
 query Records(
   $first: Int = 50
@@ -9,14 +10,11 @@ query Records(
 ) {
   records(first: $first, page: $page, orderBy: $orderBy, hasCategory: $hasCategory, where: $where) {
     data {
+      ...RecordFragment
+
       category {
         ...CategoryFragment
       }
-
-      created_at
-      id
-      note
-      sum
     }
 
     paginatorInfo {

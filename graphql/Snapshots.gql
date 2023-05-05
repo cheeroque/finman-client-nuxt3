@@ -1,10 +1,9 @@
+#import "@/graphql/fragments/SnapshotFragment.gql"
+
 query Snapshots($first: Int, $orderBy: [QueryRevisesOrderByOrderByClause!] = [{ column: CREATED_AT, order: DESC }]) {
   snapshots: revises(first: $first, orderBy: $orderBy) {
     data {
-      balance
-      created_at
-      id
-      note
+      ...SnapshotFragment
     }
 
     paginatorInfo {

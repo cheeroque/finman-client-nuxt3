@@ -1,7 +1,7 @@
+#import "@/graphql/fragments/RecordFragment.gql"
+
 mutation RecordDelete($id: ID!) {
   result: deleteRecord(id: $id) {
-    id
-    note
-    sum
+    ...RecordFragment
   }
 }

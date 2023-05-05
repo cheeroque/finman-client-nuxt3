@@ -1,4 +1,5 @@
 #import "@/graphql/fragments/CategoryFragment.gql"
+#import "@/graphql/fragments/RecordFragment.gql"
 
 query FirstRecord {
   records(first: 1, orderBy: [{ column: CREATED_AT, order: ASC }]) {
@@ -7,10 +8,7 @@ query FirstRecord {
         ...CategoryFragment
       }
 
-      created_at
-      id
-      note
-      sum
+      ...RecordFragment
     }
   }
 }

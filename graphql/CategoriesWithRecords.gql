@@ -1,4 +1,5 @@
 #import "@/graphql/fragments/CategoryFragment.gql"
+#import "@/graphql/fragments/RecordFragment.gql"
 
 query Categories(
   $where: CategoryRecordsWhereWhereConditions = {}
@@ -9,10 +10,7 @@ query Categories(
       ...CategoryFragment
 
       records(orderBy: [{ column: CREATED_AT, order: DESC }], where: $where) {
-        created_at
-        id
-        note
-        sum
+        ...RecordFragment
       }
 
       recordsTotal(where: $whereTotal)
