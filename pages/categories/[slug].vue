@@ -122,13 +122,14 @@ async function fetchRecords() {
   recordsStore.pending--
 }
 
+const { refresh } = await useAsyncData('category-records', () => fetchRecords())
+
 watch(
   () => route.query,
   async () => {
-    await fetchRecords()
+    await refresh()
     setTimeout(() => useScrollTo('.page'), 250)
-  },
-  { immediate: true }
+  }
 )
 </script>
 

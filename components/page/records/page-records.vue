@@ -25,14 +25,15 @@ const route = useRoute()
 
 const viewMode = computed<ViewMode>(() => route.params.view as ViewMode)
 
+const { refresh } = await useAsyncData('records', () => recordsStore.fetchRecords())
+
 watch(
   () => route.query,
 
   async () => {
-    await recordsStore.fetchRecords()
+    await refresh()
     setTimeout(() => useScrollTo('.page'), 250)
-  },
-  { immediate: true }
+  }
 )
 
 /** Observe pagination element to hide/show FAB on scroll */

@@ -99,7 +99,7 @@ async function fetchCategories() {
   recordsStore.pending--
 }
 
-fetchCategories()
+await useAsyncData('month-records', () => fetchCategories())
 </script>
 
 <style lang="scss" scoped>
