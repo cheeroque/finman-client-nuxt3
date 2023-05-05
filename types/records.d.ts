@@ -30,10 +30,10 @@ interface RecordsQueryResponseRecords {
 }
 
 interface RecordsQueryVariables {
-  first: number
+  first?: number
   hasCategory?: WhereConditions
-  orderBy: OrderByClause[]
-  page: number
+  orderBy?: OrderByClause[]
+  page?: number
   where?: RecordsQueryWhereConditions | WhereConditions
 }
 

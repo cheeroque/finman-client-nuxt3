@@ -10,22 +10,13 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { RecordsItem } from '~~/types/records'
+import { RecordsItem, RecordsQueryResponse, RecordsQueryVariables } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
 import RECORDS_QUERY from '@/graphql/Records.gql'
 
 interface CategoryRecordsByMonth {
   [key: string]: TableItem
-}
-
-interface RecordsQueryResponse {
-  records: RecordsQueryResponseRecords
-}
-
-interface RecordsQueryResponseRecords {
-  data: RecordsItem[]
-  paginatorInfo: PaginatorInfo
 }
 
 interface TableItem {
@@ -72,13 +63,17 @@ async function fetchRecords() {
 
   const from = to.minus({ month: perPage.value - 1 }).set({ hour: 0, minute: 0, second: 0, day: 1 })
 
-  const variables = {
+  const variables: RecordsQueryVariables = {
     where: {
       AND: [
         { column: 'CREATED_AT', operator: 'GTE', value: from.toFormat('yyyy-LL-dd HH:mm:ss') },
         { column: 'CREATED_AT', operator: 'LTE', value: to.toFormat('yyyy-LL-dd HH:mm:ss') },
       ],
     },
+  }
+
+  if (category) {
+    variables.hasCategory = { column: 'ID', operator: 'EQ', value: category.id }
   }
 
   recordsStore.pending++
