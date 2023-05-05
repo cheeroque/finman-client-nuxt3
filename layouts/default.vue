@@ -5,20 +5,35 @@
     <div class="app-content">
       <Sidebar />
 
-      <div class="page">
+      <div :class="{ loading: pending }" class="page">
         <slot />
       </div>
     </div>
 
     <UiToast v-bind="toast" @update:model-value="handleToastUpdate" />
+
     <NavBottom @toggle:drawer="handleToggleDrawer" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useRecordsStore } from '~/store/records'
+
+const recordsStore = useRecordsStore()
+
 const toast = useToast()
 
 const drawerOpen = ref(false)
+
+const { pending } = await useAsyncData('global-data', () =>
+  Promise.all([
+    recordsStore.fetchBalance(),
+    recordsStore.fetchCategories(),
+    recordsStore.fetchFirstRecord(),
+    recordsStore.fetchMonthRecords(),
+    recordsStore.fetchSnapshot(),
+  ])
+)
 
 function handleToggleDrawer() {
   drawerOpen.value = !drawerOpen.value
