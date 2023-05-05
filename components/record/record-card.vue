@@ -1,7 +1,7 @@
 <template>
   <div :class="cardClasses">
     <NuxtLink :to="monthLink" class="record-date">
-      {{ useDateFormat(record.created_at, { dateStyle: 'long', timeStyle: 'short' }) }}
+      {{ formatDate(record.created_at) }}
     </NuxtLink>
 
     <UiButton variant="link" class="record-sum" @click="emit('edit')">
@@ -47,6 +47,13 @@ const monthLink = computed(() => {
   const date = DateTime.fromFormat(props.record.created_at, 'yyyy-LL-dd HH:mm:ss').toFormat('yyyy-LL')
   return `/months/${date}`
 })
+
+function formatDate(datestring: string): string {
+  return DateTime.fromFormat(datestring, 'yyyy-LL-dd HH:mm:ss').toLocaleString(
+    { dateStyle: 'long', timeStyle: 'short' },
+    { locale: useLocale() }
+  )
+}
 </script>
 
 <style lang="scss" scoped>
