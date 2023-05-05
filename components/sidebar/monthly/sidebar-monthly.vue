@@ -7,7 +7,7 @@
     <ul class="list-unstyled">
       <li
         v-for="(group, index) in visibleCategories"
-        :key="`group-${index}`"
+        :key="`group-${group.category.id}`"
         :class="{ 'mt-8': index > 0 }"
         role="presentation"
       >

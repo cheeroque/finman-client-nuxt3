@@ -1,11 +1,11 @@
 <template>
   <NuxtLink
     :to="`/categories/${category.slug}`"
-    :class="{ 'caption-outside': captionOutside, 'caption-visible': mounted }"
+    :class="{ 'caption-outside': captionOutside, 'caption-visible': visible }"
     :style="{
       '--category-bar-color': category.color,
       '--category-text-color': textColor,
-      '--category-bar-width': widthRatio,
+      '--category-bar-width': barWidth,
     }"
     class="category-link"
   >
@@ -31,18 +31,42 @@ const textColor = computed(() => useContrastColor(props.category.color))
 
 const widthRatio = computed(() => `${Math.round((props.total * 10000) / props.maxTotal) / 100}%`)
 
+const barWidth = ref('100%')
+
 const caption = ref()
 const captionOutside = ref(false)
-const mounted = ref(false)
+const visible = ref(false)
+
+function initCaption() {
+  /* Determine whether category caption should be inside or outside the bar */
+  if (!caption.value) return
+
+  visible.value = false
+
+  const captionEl = caption.value
+  const parent = captionEl.closest('.category-link')
+  const root = parent.parentElement
+
+  const captionWidth = captionEl.offsetWidth
+  const rootWidth = root?.offsetWidth ?? 0
+
+  const parentWidth = Math.round((rootWidth * props.total) / props.maxTotal)
+
+  captionOutside.value = captionWidth > parentWidth
+  barWidth.value = `${parentWidth}px`
+
+  visible.value = true
+}
+
+watch(
+  () => [props.maxTotal, props.total],
+  () => {
+    initCaption()
+  }
+)
 
 onMounted(() => {
-  const el = caption.value
-
-  const parent = el.closest('.category-link')
-  const captionWidth = el.offsetWidth
-  const parentWidth = parent.offsetWidth
-  captionOutside.value = captionWidth > parentWidth
-  mounted.value = true
+  initCaption()
 })
 </script>
 
