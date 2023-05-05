@@ -124,8 +124,13 @@ async function onSubmit() {
       if (response?.data?.result) {
         emit('success', response.data.result)
 
-        /** Refetch stored categories */
-        await recordsStore.fetchCategories()
+        /** Refetch everything that could change after category upsert */
+        await Promise.all([
+          recordsStore.fetchBalance(),
+          recordsStore.fetchCategories(),
+          recordsStore.fetchMonthRecords(),
+          recordsStore.fetchRecords(),
+        ])
       }
     } catch (error: any) {}
 

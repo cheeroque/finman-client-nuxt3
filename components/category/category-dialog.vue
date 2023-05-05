@@ -110,8 +110,13 @@ async function handleCategoryDelete() {
 
       emit('update:modelValue', false)
 
-      /** Refetch stored categories */
-      await recordsStore.fetchCategories()
+      /** Refetch everything that could change after category delete */
+      await Promise.all([
+        recordsStore.fetchBalance(),
+        recordsStore.fetchCategories(),
+        recordsStore.fetchMonthRecords(),
+        recordsStore.fetchRecords(),
+      ])
     }
   } catch (error: any) {}
 
