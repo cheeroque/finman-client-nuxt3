@@ -26,6 +26,8 @@ export const handleNuxtReady = (nuxt: Nuxt) => {
     { prefix: 'on', stop: 20 },
     { suffix: 'bg', stop: 30 },
     { prefix: 'on', suffix: 'bg', stop: 90 },
+    { suffix: 'surface', stop: 10 },
+    { prefix: 'on', suffix: 'surface', stop: 90 },
   ]
   const themeLight: ThemeItem[] = [
     { suffix: '', stop: 40 },
