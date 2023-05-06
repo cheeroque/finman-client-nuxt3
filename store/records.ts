@@ -9,7 +9,6 @@ import {
 } from '~~/types/records'
 
 import CATEGORIES_QUERY from '@/graphql/Categories.gql'
-import FIRST_RECORD_QUERY from '@/graphql/FirstRecord.gql'
 import RECORDS_QUERY from '@/graphql/Records.gql'
 import RECORDS_TOTAL_QUERY from '@/graphql/RecordsTotal.gql'
 import SNAPSHOTS_QUERY from '@/graphql/Snapshots.gql'
@@ -37,14 +36,6 @@ interface CategoriesQueryResponse {
 interface CategoriesQueryResponseCategories {
   data: RecordsCategory[]
   paginatorInfo: PaginatorInfo
-}
-
-interface FirstRecordQueryResponse {
-  records: FirstRecordQueryResponseRecords
-}
-
-interface FirstRecordQueryResponseRecords {
-  data: RecordsItem[]
 }
 
 interface RecordsTotalResponse {
@@ -121,8 +112,13 @@ export const useRecordsStore = defineStore({
     async fetchFirstRecord() {
       this.pending++
 
+      const variables = {
+        first: 1,
+        orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
+      }
+
       try {
-        const { data, error } = await useAsyncQuery<FirstRecordQueryResponse>(FIRST_RECORD_QUERY)
+        const { data, error } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
 
         if (error.value) throw error.value
 
