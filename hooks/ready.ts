@@ -52,20 +52,20 @@ function generateManifest(nuxt: Nuxt) {
       {
         src: '/icon.svg',
         sizes: 'any',
-        type: 'image/svg',
+        type: 'image/svg+xml',
         purpose: 'any',
       },
       {
         src: '/icon-maskable.svg',
         sizes: 'any',
-        type: 'image/svg',
+        type: 'image/svg+xml',
         purpose: 'maskable',
       },
       {
         /* Chrome installable PWA icon */
         src: '/icon-maskable.svg',
         sizes: '384x384',
-        type: 'image/svg',
+        type: 'image/svg+xml',
         purpose: 'any',
       },
     ],
