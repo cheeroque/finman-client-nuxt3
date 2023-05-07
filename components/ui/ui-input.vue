@@ -1,6 +1,7 @@
 <template>
   <div :class="componentClasses">
     <input
+      ref="input"
       :id="id"
       :autocomplete="autocomplete"
       :disabled="disabled"
@@ -35,6 +36,7 @@ import { ComputedRef } from 'vue'
 const props = defineProps<{
   append?: string
   autocomplete?: string
+  autofocus?: boolean
   disabled?: boolean
   max?: number | string
   min?: number | string
@@ -66,6 +68,10 @@ const parentState = inject(
   computed(() => null)
 )
 
+const input = ref()
+const observer = ref()
+const wasFocused = ref(false)
+
 const disabled = computed(() => props.disabled || parentDisabled.value)
 const size = computed(() => props.size)
 const state = computed(() => props.state ?? parentState.value)
@@ -95,10 +101,50 @@ const componentClasses = computed(() => {
   return classes
 })
 
+watch(
+  () => props.autofocus,
+  (event) => {
+    if (event) setObserver()
+    else removeObserver()
+  }
+)
+
+onMounted(() => {
+  if (props.autofocus) {
+    wasFocused.value = false
+    setObserver()
+  }
+})
+
+onUnmounted(() => {
+  removeObserver()
+})
+
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement
 
   emit('input', event)
   emit('update:modelValue', target.value)
+}
+
+function setObserver() {
+  if (!process.client) return
+
+  if ('IntersectionObserver' in window) {
+    observer.value = new IntersectionObserver(([{ isIntersecting }]) => {
+      if (!wasFocused.value && isIntersecting) {
+        /** Focus input ONCE when it's in viewport if autofocus prop set */
+        input.value.focus()
+        wasFocused.value = true
+      }
+    })
+    observer.value.observe(input.value)
+  }
+}
+
+function removeObserver() {
+  if (input.value && observer.value instanceof IntersectionObserver) {
+    observer.value.unobserve(input.value)
+  }
 }
 </script>

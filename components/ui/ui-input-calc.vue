@@ -1,6 +1,7 @@
 <template>
   <UiInput
     ref="input"
+    :autofocus="autofocus"
     :disabled="disabled"
     :model-value="modelValue"
     :name="name"
@@ -32,6 +33,7 @@ interface FakeFocusEvent {
 
 const props = defineProps<{
   append?: string
+  autofocus?: boolean
   disabled?: boolean
   modelValue?: number | string
   name?: string

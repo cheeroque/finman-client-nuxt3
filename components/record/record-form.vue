@@ -13,7 +13,7 @@
       :label="useString('sum')"
       :state="useValidationState(v$, 'sum')"
     >
-      <UiInputCalc v-model="formData.sum" name="sum" />
+      <UiInputCalc v-model="formData.sum" name="sum" autofocus />
     </UiFormGroup>
 
     <UiFormGroup
