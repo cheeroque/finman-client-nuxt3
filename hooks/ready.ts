@@ -33,6 +33,24 @@ function generateManifest(nuxt: Nuxt) {
   const config = nuxt.options.runtimeConfig
   const primaryColor = config.THEME_PRIMARY_COLOR
 
+  /** Get SVG icon templates & set main color */
+  let icon: string = fs.readFileSync('./public/icon-template.svg', { encoding: 'utf8' })
+  icon = icon.replaceAll('%THEME_COLOR%', primaryColor)
+
+  let iconMaskable: string = fs.readFileSync('./public/icon-maskable-template.svg', { encoding: 'utf8' })
+  iconMaskable = iconMaskable.replaceAll('%THEME_COLOR%', primaryColor)
+
+  /** Write SVG icon files */
+  fs.writeFileSync('./public/icon.svg', icon)
+  fs.writeFileSync('./public/icon-maskable.svg', iconMaskable)
+
+  /** Export maskable icon to PNG for Chrome installable PWA */
+  const svg2img = require('svg2img')
+  svg2img(iconMaskable, (_: any, buffer: any) => {
+    fs.writeFileSync('./public/icon-maskable-384.png', buffer)
+  })
+
+  /** Build manifest */
   const manifest = {
     name: 'Finance Manager 3',
     short_name: 'Finman 3',
@@ -51,7 +69,7 @@ function generateManifest(nuxt: Nuxt) {
       },
       {
         /* Chrome installable PWA icon */
-        src: '/icon-384.png',
+        src: '/icon-maskable-384.png',
         sizes: '384x384',
         type: 'image/png',
         purpose: 'any',
@@ -64,15 +82,8 @@ function generateManifest(nuxt: Nuxt) {
     start_url: '/',
   }
 
-  let icon: string = fs.readFileSync('./public/icon-template.svg', { encoding: 'utf8' })
-  icon = icon.replaceAll('%THEME_COLOR%', primaryColor)
-
-  let iconMaskable: string = fs.readFileSync('./public/icon-maskable-template.svg', { encoding: 'utf8' })
-  iconMaskable = iconMaskable.replaceAll('%THEME_COLOR%', primaryColor)
-
+  /** Save manifest to file & add it to options */
   fs.writeFileSync('./public/manifest.json', JSON.stringify(manifest))
-  fs.writeFileSync('./public/icon.svg', icon)
-  fs.writeFileSync('./public/icon-maskable.svg', iconMaskable)
 
   nuxt.options.app.head.link?.push({
     rel: 'manifest',
