@@ -49,6 +49,13 @@ function generateManifest(nuxt: Nuxt) {
         type: 'image/svg',
         purpose: 'maskable',
       },
+      {
+        /* Chrome installable PWA icon */
+        src: '/icon-384.png',
+        sizes: '384x384',
+        type: 'image/png',
+        purpose: 'any',
+      },
     ],
     display: 'standalone',
     background_color: primaryColor,
