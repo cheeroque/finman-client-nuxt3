@@ -51,7 +51,7 @@ export default defineNuxtConfig({
   apollo: {
     clients: {
       default: {
-        httpEndpoint: process.env.GQL_HOST,
+        httpEndpoint: process.env.GQL_HOST ?? '',
         httpLinkOptions: {
           credentials: 'include',
           fetchOptions: {
@@ -62,7 +62,7 @@ export default defineNuxtConfig({
     },
     cookieAttributes: {
       httpOnly: false,
-      sameSite: 'Strict',
+      sameSite: 'strict',
       secure: true,
     },
   },
