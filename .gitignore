@@ -7,3 +7,6 @@ node_modules
 .env
 dist
 assets/styles/theme.css
+public/manifest.json
+public/icon-maskable.svg
+public/icon.svg

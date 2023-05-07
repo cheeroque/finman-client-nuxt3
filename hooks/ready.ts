@@ -2,22 +2,82 @@ import chroma from 'chroma-js'
 import type { Nuxt } from '@nuxt/schema'
 import type { Color } from 'chroma-js'
 
-type ThemeColor = {
+interface ThemeColor {
   c?: string
   h?: string
   name: string
 }
 
-type ThemeItem = {
+interface ThemeItem {
   prefix?: string
   stop: number
   strength?: number
   suffix?: string
 }
 
+const fs = require('fs')
+
 export const handleNuxtReady = (nuxt: Nuxt) => {
-  const fs = require('fs')
+  generateManifest(nuxt)
+  generateThemes(nuxt)
+}
+
+function adjustColor(base: string, c?: string, h?: string): string {
+  let color: Color = chroma(base)
+  if (c) color = color.set('lch.c', c)
+  if (h) color = color.set('lch.h', h)
+  return color.hex()
+}
+
+function generateManifest(nuxt: Nuxt) {
   const config = nuxt.options.runtimeConfig
+  const primaryColor = config.THEME_PRIMARY_COLOR
+
+  const manifest = {
+    name: 'Finance Manager 3',
+    short_name: 'Finman 3',
+    icons: [
+      {
+        src: '/icon.svg',
+        sizes: 'any',
+        type: 'image/svg',
+        purpose: 'any',
+      },
+      {
+        src: '/icon-maskable.svg',
+        sizes: 'any',
+        type: 'image/svg',
+        purpose: 'maskable',
+      },
+    ],
+    display: 'standalone',
+    background_color: primaryColor,
+    theme_color: primaryColor,
+    lang: 'en',
+    start_url: '/',
+  }
+
+  let icon: string = fs.readFileSync('./public/icon-template.svg', { encoding: 'utf8' })
+  icon = icon.replaceAll('%THEME_COLOR%', primaryColor)
+
+  let iconMaskable: string = fs.readFileSync('./public/icon-maskable-template.svg', { encoding: 'utf8' })
+  iconMaskable = iconMaskable.replaceAll('%THEME_COLOR%', primaryColor)
+
+  fs.writeFileSync('./public/manifest.json', JSON.stringify(manifest))
+  fs.writeFileSync('./public/icon.svg', icon)
+  fs.writeFileSync('./public/icon-maskable.svg', iconMaskable)
+
+  nuxt.options.app.head.link?.push({
+    rel: 'manifest',
+    hid: 'manifest',
+    href: '/manifest.json',
+    crossorigin: 'use-credentials',
+  })
+}
+
+function generateThemes(nuxt: Nuxt) {
+  const config = nuxt.options.runtimeConfig
+  const primaryColor = config.THEME_PRIMARY_COLOR
 
   const themeDark: ThemeItem[] = [
     { suffix: '', stop: 80 },
@@ -29,6 +89,7 @@ export const handleNuxtReady = (nuxt: Nuxt) => {
     { suffix: 'surface', stop: 10 },
     { prefix: 'on', suffix: 'surface', stop: 90 },
   ]
+
   const themeLight: ThemeItem[] = [
     { suffix: '', stop: 40 },
     { suffix: 'active', stop: 35 },
@@ -39,6 +100,7 @@ export const handleNuxtReady = (nuxt: Nuxt) => {
     { suffix: 'surface', stop: 95 },
     { prefix: 'on', suffix: 'surface', stop: 10 },
   ]
+
   const themeColors: ThemeColor[] = [
     { name: 'primary' },
     { name: 'secondary', h: '-40' },
@@ -48,8 +110,6 @@ export const handleNuxtReady = (nuxt: Nuxt) => {
     { name: 'danger', h: '35' },
     { name: 'success', h: '140' },
   ]
-
-  const primaryColor = config.THEME_PRIMARY_COLOR
 
   const colorVarsDark = themeColors
     .map(({ name, c, h }) => {
@@ -85,14 +145,8 @@ export const handleNuxtReady = (nuxt: Nuxt) => {
   ]
 
   fs.writeFileSync('./assets/styles/theme.css', lines.join('\n'))
-  nuxt.options.css.push('~/assets/styles/theme.css')
-}
 
-function adjustColor(base: string, c?: string, h?: string): string {
-  let color: Color = chroma(base)
-  if (c) color = color.set('lch.c', c)
-  if (h) color = color.set('lch.h', h)
-  return color.hex()
+  nuxt.options.css.push('~/assets/styles/theme.css')
 }
 
 function getThemeShades(color: string, name: string, theme: ThemeItem[], blendBase: string = '#fff'): string[] {
