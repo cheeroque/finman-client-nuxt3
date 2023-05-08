@@ -45,11 +45,21 @@ $toast-border-radius: 0.25rem;
 
 @each $variant in $theme-colors {
   .toast-#{$variant} {
-    color: var(--on-#{$variant}-bg);
-    background-color: var(--#{$variant}-bg);
+    color: var(--on-#{$variant});
+    background-color: var(--#{$variant});
 
     .toast-header {
       color: var(--#{$variant});
     }
+  }
+}
+
+@include media-max-width(sm) {
+  .toast {
+    top: $grid-gap;
+    right: $grid-gap * 0.5;
+    left: $grid-gap * 0.5;
+    bottom: auto;
+    width: auto;
   }
 }
