@@ -1,0 +1,17 @@
+#import "@/graphql/fragments/RecordFragment.gql"
+
+query RecordsByPeriod($category_id: Int!, $first: Int = 18, $page: Int = 1) {
+  records: recordsByPeriod(category_id: $category_id, first: $first, page: $page) {
+    data {
+      period
+      records {
+        ...RecordFragment
+      }
+    }
+
+    paginatorInfo {
+      lastPage
+      total
+    }
+  }
+}

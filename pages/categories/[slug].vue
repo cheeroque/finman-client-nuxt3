@@ -10,13 +10,29 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { RecordsItem, RecordsQueryResponse, RecordsQueryVariables } from '~~/types/records'
+import { RecordsItem } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
-import RECORDS_QUERY from '@/graphql/Records.gql'
+import RECORDS_BY_PERIOD_QUERY from '@/graphql/RecordsByPeriod.gql'
 
-interface CategoryRecordsByMonth {
-  [key: string]: TableItem
+interface RecordsByPeriodQueryResponse {
+  records: RecordsByPeriodQueryResponseRecords
+}
+
+interface RecordsByPeriodQueryResponseData {
+  period: string
+  records: RecordsItem[]
+}
+
+interface RecordsByPeriodQueryResponseRecords {
+  data: RecordsByPeriodQueryResponseData[]
+  paginatorInfo: PaginatorInfo
+}
+
+interface RecordsByPeriodQueryVariables {
+  category_id: number
+  first?: number
+  page?: number
 }
 
 interface TableItem {
@@ -38,79 +54,38 @@ if (!category) {
 const perPage = ref<number>()
 const page = ref<number>()
 const tableItems = ref<TableItem[]>([])
-
-const totalPages = computed<number>(() => {
-  if (!recordsStore.firstRecord?.created_at) return 1
-
-  /* Get total count of months between now and first record, then divide it
-   * by months per page */
-  const startDate = DateTime.fromFormat(recordsStore.firstRecord.created_at, 'yyyy-LL-dd HH:mm:ss')
-  const months = Math.ceil(Math.abs(startDate.diffNow('month').months))
-
-  return Math.ceil(months / (perPage.value ?? 18))
-})
+const totalPages = ref(0)
 
 async function fetchRecords() {
+  if (!category) return
+
   perPage.value = Number(route.query.perPage) || 18
   page.value = Number(route.query.page) || 1
 
-  const now = DateTime.now()
-
-  const to = now
-    .set({ hour: 0, minute: 0, second: 0, day: 1 })
-    .plus({ month: 1 })
-    .minus({ month: (page.value - 1) * perPage.value, second: 1 })
-
-  const from = to.minus({ month: perPage.value - 1 }).set({ hour: 0, minute: 0, second: 0, day: 1 })
-
-  const variables: RecordsQueryVariables = {
-    where: {
-      AND: [
-        { column: 'CREATED_AT', operator: 'GTE', value: from.toFormat('yyyy-LL-dd HH:mm:ss') },
-        { column: 'CREATED_AT', operator: 'LTE', value: to.toFormat('yyyy-LL-dd HH:mm:ss') },
-      ],
-    },
-  }
-
-  if (category) {
-    variables.hasCategory = { column: 'ID', operator: 'EQ', value: category.id }
+  const variables: RecordsByPeriodQueryVariables = {
+    category_id: Number(category.id),
+    first: perPage.value,
+    page: page.value,
   }
 
   recordsStore.pending++
 
   try {
-    const { data, error } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
+    const { data, error } = await useAsyncQuery<RecordsByPeriodQueryResponse>(RECORDS_BY_PERIOD_QUERY, variables)
 
     if (error.value) throw error.value
 
     if (data.value?.records?.data) {
-      /* Group records by month */
-      const monthGroups: CategoryRecordsByMonth = {}
+      tableItems.value = data.value.records.data.map(({ period, records }) => {
+        const date = DateTime.fromFormat(period, 'yyyy-LL')
+        const group = date.toLocaleString({ month: 'long', year: 'numeric' }, { locale: useLocale() })
+        const subtotal = records.reduce((acc, cur) => (acc += cur.sum), 0)
+        const timestamp = date.valueOf()
 
-      data.value.records.data.forEach((record) => {
-        const month = DateTime.fromFormat(record.created_at, 'yyyy-LL-dd HH:mm:ss').set({
-          hour: 0,
-          minute: 0,
-          second: 0,
-          day: 1,
-        })
-
-        const key = month.toFormat('yyyy-LL')
-        const group = month.toLocaleString({ month: 'long', year: 'numeric' }, { locale: useLocale() })
-        const timestamp = month.valueOf()
-
-        let subtotal = record.sum
-
-        if (!monthGroups[key]) {
-          monthGroups[key] = { group, records: [record], subtotal, timestamp }
-        } else {
-          subtotal += monthGroups[key].records.reduce((acc, cur) => (acc += cur.sum), 0)
-          monthGroups[key].subtotal = subtotal
-          monthGroups[key].records.push(record)
-        }
+        return { group, subtotal, records, timestamp }
       })
 
-      tableItems.value = Object.values(monthGroups)
+      totalPages.value = data.value.records.paginatorInfo.lastPage
     }
   } catch (error) {}
 
