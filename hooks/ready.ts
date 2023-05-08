@@ -117,8 +117,8 @@ function generateThemes(nuxt: Nuxt) {
     { name: 'primary' },
     { name: 'secondary', h: '-40' },
     { name: 'tertiary', h: '+95' },
-    { name: 'neutral', c: '2' },
-    { name: 'neutral-variant', c: '2', h: '-40' },
+    { name: 'neutral', c: '5' },
+    { name: 'neutral-variant', c: '5', h: '-40' },
     { name: 'danger', h: '35' },
     { name: 'success', h: '140' },
   ]
@@ -163,13 +163,19 @@ function generateThemes(nuxt: Nuxt) {
 
 function getThemeShades(color: string, name: string, theme: ThemeItem[], blendBase: string = '#fff'): string[] {
   const scale = chroma.scale(['#000', color, '#fff']).domain([0, 40, 100]).mode('lch')
+
   return theme.map(({ prefix, stop, strength, suffix }) => {
-    const saturationRatio = stop >= 40 ? ((stop - 40) * 1.5) / 100 : 0
     let color: Color = scale(stop)
-    if (saturationRatio) color = color.saturate(saturationRatio)
+
+    /** Adjust saturation for colors darker than 30 and lighter than 50 */
+    const multiplier = stop <= 30 || stop >= 50 ? 0.125 : 0
+    const saturationRatio = 1 + ((40 - stop) / stop) * multiplier
+    color = color.saturate(saturationRatio)
+
     if (strength) color = chroma.mix(blendBase, color, strength, 'lch')
 
     const varName = [prefix, name, suffix].filter((el) => Boolean(el?.length)).join('-')
+
     return `--${varName}: ${color.hex()};`
   })
 }
