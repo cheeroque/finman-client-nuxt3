@@ -98,7 +98,13 @@ watch(
   () => route.query,
   async () => {
     await refresh()
-    setTimeout(() => useScrollTo('.page'), 250)
+    setTimeout(() => {
+      /* If window is scrolled down (e.g. in mobile) scroll it back to top,
+       * otherwise scroll back page element */
+      const windowTop = useWindowTop()
+      const target = !windowTop ? '.page' : undefined
+      useScrollTo(target)
+    }, 250)
   }
 )
 </script>
