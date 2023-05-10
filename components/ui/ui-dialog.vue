@@ -1,6 +1,6 @@
 <template>
   <Teleport to="body">
-    <Transition name="dialog" @after-leave="handleAfterLeave">
+    <Transition name="dialog" @after-leave="handleAfterLeave" @before-enter="handleBeforeEnter">
       <div v-if="modelValue" :class="componentClasses">
         <div class="dialog-content">
           <div v-if="hasHeader" class="dialog-header">
@@ -66,8 +66,16 @@ const componentClasses = computed(() => {
   return classes
 })
 
+/** Disable body scrolling when dialog is open */
+const bodyFixed = useScrollLock(document.body)
+
 function handleAfterLeave() {
+  bodyFixed.value = false
   emit('closed')
+}
+
+function handleBeforeEnter() {
+  bodyFixed.value = true
 }
 
 function handleClose() {

@@ -35,7 +35,7 @@
     <div v-if="open" class="app-drawer-backdrop" aria-hidden="true" @click="emit('close')" />
   </Transition>
 
-  <SnapshotDialog v-model="dialogVisible" />
+  <SnapshotDialog v-model="snapshotDialogVisible" />
 </template>
 
 <script setup lang="ts">
@@ -49,7 +49,7 @@ const emit = defineEmits(['close', 'toggle'])
 
 const drawerActions: DrawerAction[] = [
   { key: 'snapshot', component: resolveComponent('NavDrawerSnapshot'), handler: handleSnapshotClick },
-  { key: 'export', component: resolveComponent('NavDrawerExport'), handler: handleExportClick },
+  { key: 'export', component: resolveComponent('NavDrawerExport') },
   { key: 'logout', component: resolveComponent('NavDrawerLogout') },
 ]
 
@@ -65,12 +65,17 @@ const drawerClasses = computed(() => {
   return classes
 })
 
-const dialogVisible = ref(false)
+/** Disable body scrolling when drawer is open */
+const bodyFixed = useScrollLock(document.body)
 
-function handleExportClick() {}
+watchEffect(() => {
+  bodyFixed.value = props.open
+})
+
+const snapshotDialogVisible = ref(false)
 
 function handleSnapshotClick() {
-  dialogVisible.value = true
+  snapshotDialogVisible.value = true
 }
 </script>
 

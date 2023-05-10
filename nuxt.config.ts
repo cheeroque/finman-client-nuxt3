@@ -36,7 +36,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@nuxtjs/apollo', '@pinia/nuxt', 'nuxt-icons'],
+  modules: ['@nuxtjs/apollo', '@pinia/nuxt', '@vueuse/nuxt', 'nuxt-icons'],
 
   apollo: {
     clients: {
