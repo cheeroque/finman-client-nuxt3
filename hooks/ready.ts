@@ -117,8 +117,8 @@ function generateThemes(nuxt: Nuxt) {
     { name: 'primary' },
     { name: 'secondary', h: '-40' },
     { name: 'tertiary', h: '+95' },
-    { name: 'neutral', c: '5' },
-    { name: 'neutral-variant', c: '5', h: '-40' },
+    { name: 'neutral', c: '3' },
+    { name: 'neutral-variant', c: '3', h: '-40' },
     { name: 'danger', h: '35' },
     { name: 'success', h: '140' },
   ]
@@ -168,8 +168,9 @@ function getThemeShades(color: string, name: string, theme: ThemeItem[], blendBa
     let color: Color = scale(stop)
 
     /** Adjust saturation for colors darker than 30 and lighter than 50 */
-    const multiplier = stop <= 30 || stop >= 50 ? 0.125 : 0
-    const saturationRatio = 1 + ((40 - stop) / stop) * multiplier
+    let saturationRatio = 1 + (40 - stop) / 100
+    if (stop > 30 && stop < 50) saturationRatio = 0
+
     color = color.saturate(saturationRatio)
 
     if (strength) color = chroma.mix(blendBase, color, strength, 'lch')
