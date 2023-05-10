@@ -10,7 +10,6 @@
     :state="state"
     autocomplete="off"
     placeholder="0"
-    prevent-native-input
     @blur="calculate"
     @focus="handleFocus"
     @input="handleInput"
