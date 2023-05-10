@@ -67,7 +67,12 @@ export default defineNuxtConfig({
     API_URL: process.env.API_URL,
     STATIC_URL: process.env.STATIC_URL,
     THEME_PRIMARY_COLOR: process.env.THEME_PRIMARY_COLOR || '#6750a4',
-    TOKEN_COOKIE_NAME: process.env.TOKEN_COOKIE_NAME || 'auth_token',
+    THEME_SECONDARY_COLOR: process.env.THEME_SECONDARY_COLOR,
+    THEME_TERTIARY_COLOR: process.env.THEME_TERTIARY_COLOR,
+    THEME_NEUTRAL_COLOR: process.env.THEME_NEUTRAL_COLOR,
+    THEME_NEUTRAL_VARIANT_COLOR: process.env.THEME_NEUTRAL_VARIANT_COLOR,
+    THEME_DANGER_COLOR: process.env.THEME_DANGER_COLOR,
+    THEME_SUCCESS_COLOR: process.env.THEME_SUCCESS_COLOR,
 
     public: {
       API_URL: process.env.API_URL,
