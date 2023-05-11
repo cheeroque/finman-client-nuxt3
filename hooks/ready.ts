@@ -97,7 +97,9 @@ function generateThemes(nuxt: Nuxt) {
     { suffix: 'outline', stop: 80, strength: 0.25 },
     { prefix: 'on', stop: 20 },
     { suffix: 'bg', stop: 30 },
+    { suffix: 'bg-active', stop: 35 },
     { prefix: 'on', suffix: 'bg', stop: 90 },
+    { prefix: 'on', suffix: 'bg-active', stop: 95 },
     { suffix: 'surface', stop: 10 },
     { prefix: 'on', suffix: 'surface', stop: 90 },
   ]
@@ -108,7 +110,9 @@ function generateThemes(nuxt: Nuxt) {
     { suffix: 'outline', stop: 40, strength: 0.175 },
     { prefix: 'on', stop: 99 },
     { suffix: 'bg', stop: 90 },
+    { suffix: 'bg-active', stop: 85 },
     { prefix: 'on', suffix: 'bg', stop: 10 },
+    { prefix: 'on', suffix: 'bg-active', stop: 5 },
     { suffix: 'surface', stop: 95 },
     { prefix: 'on', suffix: 'surface', stop: 10 },
   ]
