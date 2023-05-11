@@ -1,6 +1,10 @@
 <template>
   <div class="group-table-wrapper">
     <UiTable :fields="fields" :items="items" class="group-table" fixed>
+      <template #cell(group)="scope">
+        <slot v-bind="scope" name="cell(group)" />
+      </template>
+
       <template #cell(subtotal)="{ detailsVisible, item, toggleDetails, value }">
         <UiButton
           v-if="item.records?.length"

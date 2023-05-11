@@ -1,6 +1,11 @@
 <template>
   <PageContent :loading="recordsStore.loading" :title="category.name" spinner-variant="primary" class="overflow-hidden">
-    <GroupTable :group-label="useString('date')" :items="tableItems" :loading="recordsStore.loading" />
+    <GroupTable :group-label="useString('date')" :items="tableItems" :loading="recordsStore.loading">
+      <template #cell(group)="{ item }">
+        <span class="d-md-none" v-text="formatDate(item.timestamp, true)" />
+        <span class="d-none d-md-inline" v-text="formatDate(item.timestamp)" />
+      </template>
+    </GroupTable>
 
     <template #footer v-if="totalPages > 1">
       <UiPagination :disabled="recordsStore.loading" :total-pages="totalPages" hide-prev-next />
@@ -90,6 +95,11 @@ async function fetchRecords() {
   } catch (error) {}
 
   recordsStore.pending--
+}
+
+function formatDate(timestamp: number, short = false): string {
+  const monthFormat = short ? 'LLL' : 'LLLL'
+  return DateTime.fromMillis(timestamp).toFormat(`${monthFormat} yyyy`)
 }
 
 const { refresh } = await useAsyncData('category-records', () => fetchRecords())
