@@ -43,6 +43,15 @@ import { LoginCredentials } from '~~/types/auth'
 definePageMeta({
   isPublic: true,
   layout: 'auth',
+  middleware: [
+    /* Redirect to index page if already logged in */
+    async function () {
+      const { getToken } = useApollo()
+      const token = await getToken()
+
+      if (token) return navigateTo('/')
+    },
+  ],
 })
 
 const credentials = reactive<LoginCredentials>({
