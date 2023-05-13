@@ -4,20 +4,6 @@ import ME_QUERY from '@/graphql/Me.gql'
 import LOGIN_MUTATION from '@/graphql/Login.gql'
 import LOGOUT_MUTATION from '@/graphql/Logout.gql'
 
-export class AuthError extends Error {
-  code?: string
-  message: string
-
-  constructor({ code, message }: { code?: string; message: string }) {
-    super()
-
-    Object.setPrototypeOf(this, AuthError.prototype)
-
-    this.code = code
-    this.message = message
-  }
-}
-
 export default defineNuxtPlugin(() => {
   const { onLogin, onLogout } = useApollo()
   const authStore = useAuthStore()
@@ -27,9 +13,9 @@ export default defineNuxtPlugin(() => {
       const { data } = await useAsyncQuery<Me>(ME_QUERY)
 
       if (data.value?.me) {
-        storeUser(data.value.me)
+        authStore.user = data.value.me
       } else {
-        handleAuthError(createError({ statusCode: 401 }))
+        throw createError({ statusCode: 401 })
       }
     } catch (error) {
       handleAuthError(error)
@@ -45,11 +31,10 @@ export default defineNuxtPlugin(() => {
       if (response?.data?.login) {
         const { access_token, user } = response.data.login
 
-        storeUser(user)
-        storeToken(access_token)
+        authStore.user = user
         return onLogin(access_token)
       } else {
-        handleAuthError()
+        throw createError({ statusCode: 401 })
       }
     } catch (error: any) {
       handleAuthError(error)
@@ -68,9 +53,7 @@ export default defineNuxtPlugin(() => {
     if ((error?.graphQLErrors?.length && isAuthError) || error.statusCode === 401) {
       /* Authentication error => reset auth */
       reset()
-
-      const authError = new AuthError({ code: '401', message: error.message })
-      throw authError
+      throw createError({ statusCode: 401, message: error.message })
     } else {
       /* Non-authentication error */
       throw error
@@ -78,17 +61,8 @@ export default defineNuxtPlugin(() => {
   }
 
   function reset() {
-    storeUser()
-    storeToken()
+    authStore.user = undefined
     return onLogout()
-  }
-
-  function storeToken(token?: string) {
-    authStore.token = token
-  }
-
-  function storeUser(user?: User) {
-    authStore.user = user
   }
 
   const auth = { fetchUser, login, logout, reset }

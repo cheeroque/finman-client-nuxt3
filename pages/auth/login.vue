@@ -37,7 +37,6 @@
 </template>
 
 <script setup lang="ts">
-import { AuthError } from '~/plugins/auth'
 import { LoginCredentials } from '~~/types/auth'
 import { useAuthStore } from '~/store/auth'
 
@@ -48,8 +47,7 @@ definePageMeta({
     /* Redirect to index page if already logged in */
     async function () {
       const authStore = useAuthStore()
-
-      if (authStore.token) return navigateTo('/')
+      if (authStore.user) return navigateTo('/')
     },
   ],
 })
@@ -72,7 +70,7 @@ async function handleSubmit() {
     await $auth.login(credentials)
     navigateTo('/')
   } catch (error: any) {
-    if (error instanceof AuthError && error.code === '401') {
+    if (error.statusCode === 401) {
       submitError.value = useString('invalidCredentials')
     } else {
       submitError.value = useString('errorMessage')
