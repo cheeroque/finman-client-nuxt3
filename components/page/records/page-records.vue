@@ -74,32 +74,38 @@ function removeObserver() {
 </script>
 
 <style lang="scss" scoped>
-:deep(.page-content-body) {
-  padding: 0 0 0.5rem;
-}
-
-:deep(.page-content-footer) {
-  display: flex;
-  justify-content: center;
-}
-
-@include media-min-width(lg) {
-  :deep(.page-content-header) {
-    padding: 1.25rem 0 0;
-  }
-
+.page-records {
   :deep(.page-content-body) {
-    padding: 0;
+    padding: 0 0 0.5rem;
   }
 
   :deep(.page-content-footer) {
-    justify-content: flex-end;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+@include media-min-width(lg) {
+  .page-records {
+    :deep(.page-content-header) {
+      padding: 1.25rem 0 0;
+    }
+
+    :deep(.page-content-body) {
+      padding: 0;
+    }
+
+    :deep(.page-content-footer) {
+      justify-content: flex-end;
+    }
   }
 }
 
 @include media-min-width(xxl) {
-  :deep(.page-content-header) {
-    padding: 1.25rem 1rem;
+  .page-records {
+    :deep(.page-content-header) {
+      padding: 1.25rem 1rem;
+    }
   }
 }
 </style>
