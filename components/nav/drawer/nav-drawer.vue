@@ -65,12 +65,20 @@ const drawerClasses = computed(() => {
   return classes
 })
 
-/** Disable body scrolling when drawer is open */
-const bodyFixed = useScrollLock(document.body)
+function toggleBodyFixed(isFixed: boolean) {
+  /** Disable body scrolling when drawer is open */
+  if (!process.client) return
 
-watchEffect(() => {
-  bodyFixed.value = props.open
-})
+  const bodyFixed = useScrollLock(document.body)
+  bodyFixed.value = isFixed
+}
+
+watch(
+  () => props.open,
+  (event) => {
+    toggleBodyFixed(event)
+  }
+)
 
 const snapshotDialogVisible = ref(false)
 

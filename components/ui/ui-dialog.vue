@@ -66,19 +66,24 @@ const componentClasses = computed(() => {
   return classes
 })
 
-/** Disable body scrolling when dialog is open */
-const bodyFixed = useScrollLock(document.body)
-
 function handleAfterLeave() {
-  bodyFixed.value = false
+  toggleBodyFixed(false)
   emit('closed')
 }
 
 function handleBeforeEnter() {
-  bodyFixed.value = true
+  toggleBodyFixed(true)
 }
 
 function handleClose() {
   emit('update:modelValue', false)
+}
+
+function toggleBodyFixed(isFixed: boolean) {
+  /** Disable body scrolling when dialog is open */
+  if (!process.client) return
+
+  const bodyFixed = useScrollLock(document.body)
+  bodyFixed.value = isFixed
 }
 </script>
