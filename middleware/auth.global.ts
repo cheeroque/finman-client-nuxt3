@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
         await $auth.fetchUser()
       } catch (error: any) {
         if (error instanceof AuthError) {
-          $auth.reset()
+          // $auth.reset()
           return navigateTo('/auth/login')
         }
       }
