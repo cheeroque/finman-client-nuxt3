@@ -19,7 +19,7 @@
     <div v-if="hasContent" class="page-content-body">
       <slot />
 
-      <UiSpinner v-if="loading" :variant="spinnerVariant" />
+      <UiSpinner v-show="loading" :variant="spinnerVariant" />
     </div>
 
     <footer v-if="hasFooter" class="page-content-footer">
