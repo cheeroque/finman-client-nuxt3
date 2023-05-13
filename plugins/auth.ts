@@ -24,12 +24,12 @@ export default defineNuxtPlugin(() => {
 
   async function fetchUser() {
     try {
-      const { data, error } = await useAsyncQuery<Me>(ME_QUERY)
-
-      if (error.value) handleAuthError(error.value)
+      const { data } = await useAsyncQuery<Me>(ME_QUERY)
 
       if (data.value?.me) {
         storeUser(data.value.me)
+      } else {
+        handleAuthError(createError({ statusCode: 401 }))
       }
     } catch (error) {
       handleAuthError(error)
@@ -63,21 +63,16 @@ export default defineNuxtPlugin(() => {
   }
 
   function handleAuthError(error?: any) {
-    if (error?.graphQLErrors?.length) {
-      const isAuthError = error?.message === 'Unauthenticated.'
+    const isAuthError = error?.message === 'Unauthenticated.'
 
-      if (isAuthError) {
-        /* Apollo authentication error => reset auth */
-        reset()
+    if ((error?.graphQLErrors?.length && isAuthError) || error.statusCode === 401) {
+      /* Authentication error => reset auth */
+      reset()
 
-        const authError = new AuthError({ code: '401', message: error.message })
-        throw authError
-      } else {
-        /* Apollo non-authentication error */
-        throw error
-      }
+      const authError = new AuthError({ code: '401', message: error.message })
+      throw authError
     } else {
-      /* NOT Apollo error */
+      /* Non-authentication error */
       throw error
     }
   }
