@@ -80,7 +80,7 @@ async function fetchCategories() {
           tableItems.value.push({
             category: { color, id, is_income, name, slug },
             group: name,
-            records,
+            records: records.map((record) => ({ ...record, category: { color, id, is_income, name, slug } })),
             subtotal: recordsTotal,
             trClass: is_income ? 'row-income' : undefined,
           })
