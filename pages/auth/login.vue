@@ -39,6 +39,7 @@
 <script setup lang="ts">
 import { AuthError } from '~/plugins/auth'
 import { LoginCredentials } from '~~/types/auth'
+import { useAuthStore } from '~/store/auth'
 
 definePageMeta({
   isPublic: true,
@@ -46,10 +47,9 @@ definePageMeta({
   middleware: [
     /* Redirect to index page if already logged in */
     async function () {
-      const { getToken } = useApollo()
-      const token = await getToken()
+      const authStore = useAuthStore()
 
-      if (token) return navigateTo('/')
+      if (authStore.token) return navigateTo('/')
     },
   ],
 })

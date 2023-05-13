@@ -46,6 +46,7 @@ export default defineNuxtPlugin(() => {
         const { access_token, user } = response.data.login
 
         storeUser(user)
+        storeToken(access_token)
         onLogin(access_token)
       } else {
         handleAuthError()
@@ -83,7 +84,12 @@ export default defineNuxtPlugin(() => {
 
   function reset() {
     storeUser()
+    storeToken()
     onLogout()
+  }
+
+  function storeToken(token?: string) {
+    authStore.token = token
   }
 
   function storeUser(user?: User) {
