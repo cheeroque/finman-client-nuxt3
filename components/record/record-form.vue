@@ -17,20 +17,20 @@
     </UiFormGroup>
 
     <UiFormGroup
-      :invalid-feedback="useValidationErrors(v$, 'created_at')"
-      :label="useString('dateTime')"
-      :state="useValidationState(v$, 'created_at')"
-    >
-      <UiInputDatetime v-model="formData.created_at" name="created_at" />
-    </UiFormGroup>
-
-    <UiFormGroup
       :invalid-feedback="useValidationErrors(v$, 'note')"
       :label="useString('note')"
       :state="useValidationState(v$, 'note')"
-      class="mb-0"
     >
       <UiInput v-model="formData.note" :placeholder="useString('notePlaceholder')" name="note" />
+    </UiFormGroup>
+
+    <UiFormGroup
+      :invalid-feedback="useValidationErrors(v$, 'created_at')"
+      :label="useString('dateTime')"
+      :state="useValidationState(v$, 'created_at')"
+      class="mb-0"
+    >
+      <UiInputDatetime v-model="formData.created_at" name="created_at" />
     </UiFormGroup>
   </form>
 </template>
