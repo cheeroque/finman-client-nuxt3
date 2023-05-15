@@ -9,10 +9,14 @@
 </template>
 
 <script setup lang="ts">
+const emit = defineEmits(['submit'])
+
 const q = ref('')
 
 function handleSubmit() {
   if (!q.value.length) return
+
+  emit('submit')
 
   const router = useRouter()
   router.push({ path: '/search', query: { q: q.value } })

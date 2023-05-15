@@ -26,7 +26,7 @@
       </ul>
 
       <div class="d-lg-none mt-auto p-16">
-        <SearchForm />
+        <SearchForm @submit="emit('close')" />
       </div>
     </nav>
   </div>
