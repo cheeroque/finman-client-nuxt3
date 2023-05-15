@@ -8,6 +8,11 @@
       </div>
     </div>
   </div>
+
+  <div class="datetimepicker-footer">
+    <UiButton variant="neutral-muted" @click="emit('close')"> {{ useString('cancel') }} </UiButton>
+    <UiButton variant="secondary" @click="emit('set-now')"> {{ useString('now') }} </UiButton>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -18,7 +23,7 @@ const props = defineProps<{
   modelValue?: Date
 }>()
 
-const emit = defineEmits(['update:modelValue', 'close'])
+const emit = defineEmits(['update:modelValue', 'close', 'set-now'])
 
 const savedDate = ref()
 

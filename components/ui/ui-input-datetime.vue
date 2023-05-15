@@ -11,11 +11,10 @@
         :size="size"
         :state="state"
         autocomplete="off"
-        @click="show"
         @input="handleInput"
       >
         <template #append>
-          <UiButton icon="stopwatch-24" variant="link" class="form-control-icon" @click="setNow" />
+          <UiButton icon="stopwatch-24" variant="link" class="form-control-icon" @click="show" />
         </template>
       </UiInput>
     </template>
@@ -24,6 +23,7 @@
       <UiInputDatetimeDropdown
         :model-value="modelValue"
         @close="close"
+        @set-now="setNow"
         @update:modelValue="emit('update:modelValue', $event)"
       />
     </template>
@@ -73,6 +73,8 @@ function handleInput(event: Event) {
 }
 
 function setNow() {
+  dropdownVisible.value = false
+
   emit('update:modelValue', new Date())
 }
 </script>
