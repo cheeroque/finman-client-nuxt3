@@ -45,9 +45,14 @@ definePageMeta({
   layout: 'auth',
   middleware: [
     /* Redirect to index page if already logged in */
-    async function () {
+    function () {
+      const cookie = useCookie('apollo:default.token')
       const authStore = useAuthStore()
-      if (authStore.user) return navigateTo('/')
+
+      if (authStore.user || cookie.value) {
+        console.log('already logged in, redirecting')
+        return navigateTo('/')
+      }
     },
   ],
 })
