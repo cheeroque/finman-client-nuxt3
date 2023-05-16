@@ -94,7 +94,7 @@ const monthdays = computed(() => {
 
   const leftPad = luxonDate.value.weekday - 1
   const rightPad = 7 - luxonDate.value.plus({ months: 1 }).minus({ days: 1 }).weekday
-  const monthLength = luxonDate.value.daysInMonth
+  const monthLength = luxonDate.value.daysInMonth ?? 0
 
   for (let i = -leftPad; i < monthLength + rightPad; i++) {
     days.push(luxonDate.value.plus({ days: i }))
