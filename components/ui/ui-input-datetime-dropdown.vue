@@ -13,6 +13,8 @@
     <UiButton variant="neutral-muted" @click="emit('close')"> {{ useString('cancel') }} </UiButton>
     <UiButton variant="secondary" @click="emit('set-now')"> {{ useString('now') }} </UiButton>
   </div>
+
+  <div class="datetimepicker-backdrop" @click="emit('close')" />
 </template>
 
 <script setup lang="ts">
