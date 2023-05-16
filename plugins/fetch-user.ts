@@ -15,7 +15,6 @@ export default defineNuxtPlugin(async (nuxtApp: Nuxt) => {
 
       if (data.value?.me) {
         authStore.user = data.value.me
-        console.log('got me', data.value.me)
       }
     } catch (error) {}
   }
