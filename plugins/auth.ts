@@ -1,26 +1,12 @@
 import { useAuthStore } from '~/store/auth'
-import { LoginCredentials, LoginResponseData, Me, User } from '~~/types/auth'
-import ME_QUERY from '@/graphql/Me.gql'
+import { LoginCredentials, LoginResponseData } from '~~/types/auth'
+
 import LOGIN_MUTATION from '@/graphql/Login.gql'
 import LOGOUT_MUTATION from '@/graphql/Logout.gql'
 
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin((nuxtApp) => {
   const { onLogin, onLogout } = useApollo()
   const authStore = useAuthStore()
-
-  async function fetchUser() {
-    try {
-      const { data } = await useAsyncQuery<Me>(ME_QUERY)
-
-      if (data.value?.me) {
-        authStore.user = data.value.me
-      } else {
-        throw createError({ statusCode: 401 })
-      }
-    } catch (error) {
-      handleAuthError(error)
-    }
-  }
 
   async function login(credentials: LoginCredentials) {
     const { mutate } = useMutation<LoginResponseData>(LOGIN_MUTATION)
@@ -65,7 +51,7 @@ export default defineNuxtPlugin(() => {
     return onLogout()
   }
 
-  const auth = { fetchUser, login, logout, reset }
+  const auth = { login, logout, reset }
 
   return { provide: { auth } }
 })
