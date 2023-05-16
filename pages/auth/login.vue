@@ -8,21 +8,37 @@
           </div>
 
           <div class="card-body">
-            <UiFormGroup :label="useString('userName')">
+            <UiFormGroup
+              :invalid-feedback="useValidationErrors(v$, 'username')"
+              :label="useString('userName')"
+              :state="useValidationState(v$, 'username')"
+            >
               <UiInput
                 v-model="credentials.username"
+                :disabled="loading"
                 :placeholder="useString('userNamePlaceholder')"
                 @input="submitError = undefined"
               />
             </UiFormGroup>
 
-            <UiFormGroup :label="useString('password')" class="mb-0">
-              <UiInput v-model="credentials.password" type="password" @input="submitError = undefined" />
+            <UiFormGroup
+              :invalid-feedback="useValidationErrors(v$, 'password')"
+              :label="useString('password')"
+              :state="useValidationState(v$, 'password')"
+              class="mb-0"
+            >
+              <UiInput
+                v-model="credentials.password"
+                :disabled="loading"
+                type="password"
+                @input="submitError = undefined"
+              />
             </UiFormGroup>
           </div>
 
           <div class="card-footer text-right">
-            <UiButton type="submit" variant="secondary" class="px-24">
+            <UiButton :disabled="loading" type="submit" variant="secondary" class="px-24">
+              <UiSpinner v-if="loading" size="1em" class="nuxt-icon nuxt-icon-left" />
               {{ useString('login') }}
             </UiButton>
           </div>
@@ -37,6 +53,8 @@
 </template>
 
 <script setup lang="ts">
+import { useVuelidate } from '@vuelidate/core'
+import { helpers, required } from '@vuelidate/validators'
 import { LoginCredentials } from '~~/types/auth'
 import { useAuthStore } from '~/store/auth'
 
@@ -50,7 +68,6 @@ definePageMeta({
       const authStore = useAuthStore()
 
       if (authStore.user || cookie.value) {
-        console.log('already logged in, redirecting')
         return navigateTo('/')
       }
     },
@@ -58,31 +75,45 @@ definePageMeta({
 })
 
 const credentials = reactive<LoginCredentials>({
-  username: '',
   password: '',
+  username: '',
 })
 
 const loading = ref(false)
 
 const submitError: Ref<string | undefined> = ref()
 
+/* Form validation */
+const rules = computed(() => ({
+  password: { required: helpers.withMessage(useString('fieldRequired'), required) },
+  username: { required: helpers.withMessage(useString('fieldRequired'), required) },
+}))
+
+const v$ = useVuelidate<LoginCredentials>(rules, credentials, { $lazy: true })
+
 async function handleSubmit() {
-  const { $auth } = useNuxtApp()
+  v$.value.$validate()
 
-  loading.value = true
+  if (!v$.value.$error) {
+    const { $auth } = useNuxtApp()
 
-  try {
-    await $auth.login(credentials)
-    navigateTo('/')
-  } catch (error: any) {
-    if (error.statusCode === 401) {
-      submitError.value = useString('invalidCredentials')
-    } else {
-      submitError.value = useString('errorMessage')
+    loading.value = true
+
+    try {
+      await $auth.login(credentials)
+      navigateTo('/')
+    } catch (error: any) {
+      const isAuthError = Boolean(error?.message?.match(/Authentication/gi)) || error?.statusCode === 401
+
+      if (isAuthError) {
+        submitError.value = useString('invalidCredentials')
+      } else {
+        submitError.value = useString('errorMessage')
+      }
     }
-  }
 
-  loading.value = false
+    loading.value = false
+  }
 }
 </script>
 
