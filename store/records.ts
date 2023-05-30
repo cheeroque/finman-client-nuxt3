@@ -142,6 +142,7 @@ export const useRecordsStore = defineStore({
       const to = from.plus({ month: 1 }).minus({ second: 1 })
 
       const variables = {
+        first: 1000,
         where: {
           AND: [
             { column: 'CREATED_AT', operator: 'GTE', value: from.toFormat('yyyy-LL-dd HH:mm:ss') },
