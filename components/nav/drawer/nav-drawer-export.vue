@@ -36,7 +36,7 @@ async function handleClick() {
       const filePath = response.data.result.file.path
       const link = document.createElement('a')
 
-      link.href = `${config.public.STATIC_URL}${filePath}`
+      link.href = `${config.public.staticUrl}${filePath}`
       link.target = '_blank'
 
       document.body.appendChild(link)

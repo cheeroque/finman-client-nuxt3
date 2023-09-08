@@ -31,7 +31,7 @@ function adjustColor(base: string, c?: string, h?: string): string {
 
 function generateManifest(nuxt: Nuxt) {
   const config = nuxt.options.runtimeConfig
-  const primaryColor = config.THEME_PRIMARY_COLOR
+  const primaryColor = config.themePrimaryColor
 
   /** Get SVG icon templates & set main color */
   let icon: string = fs.readFileSync('./public/icon-template.svg', { encoding: 'utf8' })
@@ -89,7 +89,7 @@ function generateManifest(nuxt: Nuxt) {
 
 function generateThemes(nuxt: Nuxt) {
   const config = nuxt.options.runtimeConfig
-  const primaryColor = config.THEME_PRIMARY_COLOR
+  const primaryColor = config.themePrimaryColor
 
   const themeDark: ThemeItem[] = [
     { suffix: '', stop: 80 },
