@@ -9,6 +9,7 @@ export interface LoginResponseData {
 
 export interface LoginOutput {
   access_token: string
+  refresh_token?: string
   user: User
 }
 

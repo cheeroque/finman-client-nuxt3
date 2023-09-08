@@ -1,57 +1,90 @@
 import { useAuthStore } from '~/store/auth'
-import { LoginCredentials, LoginResponseData } from '~~/types/auth'
 
 import LOGIN_MUTATION from '@/graphql/Login.gql'
 import LOGOUT_MUTATION from '@/graphql/Logout.gql'
 
+import type { Client } from '@urql/core'
+import type { CookieOptions } from 'nuxt/app'
+import type { LoginCredentials } from '~/types/auth'
+
+export interface AuthPlugin {
+  login: (credentials: LoginCredentials) => void
+  logout: () => void
+  getToken: (refresh?: boolean) => string
+  setToken: (token?: string) => void
+  reset: () => void
+}
+
+const TOKEN_KEY = 'auth_token'
+const REFRESH_TOKEN_KEY = 'auth_refresh_token'
+
+const COOKIE_OPTIONS: CookieOptions = {
+  path: '/',
+  sameSite: 'lax',
+}
+
 export default defineNuxtPlugin((nuxtApp) => {
-  const { onLogin, onLogout } = useApollo()
   const authStore = useAuthStore()
 
+  const tokenCookie = useCookie(TOKEN_KEY, COOKIE_OPTIONS)
+  const refreshTokenCookie = useCookie(REFRESH_TOKEN_KEY, COOKIE_OPTIONS)
+
   async function login(credentials: LoginCredentials) {
-    const { mutate } = useMutation<LoginResponseData>(LOGIN_MUTATION)
+    if (!nuxtApp.$urql) return
 
-    try {
-      const response = await mutate(credentials)
+    const $urql = nuxtApp.$urql as Client
 
-      if (response?.data?.login) {
-        const { access_token, user } = response.data.login
+    const { data, error } = await $urql.mutation(LOGIN_MUTATION, credentials)
 
-        authStore.user = user
-        return onLogin(access_token)
-      } else {
-        throw createError({ statusCode: 401 })
-      }
-    } catch (error: any) {
-      handleAuthError(error)
+    if (data?.login) {
+      const { access_token, refresh_token, user } = data.login
+
+      authStore.user = user
+      setToken(access_token)
+      setToken(refresh_token, true)
+    } else {
+      throw createError({
+        statusCode: 401,
+        statusMessage: error?.message,
+      })
     }
   }
 
   async function logout() {
-    const { mutate } = useMutation(LOGOUT_MUTATION)
-    await mutate()
+    if (!nuxtApp.$urql) return
+
+    const $urql = nuxtApp.$urql as Client
+
+    const { data, error } = await $urql.mutation(LOGOUT_MUTATION, {})
+
     reset()
   }
 
-  function handleAuthError(error?: any) {
-    const isAuthError = error?.message === 'Unauthenticated.'
+  function getToken(refresh?: boolean) {
+    return refresh ? refreshTokenCookie.value : tokenCookie.value
+  }
 
-    if ((error?.graphQLErrors?.length && isAuthError) || error.statusCode === 401) {
-      /* Authentication error => reset auth */
-      reset()
-      throw createError({ statusCode: 401, message: error.message })
+  function setToken(token?: string, refresh?: boolean) {
+    if (refresh) {
+      refreshTokenCookie.value = token
     } else {
-      /* Non-authentication error */
-      throw error
+      tokenCookie.value = token
     }
   }
 
   function reset() {
     authStore.user = undefined
-    return onLogout()
+    setToken(undefined)
+    setToken(undefined, true)
   }
 
-  const auth = { login, logout, reset }
+  const auth = { login, logout, getToken, setToken, reset }
 
   return { provide: { auth } }
 })
+
+declare module '#app' {
+  interface NuxtApp {
+    $auth: AuthPlugin
+  }
+}

@@ -1,27 +1,33 @@
 import { useAuthStore } from '~/store/auth'
-import { Me } from '~~/types/auth'
-import ME_QUERY from '@/graphql/Me.gql'
+
+import ME_QUERY from '~/graphql/Me.gql'
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  /* Guard only pages that are not public */
-  if (!to.meta.isPublic) {
-    const authStore = useAuthStore()
+  const { $auth, $urql } = useNuxtApp()
+  const authStore = useAuthStore()
 
-    if (!authStore.user) {
-      try {
-        const { data } = await useAsyncQuery<Me>(ME_QUERY)
+  async function fetchUser() {
+    try {
+      const { data } = await $urql.query(ME_QUERY, {})
 
-        if (data.value?.me) {
-          authStore.user = data.value.me
-        } else {
-          throw createError({ statusCode: 401 })
-        }
-      } catch (error: any) {
-        if (error.statusCode === 401) {
-          authStore.user = undefined
-          return navigateTo('/auth/login')
-        }
+      if (!data?.me) throw createError({ statusCode: 401 })
+
+      return data.me
+    } catch (error: any) {}
+  }
+
+  if (!authStore.user) {
+    const user = await fetchUser()
+
+    if (user) {
+      authStore.user = user
+
+      if (to.meta.isPublic) {
+        return navigateTo('/')
       }
+    } else if (!to.meta.isPublic) {
+      $auth.reset()
+      return navigateTo('/login')
     }
   }
 })
