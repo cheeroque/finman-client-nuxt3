@@ -1,21 +1,19 @@
+import { useQuery } from '@urql/vue'
 import { DateTime } from 'luxon'
 import { defineStore } from 'pinia'
-import {
-  RecordsCategory,
-  RecordsItem,
-  RecordsQueryResponse,
-  RecordsQueryVariables,
-  RecordsSnapshot,
-} from '~~/types/records'
 
 import CATEGORIES_QUERY from '@/graphql/Categories.gql'
 import RECORDS_QUERY from '@/graphql/Records.gql'
 import RECORDS_TOTAL_QUERY from '@/graphql/RecordsTotal.gql'
 import SNAPSHOTS_QUERY from '@/graphql/Snapshots.gql'
 
-interface MonthRecords {
-  [key: string]: RecordsItem[]
-}
+import type {
+  RecordsCategory,
+  RecordsItem,
+  RecordsQueryResponse,
+  RecordsQueryVariables,
+  RecordsSnapshot,
+} from '~/types/records'
 
 interface RecordsState {
   balance: number
@@ -29,13 +27,15 @@ interface RecordsState {
   totalPages: number
 }
 
-interface CategoriesQueryResponse {
-  categories: CategoriesQueryResponseCategories
+interface MonthRecords {
+  [key: string]: RecordsItem[]
 }
 
-interface CategoriesQueryResponseCategories {
-  data: RecordsCategory[]
-  paginatorInfo: PaginatorInfo
+interface CategoriesQueryResponse {
+  categories: {
+    data: RecordsCategory[]
+    paginatorInfo: PaginatorInfo
+  }
 }
 
 interface RecordsTotalResponse {
@@ -44,12 +44,10 @@ interface RecordsTotalResponse {
 }
 
 interface SnapshotsQueryResponse {
-  snapshots: SnapshotsQueryResponseSnapshots
-}
-
-interface SnapshotsQueryResponseSnapshots {
-  data: RecordsSnapshot[]
-  paginatorInfo: PaginatorInfo
+  snapshots: {
+    data: RecordsSnapshot[]
+    paginatorInfo: PaginatorInfo
+  }
 }
 
 export const useRecordsStore = defineStore({
@@ -76,7 +74,7 @@ export const useRecordsStore = defineStore({
       this.pending++
 
       try {
-        const { data, error } = await useAsyncQuery<RecordsTotalResponse>(RECORDS_TOTAL_QUERY)
+        const { data, error } = await useQuery<RecordsTotalResponse>({ query: RECORDS_TOTAL_QUERY })
 
         if (error.value) throw error.value
 
@@ -95,7 +93,7 @@ export const useRecordsStore = defineStore({
       this.pending++
 
       try {
-        const { data, error } = await useAsyncQuery<CategoriesQueryResponse>(CATEGORIES_QUERY)
+        const { data, error } = await useQuery<CategoriesQueryResponse>({ query: CATEGORIES_QUERY })
 
         if (error.value) throw error.value
 
@@ -118,7 +116,7 @@ export const useRecordsStore = defineStore({
       }
 
       try {
-        const { data, error } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
+        const { data, error } = await useQuery<RecordsQueryResponse>({ query: RECORDS_QUERY, variables })
 
         if (error.value) throw error.value
 
@@ -152,7 +150,7 @@ export const useRecordsStore = defineStore({
       }
 
       try {
-        const { data, error } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
+        const { data, error } = await useQuery<RecordsQueryResponse>({ query: RECORDS_QUERY, variables })
 
         if (error.value) throw error.value
 
@@ -188,27 +186,32 @@ export const useRecordsStore = defineStore({
       const first = Number(route.query.perPage) || 50
       const page = Number(route.query.page) || 1
 
-      const variables: RecordsQueryVariables = {
-        first,
-        orderBy: [{ column, order }],
-        page,
-      }
-
       /** Set filter by is_income if needed */
       const isExpense = viewMode === 'expense'
       const isIncome = viewMode === 'income'
 
-      if (isExpense || isIncome) {
-        variables.hasCategory = {
-          column: 'IS_INCOME',
-          operator: 'EQ',
-          value: isIncome,
-        }
-      }
+      const hasCategory =
+        isExpense || isIncome
+          ? {
+              column: 'IS_INCOME',
+              operator: 'EQ',
+              value: isIncome,
+            }
+          : undefined
+
+      const variables = computed<RecordsQueryVariables>(() => ({
+        first,
+        hasCategory,
+        orderBy: [{ column, order }],
+        page,
+      }))
 
       /** Fetch records */
       try {
-        const { data, error } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
+        const { data, error } = await useQuery<RecordsQueryResponse>({
+          query: RECORDS_QUERY,
+          variables,
+        })
 
         if (error.value) throw error.value
 
@@ -229,7 +232,7 @@ export const useRecordsStore = defineStore({
       const variables = { first: 1 }
 
       try {
-        const { data, error } = await useAsyncQuery<SnapshotsQueryResponse>(SNAPSHOTS_QUERY, variables)
+        const { data, error } = await useQuery<SnapshotsQueryResponse>({ query: SNAPSHOTS_QUERY, variables })
 
         if (error.value) throw error.value
 
