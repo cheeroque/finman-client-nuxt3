@@ -254,7 +254,7 @@ export const useRecordsStore = defineStore({
         $auth.reset()
 
         const router = useRouter()
-        router.replace('/auth/login')
+        router.replace('/login')
       } else {
         this.error = typeof error?.toJSON === 'function' ? error.toJSON() : useString('errorMessage')
       }

@@ -61,17 +61,6 @@ import { useAuthStore } from '~/store/auth'
 definePageMeta({
   isPublic: true,
   layout: 'auth',
-  middleware: [
-    /* Redirect to index page if already logged in */
-    function () {
-      const cookie = useCookie('apollo:default.token')
-      const authStore = useAuthStore()
-
-      if (authStore.user || cookie.value) {
-        return navigateTo('/')
-      }
-    },
-  ],
 })
 
 const credentials = reactive<LoginCredentials>({

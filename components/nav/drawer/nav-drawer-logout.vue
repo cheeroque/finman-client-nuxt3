@@ -9,6 +9,6 @@ async function logout() {
   const { $auth } = useNuxtApp()
   await $auth.logout()
 
-  navigateTo('/auth/login')
+  navigateTo('/login')
 }
 </script>
