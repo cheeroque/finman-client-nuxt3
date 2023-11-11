@@ -52,8 +52,8 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { RecordsItem } from '~~/types/records'
-import { TableField, TableItem } from '~/components/ui/ui-table.vue'
+import type { RecordsItem } from '~/types/records'
+import type { TableField, TableItem } from '~/components/ui/ui-table.vue'
 
 const props = defineProps<{
   groupLabel: string

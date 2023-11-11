@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ComputedRef } from 'vue'
+import type { ComputedRef } from 'vue'
 
 const props = defineProps<{
   append?: string

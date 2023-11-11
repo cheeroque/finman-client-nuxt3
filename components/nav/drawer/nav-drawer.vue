@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { DrawerAction, DrawerPage } from '~~/types/drawer'
+import type { DrawerAction, DrawerPage } from '~/types/drawer'
 
 const props = defineProps<{
   open?: boolean

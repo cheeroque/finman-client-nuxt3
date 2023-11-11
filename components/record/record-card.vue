@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { RecordsItem } from '~~/types/records'
+import type { RecordsItem } from '~/types/records'
 
 const props = defineProps<{
   record: RecordsItem

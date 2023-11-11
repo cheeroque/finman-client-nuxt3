@@ -6,8 +6,8 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { RecordsCategory, RecordsItem } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
+import type { RecordsCategory, RecordsItem } from '~/types/records'
 
 import CATEGORIES_WITH_RECORDS_QUERY from '@/graphql/CategoriesWithRecords.gql'
 

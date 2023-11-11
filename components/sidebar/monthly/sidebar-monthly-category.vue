@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { RecordsCategory } from '~~/types/records'
+import type { RecordsCategory } from '~/types/records'
 
 const props = defineProps<{
   category: RecordsCategory

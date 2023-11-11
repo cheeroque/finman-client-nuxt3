@@ -33,8 +33,8 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
-import { RecordsCategory } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
+import type { RecordsCategory } from '~/types/records'
 
 import CATEGORY_CREATE_MUTATION from '@/graphql/CategoryCreate.gql'
 import CATEGORY_UPDATE_MUTATION from '@/graphql/CategoryUpdate.gql'

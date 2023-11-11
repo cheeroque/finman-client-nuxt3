@@ -42,8 +42,8 @@
 </template>
 
 <script setup lang="ts">
-import { RecordsCategory } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
+import type { RecordsCategory } from '~/types/records'
 
 interface CategoryWithTotal {
   category: RecordsCategory

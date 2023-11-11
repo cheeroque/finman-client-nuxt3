@@ -39,8 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import { RecordsItem } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
+import type { RecordsItem } from '~/types/records'
 
 import RECORD_DELETE_MUTATION from '@/graphql/RecordDelete.gql'
 

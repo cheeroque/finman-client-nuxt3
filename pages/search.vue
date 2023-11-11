@@ -16,8 +16,8 @@
 </template>
 
 <script setup lang="ts">
-import { RecordsItem, RecordsQueryResponse, RecordsQueryVariables } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
+import type { RecordsItem, RecordsQueryResponse, RecordsQueryVariables } from '~/types/records'
 
 import RECORDS_QUERY from '@/graphql/Records.gql'
 

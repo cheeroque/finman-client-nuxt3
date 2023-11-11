@@ -39,9 +39,9 @@
 import { DateTime } from 'luxon'
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
-import { RecordsItem } from '~~/types/records'
 import { useAuthStore } from '~/store/auth'
 import { useRecordsStore } from '~/store/records'
+import type { RecordsItem } from '~/types/records'
 
 import RECORD_CREATE_MUTATION from '@/graphql/RecordCreate.gql'
 import RECORD_UPDATE_MUTATION from '@/graphql/RecordUpdate.gql'

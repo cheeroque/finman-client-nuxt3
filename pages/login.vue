@@ -55,8 +55,8 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
-import { LoginCredentials } from '~~/types/auth'
 import { useAuthStore } from '~/store/auth'
+import type { LoginCredentials } from '~/types/auth'
 
 definePageMeta({
   isPublic: true,
