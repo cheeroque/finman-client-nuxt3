@@ -4,7 +4,8 @@
 
 <script setup lang="ts">
 const route = useRoute()
-const viewMode = route.params.view as string
+
+const viewMode = String(route.params.view)
 
 if (!['expense', 'income'].includes(viewMode)) {
   throw createError({
