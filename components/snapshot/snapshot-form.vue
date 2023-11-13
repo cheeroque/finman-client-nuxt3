@@ -36,9 +36,10 @@ import { DateTime } from 'luxon'
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
 import { useRecordsStore } from '~/store/records'
-import type { RecordsSnapshot } from '~/types/records'
 
-import SNAPSHOT_CREATE_MUTATION from '@/graphql/SnapshotCreate.gql'
+import SNAPSHOT_CREATE_MUTATION from '~/graphql/SnapshotCreate.gql'
+
+import type { RecordsSnapshot } from '~/types/records'
 
 interface SnapshotForm {
   balance: number

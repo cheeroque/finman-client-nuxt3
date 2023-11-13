@@ -17,9 +17,10 @@
 
 <script setup lang="ts">
 import { useRecordsStore } from '~/store/records'
-import type { RecordsItem, RecordsQueryResponse, RecordsQueryVariables } from '~/types/records'
 
-import RECORDS_QUERY from '@/graphql/Records.gql'
+import RECORDS_QUERY from '~/graphql/Records.gql'
+
+import type { RecordsItem, RecordsQueryResponse, RecordsQueryVariables } from '~/types/records'
 
 const route = useRoute()
 const recordsStore = useRecordsStore()

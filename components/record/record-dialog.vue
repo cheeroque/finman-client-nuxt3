@@ -40,9 +40,10 @@
 
 <script setup lang="ts">
 import { useRecordsStore } from '~/store/records'
-import type { RecordsItem } from '~/types/records'
 
-import RECORD_DELETE_MUTATION from '@/graphql/RecordDelete.gql'
+import RECORD_DELETE_MUTATION from '~/graphql/RecordDelete.gql'
+
+import type { RecordsItem } from '~/types/records'
 
 interface RecordDeleteResponseData {
   result: RecordDeleteOutput

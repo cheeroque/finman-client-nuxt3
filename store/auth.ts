@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+
 import type { User } from '~/types/auth'
 
 interface State {

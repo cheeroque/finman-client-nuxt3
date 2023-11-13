@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import RECORDS_EXPORT_MUTATION from '@/graphql/RecordsExport.gql'
+import RECORDS_EXPORT_MUTATION from '~/graphql/RecordsExport.gql'
 
 interface RecordsExportData {
   result: RecordsExportDataOutput

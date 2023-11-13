@@ -46,9 +46,10 @@
 
 <script setup lang="ts">
 import { useRecordsStore } from '~/store/records'
-import type { RecordsCategory } from '~/types/records'
 
-import CATEGORY_DELETE_MUTATION from '@/graphql/CategoryDelete.gql'
+import CATEGORY_DELETE_MUTATION from '~/graphql/CategoryDelete.gql'
+
+import type { RecordsCategory } from '~/types/records'
 
 interface CategoryDeleteResponseData {
   result: CategoryDeleteOutput

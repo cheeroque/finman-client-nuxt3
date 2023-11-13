@@ -34,10 +34,11 @@
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
 import { useRecordsStore } from '~/store/records'
-import type { RecordsCategory } from '~/types/records'
 
-import CATEGORY_CREATE_MUTATION from '@/graphql/CategoryCreate.gql'
-import CATEGORY_UPDATE_MUTATION from '@/graphql/CategoryUpdate.gql'
+import CATEGORY_CREATE_MUTATION from '~/graphql/CategoryCreate.gql'
+import CATEGORY_UPDATE_MUTATION from '~/graphql/CategoryUpdate.gql'
+
+import type { RecordsCategory } from '~/types/records'
 
 interface CategoryForm {
   color?: string

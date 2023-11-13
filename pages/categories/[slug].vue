@@ -16,9 +16,10 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 import { useRecordsStore } from '~/store/records'
-import type { RecordsItem } from '~/types/records'
 
-import RECORDS_BY_PERIOD_QUERY from '@/graphql/RecordsByPeriod.gql'
+import RECORDS_BY_PERIOD_QUERY from '~/graphql/RecordsByPeriod.gql'
+
+import type { RecordsItem } from '~/types/records'
 
 interface RecordsByPeriodQueryResponse {
   records: RecordsByPeriodQueryResponseRecords

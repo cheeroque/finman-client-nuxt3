@@ -2,10 +2,10 @@ import { useQuery } from '@urql/vue'
 import { DateTime } from 'luxon'
 import { defineStore } from 'pinia'
 
-import CATEGORIES_QUERY from '@/graphql/Categories.gql'
-import RECORDS_QUERY from '@/graphql/Records.gql'
-import RECORDS_TOTAL_QUERY from '@/graphql/RecordsTotal.gql'
-import SNAPSHOTS_QUERY from '@/graphql/Snapshots.gql'
+import CATEGORIES_QUERY from '~/graphql/Categories.gql'
+import RECORDS_QUERY from '~/graphql/Records.gql'
+import RECORDS_TOTAL_QUERY from '~/graphql/RecordsTotal.gql'
+import SNAPSHOTS_QUERY from '~/graphql/Snapshots.gql'
 
 import type {
   RecordsCategory,
