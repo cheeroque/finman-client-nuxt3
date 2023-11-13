@@ -60,7 +60,7 @@ const props = defineProps<{
   record?: RecordsItem
 }>()
 
-const emit = defineEmits(['closed', 'record:delete', 'record:update', 'update:modelValue'])
+const emit = defineEmits(['closed', 'delete:record', 'update:modelValue', 'update:record'])
 
 const recordsStore = useRecordsStore()
 const pending = computed(() => recordsStore.loading)
@@ -91,7 +91,7 @@ async function handleRecordDelete() {
       toast.value.message = useString('recordDeleted', `#${props.record?.id}`)
       toast.value.variant = 'danger'
 
-      emit('record:delete')
+      emit('delete:record')
       emit('update:modelValue', false)
     }
 
@@ -108,7 +108,7 @@ function handleRecordUpdate(record: RecordsItem, callback?: Function) {
   toast.value.message = useString('recordSaved', `#${record?.id}`)
   toast.value.variant = 'success'
 
-  emit('record:update')
+  emit('update:record')
 
   if (typeof callback === 'function') {
     callback()

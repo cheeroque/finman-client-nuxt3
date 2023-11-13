@@ -31,8 +31,8 @@
       v-model="dialogVisible"
       :record="currentRecord"
       @closed="handleDialogClosed"
-      @record:delete="emit('records:update')"
-      @record:update="emit('records:update')"
+      @delete:record="emit('update:records')"
+      @update:record="emit('update:records')"
     />
   </div>
 </template>
@@ -45,7 +45,7 @@ const props = defineProps<{
   viewMode?: ViewMode
 }>()
 
-const emit = defineEmits(['records:update'])
+const emit = defineEmits(['update:records'])
 
 const currentRecord = ref<RecordsItem>()
 const dialogVisible = ref(false)

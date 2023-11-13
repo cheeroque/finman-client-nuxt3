@@ -1,12 +1,12 @@
 <template>
-  <PageContent :loading="recordsStore.loading" spinner-variant="primary" class="page-records">
+  <PageContent :loading="recordsStore.loading" class="page-records" spinner-variant="primary">
     <template #header>
       <PageRecordsHeader />
     </template>
 
-    <RecordTable :records="recordsStore.records" :view-mode="viewMode" @records:update="recordsStore.fetchRecords" />
+    <RecordTable :records="recordsStore.records" :view-mode="viewMode" @update:records="recordsStore.fetchRecords" />
 
-    <RecordFab :show="!paginationVisible" @records:update="recordsStore.fetchRecords" />
+    <RecordFab :show="!paginationVisible" @update:records="recordsStore.fetchRecords" />
 
     <template #footer>
       <div ref="paginationAnchor" v-if="recordsStore.totalPages > 1">
@@ -20,23 +20,25 @@
 import { useRecordsStore } from '~/store/records'
 
 const recordsStore = useRecordsStore()
-
 const route = useRoute()
 
-const viewMode = computed<ViewMode>(() => route.params.view as ViewMode)
-
 const { refresh } = await useAsyncData('records', () => recordsStore.fetchRecords())
+
+const viewMode = computed<ViewMode>(() => route.params.view as ViewMode)
 
 watch(
   () => route.query,
 
   async () => {
     await refresh()
+
+    /* If window is scrolled down (e.g. in mobile) scroll it back to top,
+     * otherwise scroll back page element */
+
     setTimeout(() => {
-      /* If window is scrolled down (e.g. in mobile) scroll it back to top,
-       * otherwise scroll back page element */
       const windowTop = useWindowTop()
       const target = !windowTop ? '.page' : undefined
+
       useScrollTo(target)
     }, 250)
   }
