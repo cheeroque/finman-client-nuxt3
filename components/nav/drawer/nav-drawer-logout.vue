@@ -7,8 +7,9 @@
 <script setup lang="ts">
 async function logout() {
   const { $auth } = useNuxtApp()
+
   await $auth.logout()
 
-  navigateTo('/login')
+  return navigateTo('/login', { external: true })
 }
 </script>
