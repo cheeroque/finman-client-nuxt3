@@ -37,14 +37,14 @@
           </div>
 
           <div class="card-footer text-right">
-            <UiButton :disabled="loading" type="submit" variant="secondary" class="px-24">
-              <UiSpinner v-if="loading" size="1em" class="nuxt-icon nuxt-icon-left" />
+            <UiButton :disabled="loading" class="px-24" type="submit" variant="secondary">
+              <UiSpinner v-if="loading" class="nuxt-icon nuxt-icon-left" size="1em" />
               {{ useString('login') }}
             </UiButton>
           </div>
         </form>
 
-        <Transition name="fade" mode="out-in">
+        <Transition mode="out-in" name="fade">
           <p v-if="submitError" :key="submitError" class="form-feedback form-feedback-invalid">{{ submitError }}</p>
         </Transition>
       </div>
@@ -55,11 +55,10 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
-import { useAuthStore } from '~/store/auth'
+
 import type { LoginCredentials } from '~/types/auth'
 
 definePageMeta({
-  isPublic: true,
   layout: 'auth',
 })
 
@@ -69,8 +68,7 @@ const credentials = reactive<LoginCredentials>({
 })
 
 const loading = ref(false)
-
-const submitError: Ref<string | undefined> = ref()
+const submitError = ref<string | undefined>()
 
 /* Form validation */
 const rules = computed(() => ({
@@ -90,9 +88,10 @@ async function handleSubmit() {
 
     try {
       await $auth.login(credentials)
-      navigateTo('/')
+
+      return navigateTo('/')
     } catch (error: any) {
-      const isAuthError = Boolean(error?.message?.match(/Authentication/gi)) || error?.statusCode === 401
+      const isAuthError = error?.statusCode === 401
 
       if (isAuthError) {
         submitError.value = useString('invalidCredentials')
