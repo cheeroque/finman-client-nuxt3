@@ -3,9 +3,9 @@
     <UiButton
       v-for="(link, index) in navLinks"
       :key="`nav-link-${index}`"
+      :class="getLinkClasses(link)"
       :icon="link.icon"
       :to="link.link"
-      :class="getLinkClasses(link)"
       icon-size="24"
     >
       {{ link.text }}

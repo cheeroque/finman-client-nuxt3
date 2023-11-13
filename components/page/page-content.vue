@@ -3,13 +3,13 @@
     <header v-if="hasHeader" class="page-content-header">
       <slot name="header">
         <UiButton
-          :title="useString('home')"
           :aria-label="useString('home')"
-          to="/"
+          :title="useString('home')"
+          class="btn-back d-lg-none"
           icon="arrow-left-24"
           icon-size="24"
+          to="/"
           variant="link"
-          class="btn-back d-lg-none"
         />
 
         <h1 class="h4 card-title">{{ title }}</h1>
