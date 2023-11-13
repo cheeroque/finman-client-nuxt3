@@ -47,7 +47,11 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     const $urql = nuxtApp.$urql as Client
 
-    await $urql.mutation(LOGOUT_MUTATION, {})
+    try {
+      await $urql.mutation(LOGOUT_MUTATION, {})
+    } catch (error) {
+      /* Ignore error when trying to log out without token */
+    }
 
     reset()
   }
