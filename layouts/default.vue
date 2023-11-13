@@ -68,9 +68,9 @@ function handleToastUpdate(event: boolean) {
     display: flex;
     flex: 1 1 auto;
     align-items: flex-start;
-    gap: 0 $grid-gap;
+    gap: 0 0 0 $grid-gap;
     min-height: 0;
-    padding: $grid-gap 0 $grid-gap $grid-gap;
+    padding: 0 0 0 $grid-gap;
     overflow: hidden;
   }
 
@@ -79,8 +79,12 @@ function handleToastUpdate(event: boolean) {
     width: 100%;
     min-height: 0;
     max-height: 100%;
-    padding-right: $grid-gap;
+    padding: $grid-gap;
     overflow-y: auto;
+  }
+
+  :deep(.sidebar) {
+    padding: $grid-gap 0;
   }
 }
 </style>
