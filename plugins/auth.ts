@@ -1,19 +1,11 @@
 import { useAuthStore } from '~/store/auth'
 
-import LOGIN_MUTATION from '@/graphql/Login.gql'
-import LOGOUT_MUTATION from '@/graphql/Logout.gql'
+import LOGIN_MUTATION from '~/graphql/Login.gql'
+import LOGOUT_MUTATION from '~/graphql/Logout.gql'
 
 import type { Client } from '@urql/core'
 import type { CookieOptions } from 'nuxt/app'
-import type { LoginCredentials } from '~/types/auth'
-
-export interface AuthPlugin {
-  login: (credentials: LoginCredentials) => void
-  logout: () => void
-  getToken: (refresh?: boolean) => string
-  setToken: (token?: string) => void
-  reset: () => void
-}
+import type { AuthPlugin, LoginCredentials } from '~/types/auth'
 
 const TOKEN_KEY = 'auth_token'
 const REFRESH_TOKEN_KEY = 'auth_refresh_token'
@@ -55,7 +47,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     const $urql = nuxtApp.$urql as Client
 
-    const { data, error } = await $urql.mutation(LOGOUT_MUTATION, {})
+    await $urql.mutation(LOGOUT_MUTATION, {})
 
     reset()
   }

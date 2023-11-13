@@ -3,7 +3,7 @@ import { authExchange } from '@urql/exchange-auth'
 
 import type { Client } from '@urql/core'
 import type { SSRData } from '@urql/vue'
-import type { AuthPlugin } from '~/plugins/auth'
+import type { AuthPlugin } from '~/types/auth'
 
 const SSR_KEY = '__URQL_DATA__'
 
@@ -18,7 +18,10 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     return {
       /* Apply an auth token as header to each request, if present */
+
       addAuthToOperation(operation) {
+        operation.context.requestPolicy = 'network-only'
+
         const token = $auth?.getToken()
 
         if (!token) return operation
@@ -29,12 +32,14 @@ export default defineNuxtPlugin((nuxtApp) => {
       },
 
       /* Called on CombinedError, should return true if auth error occured */
+
       didAuthError(error) {
         return false
       },
 
       /* Called on auth error, should trigger auth refresh or logout
        * (if refresh is not supported) */
+
       async refreshAuth() {
         const refreshToken = $auth?.getToken(true)
 

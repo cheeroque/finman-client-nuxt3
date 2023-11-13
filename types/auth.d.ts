@@ -1,3 +1,11 @@
+export interface AuthPlugin {
+  login: (credentials: LoginCredentials) => void
+  logout: () => void
+  getToken: (refresh?: boolean) => string
+  setToken: (token?: string) => void
+  reset: () => void
+}
+
 export interface LoginCredentials {
   username: string
   password: string
