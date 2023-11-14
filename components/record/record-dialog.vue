@@ -1,6 +1,6 @@
 <template>
   <UiDialog
-    :loading="pending"
+    :loading="recordsStore.loading"
     :model-value="modelValue"
     :title="dialogTitle"
     @closed="emit('closed')"
@@ -39,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+import { useMutation } from '@urql/vue'
 import { useRecordsStore } from '~/store/records'
 
 import RECORD_DELETE_MUTATION from '~/graphql/RecordDelete.gql'
@@ -46,13 +47,11 @@ import RECORD_DELETE_MUTATION from '~/graphql/RecordDelete.gql'
 import type { RecordsItem } from '~/types/records'
 
 interface RecordDeleteResponseData {
-  result: RecordDeleteOutput
-}
-
-interface RecordDeleteOutput {
-  id: number
-  note: string
-  sum: number
+  result: {
+    id: number
+    note: string
+    sum: number
+  }
 }
 
 const props = defineProps<{
@@ -63,14 +62,14 @@ const props = defineProps<{
 const emit = defineEmits(['closed', 'delete:record', 'update:modelValue', 'update:record'])
 
 const recordsStore = useRecordsStore()
-const pending = computed(() => recordsStore.loading)
-
 const toast = useToast()
 
+const { executeMutation } = useMutation<RecordDeleteResponseData>(RECORD_DELETE_MUTATION)
+
 const form = ref()
+
 const formId = computed(() => form.value?.form.id)
 const isEdit = computed(() => Boolean(props.record?.id))
-
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeRecord' : 'createRecord'))
 
 async function handleRecordDelete() {
@@ -79,13 +78,12 @@ async function handleRecordDelete() {
   recordsStore.pending++
 
   const { id } = props.record
-  const { mutate } = useMutation<RecordDeleteResponseData>(RECORD_DELETE_MUTATION)
 
   try {
     /* Delete record */
-    const response = await mutate({ id })
+    const { data } = await executeMutation({ id })
 
-    if (response?.data?.result) {
+    if (data?.result) {
       /* Show confirmation toast */
       toast.value.modelValue = true
       toast.value.message = useString('recordDeleted', `#${props.record?.id}`)

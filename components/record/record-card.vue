@@ -4,7 +4,7 @@
       {{ formatDate(record.created_at) }}
     </NuxtLink>
 
-    <UiButton variant="link" class="record-sum" @click="emit('edit')">
+    <UiButton class="record-sum" variant="link" @click="emit('edit')">
       {{ useNumberFormat(record.sum) }}&nbsp;₽
     </UiButton>
 
@@ -14,13 +14,14 @@
 
     <p class="record-note">
       <span class="caption">{{ record.note }}</span>
-      <UiButton icon="edit-24" icon-size="24" variant="link" class="record-edit" @click="emit('edit')" />
+      <UiButton class="record-edit" icon="edit-24" icon-size="24" variant="link" @click="emit('edit')" />
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
+
 import type { RecordsItem } from '~/types/records'
 
 const props = defineProps<{

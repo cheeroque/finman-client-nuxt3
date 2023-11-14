@@ -37,6 +37,7 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
+import { useMutation } from '@urql/vue'
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
 import { useAuthStore } from '~/store/auth'
@@ -91,9 +92,7 @@ function initFormData() {
   }
 }
 
-watchEffect(() => {
-  initFormData()
-})
+watchEffect(() => initFormData())
 
 /* Form validation */
 function isValidDate(value: Date): boolean {
@@ -102,14 +101,11 @@ function isValidDate(value: Date): boolean {
 
 const rules = computed(() => ({
   category_id: { required: helpers.withMessage(useString('fieldRequired'), required) },
-
   created_at: {
     required: helpers.withMessage(useString('fieldRequired'), required),
     isValidDate: helpers.withMessage(useString('invalidDate'), isValidDate),
   },
-
   note: { required: helpers.withMessage(useString('fieldRequired'), required) },
-
   sum: {
     minValue: helpers.withMessage(({ $params }) => `${useString('fieldMinimumValue')} ${$params.min}`, minValue(0)),
     required: helpers.withMessage(useString('fieldRequired'), required),
@@ -119,6 +115,10 @@ const rules = computed(() => ({
 const v$ = useVuelidate<RecordsForm>(rules, formData, { $lazy: true })
 
 /* Submit form */
+const { executeMutation } = useMutation<RecordUpsertResponse>(
+  props.edit ? RECORD_UPDATE_MUTATION : RECORD_CREATE_MUTATION
+)
+
 async function handleSubmit() {
   v$.value.$validate()
 
@@ -127,27 +127,25 @@ async function handleSubmit() {
 
     const { category_id, created_at, note, sum } = formData
 
-    const data = {
-      category: { connect: category_id },
-      created_at: DateTime.fromJSDate(created_at).toFormat('yyyy-LL-dd HH:mm:ss'),
-      id: props.record?.id,
-      note,
-      sum,
-      user: { connect: authStore.user?.id },
+    const variables = {
+      data: {
+        category: { connect: category_id },
+        created_at: DateTime.fromJSDate(created_at).toFormat('yyyy-LL-dd HH:mm:ss'),
+        id: props.record?.id,
+        note,
+        sum,
+        user: { connect: authStore.user?.id },
+      },
     }
-
-    const mutation = props.edit ? RECORD_UPDATE_MUTATION : RECORD_CREATE_MUTATION
 
     recordsStore.pending++
 
-    const { mutate } = useMutation<RecordUpsertResponse>(mutation)
-
     try {
       /* Upsert record */
-      const response = await mutate({ data })
+      const { data } = await executeMutation(variables)
 
-      if (response?.data?.result) {
-        emit('success', response.data.result)
+      if (data?.result) {
+        emit('success', data.result)
       }
 
       /* Refetch everything that changes after record upsert */

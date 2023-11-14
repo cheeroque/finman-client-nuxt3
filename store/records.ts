@@ -1,3 +1,5 @@
+/* TODO: fix actions not working when called after category/record update */
+
 import { useQuery } from '@urql/vue'
 import { DateTime } from 'luxon'
 import { defineStore } from 'pinia'

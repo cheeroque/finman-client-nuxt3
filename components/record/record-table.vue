@@ -4,12 +4,15 @@
       <div class="record-table-th record-date">
         {{ useString('date') }}
       </div>
+
       <div class="record-table-th record-sum">
         {{ useString('sum') }}
       </div>
+
       <div class="record-table-th record-category">
         {{ useString('category') }}
       </div>
+
       <div class="record-table-th record-note">
         {{ useString('note') }}
       </div>
