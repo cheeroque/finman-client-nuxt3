@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { TableField, TableItem } from '~/components/ui/ui-table.vue'
+import type { TableField, TableItem } from '~/components/ui/ui-table.vue'
 
 const props = defineProps<{
   fields: TableField[]
