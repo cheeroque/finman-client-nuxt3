@@ -22,7 +22,6 @@ import type { RecordsCategory } from '~/types/records'
 const recordsStore = useRecordsStore()
 
 const currentCategory = ref<RecordsCategory>()
-
 const dialogVisible = ref(false)
 
 function handleCategoryCreate() {
