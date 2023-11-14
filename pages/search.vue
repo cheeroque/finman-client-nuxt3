@@ -50,13 +50,13 @@ const variables = computed(() => {
   }
 })
 
-const { data: result, fetching } = useQuery({
+const { data: result, fetching } = await useQuery({
   query: RECORDS_QUERY,
   variables,
 })
 
 const tableItems = computed(() => result.value?.records?.data ?? [])
-const totalPages = computed(() => Math.ceil(result.value?.records?.paginatorInfo?.total ?? 0 / perPage.value))
+const totalPages = computed(() => result.value?.records?.paginatorInfo?.lastPage ?? 1)
 </script>
 
 <style lang="scss" scoped>
