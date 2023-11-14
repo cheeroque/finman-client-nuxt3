@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import { useMutation } from '@urql/vue'
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
 import { useRecordsStore } from '~/store/records'
@@ -83,47 +84,46 @@ function initFormData() {
   }
 }
 
-watchEffect(() => {
-  initFormData()
-})
+watchEffect(() => initFormData())
 
 /* Form validation */
 const rules = computed(() => ({
   color: { required: helpers.withMessage(useString('fieldRequired'), required) },
-
   name: { required: helpers.withMessage(useString('fieldRequired'), required) },
-
   slug: { required: helpers.withMessage(useString('fieldRequired'), required) },
 }))
 
 const v$ = useVuelidate<CategoryForm>(rules, formData, { $lazy: true })
 
 /* Submit form */
+
+const { executeMutation } = useMutation<CategoryUpsertResponse>(
+  props.edit ? CATEGORY_UPDATE_MUTATION : CATEGORY_CREATE_MUTATION
+)
+
 async function onSubmit() {
   v$.value.$validate()
 
   if (!v$.value.$error) {
     const { color, is_income, name, slug } = formData
 
-    const data = {
-      color,
-      id: props.category?.id,
-      is_income,
-      name,
-      slug,
+    const variables = {
+      data: {
+        color,
+        id: props.category?.id,
+        is_income,
+        name,
+        slug,
+      },
     }
-
-    const mutation = props.edit ? CATEGORY_UPDATE_MUTATION : CATEGORY_CREATE_MUTATION
 
     recordsStore.pending++
 
-    const { mutate } = useMutation<CategoryUpsertResponse>(mutation)
-
     try {
-      const response = await mutate({ data })
+      const { data } = await executeMutation(variables)
 
-      if (response?.data?.result) {
-        emit('success', response.data.result)
+      if (data?.result) {
+        emit('success', data.result)
 
         /** Refetch everything that could change after category upsert */
         await Promise.all([

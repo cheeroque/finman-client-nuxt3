@@ -12,12 +12,12 @@
 
     <div class="card-footer">
       <UiButton
-        :title="useString('edit')"
         :aria-label="useString('edit')"
+        :title="useString('edit')"
+        class="category-edit"
         icon="edit-24"
         icon-size="16"
         variant="link"
-        class="category-edit"
         @click="emit('edit')"
       />
     </div>

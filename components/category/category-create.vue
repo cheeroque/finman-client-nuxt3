@@ -1,5 +1,5 @@
 <template>
-  <UiButton icon="edit-24" icon-size="24" variant="tertiary" class="btn-category-create" @click="emit('click')">
+  <UiButton class="btn-category-create" icon="edit-24" icon-size="24" variant="tertiary" @click="emit('click')">
     <span class="h5 fw-medium mb-0">{{ useString('addCategory') }}</span>
   </UiButton>
 </template>
