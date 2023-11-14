@@ -50,13 +50,29 @@ const variables = computed(() => {
   }
 })
 
-const { data: result, fetching } = await useQuery({
+const { data: result, executeQuery, fetching } = await useQuery({
   query: RECORDS_QUERY,
   variables,
 })
 
 const tableItems = computed(() => result.value?.records?.data ?? [])
 const totalPages = computed(() => result.value?.records?.paginatorInfo?.lastPage ?? 1)
+
+watch(
+  () => route.query,
+
+  async () => {
+    await executeQuery()
+
+    setTimeout(() => {
+      /* If window is scrolled down (e.g. in mobile) scroll it back to top,
+       * otherwise scroll back page element */
+      const windowTop = useWindowTop()
+      const target = !windowTop ? '.page' : undefined
+      useScrollTo(target)
+    }, 250)
+  }
+)
 </script>
 
 <style lang="scss" scoped>

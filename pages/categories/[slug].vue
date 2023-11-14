@@ -83,6 +83,7 @@ function formatDate(timestamp: number, short = false): string {
 
 watch(
   () => route.query,
+
   async () => {
     await executeQuery()
 
