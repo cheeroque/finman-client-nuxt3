@@ -74,7 +74,7 @@ const tableItems = computed(
     }) ?? []
 )
 
-const totalPages = computed(() => data.value?.records.paginatorInfo.lastPage ?? 1)
+const totalPages = computed(() => data.value?.records?.paginatorInfo.lastPage ?? 1)
 
 function formatDate(timestamp: number, short = false): string {
   const monthFormat = short ? 'LLL' : 'LLLL'

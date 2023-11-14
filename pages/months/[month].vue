@@ -1,10 +1,11 @@
 <template>
-  <PageContent :loading="recordsStore.loading" :title="monthName" spinner-variant="primary" class="overflow-hidden">
+  <PageContent :loading="recordsStore.loading" :title="monthName" class="overflow-hidden" spinner-variant="primary">
     <GroupTable :group-label="useString('category')" :items="tableItems" :loading="recordsStore.loading" />
   </PageContent>
 </template>
 
 <script setup lang="ts">
+import { useQuery } from '@urql/vue'
 import { DateTime } from 'luxon'
 import { useRecordsStore } from '~/store/records'
 
@@ -13,11 +14,9 @@ import CATEGORIES_WITH_RECORDS_QUERY from '~/graphql/CategoriesWithRecords.gql'
 import type { RecordsCategory, RecordsItem } from '~/types/records'
 
 interface CategoriesWithRecordsQueryResponse {
-  categories: CategoriesWithRecordsQueryResponseCategories
-}
-
-interface CategoriesWithRecordsQueryResponseCategories {
-  data: CategoryWithRecords[]
+  categories: {
+    data: CategoryWithRecords[]
+  }
 }
 
 interface CategoryWithRecords extends RecordsCategory {
@@ -25,27 +24,19 @@ interface CategoryWithRecords extends RecordsCategory {
   recordsTotal: number
 }
 
-interface MonthRecordsGroup {
-  category?: RecordsCategory
-  group?: string
-  records?: RecordsItem[]
-  subtotal: number
-  trClass?: string
-}
-
 const route = useRoute()
 const recordsStore = useRecordsStore()
 
-const month = route.params.month as string
-const monthName = DateTime.fromFormat(month, 'yyyy-LL').toLocaleString(
-  { month: 'long', year: 'numeric' },
-  { locale: useLocale() }
+const month = computed(() => String(route.params.month))
+const monthName = computed(() =>
+  DateTime.fromFormat(month.value, 'yyyy-LL').toLocaleString(
+    { month: 'long', year: 'numeric' },
+    { locale: useLocale() }
+  )
 )
 
-const tableItems = ref<MonthRecordsGroup[]>([])
-
-async function fetchCategories() {
-  const from = DateTime.fromFormat(month, 'yyyy-LL')
+const variables = computed(() => {
+  const from = DateTime.fromFormat(month.value, 'yyyy-LL')
   const to = from.plus({ month: 1 }).minus({ second: 1 })
 
   const where = {
@@ -57,50 +48,55 @@ async function fetchCategories() {
 
   /* Filter by month is the same for records & recordsTotal, but variable types
    * are different in GQL, so query variables have to be separate */
-  const variables = { where, whereTotal: where }
+  return { where, whereTotal: where }
+})
 
-  recordsStore.pending++
+const { data, executeQuery, fetching } = await useQuery<CategoriesWithRecordsQueryResponse>({
+  query: CATEGORIES_WITH_RECORDS_QUERY,
+  variables,
+})
 
-  try {
-    const { data, error } = await useAsyncQuery<CategoriesWithRecordsQueryResponse>(
-      CATEGORIES_WITH_RECORDS_QUERY,
-      variables
-    )
+const tableItems = computed(() => {
+  const result = []
+  let balance = 0
+  let totalExpenses = 0
 
-    if (error.value) throw error.value
+  /* Map categories with records to table rows */
+  data.value?.categories?.data?.forEach(({ color, id, is_income, name, records, recordsTotal, slug }) => {
+    if (is_income) {
+      balance += recordsTotal
+    } else {
+      balance -= recordsTotal
+      totalExpenses += recordsTotal
+    }
 
-    if (data.value?.categories?.data) {
-      let balance = 0
-
-      /* Map categories with records to table rows */
-      data.value.categories.data.forEach(({ color, id, is_income, name, records, recordsTotal, slug }) => {
-        if (is_income) balance += recordsTotal
-        else balance -= recordsTotal
-
-        if (recordsTotal) {
-          tableItems.value.push({
-            category: { color, id, is_income, name, slug },
-            group: name,
-            records: records.map((record) => ({ ...record, category: { color, id, is_income, name, slug } })),
-            subtotal: recordsTotal,
-            trClass: is_income ? 'row-income' : undefined,
-          })
-        }
-      })
-
-      /* Append table row with total balance */
-      tableItems.value.push({
-        group: useString('monthBalance'),
-        subtotal: balance,
-        trClass: `row-balance ${balance > 0 ? 'row-balance-positive' : 'row-balance-negative'}`,
+    if (recordsTotal) {
+      result.push({
+        category: { color, id, is_income, name, slug },
+        group: name,
+        records: records.map((record) => ({ ...record, category: { color, id, is_income, name, slug } })),
+        subtotal: recordsTotal,
+        trClass: is_income ? 'row-income' : undefined,
       })
     }
-  } catch (error) {}
+  })
 
-  recordsStore.pending--
-}
+  /* Append table row with total balance */
+  result.push(
+    {
+      group: useString('monthExpenses'),
+      subtotal: totalExpenses,
+      trClass: 'row-expense',
+    },
+    {
+      group: useString('monthBalance'),
+      subtotal: balance,
+      trClass: `row-balance ${balance > 0 ? 'row-balance-positive' : 'row-balance-negative'}`,
+    }
+  )
 
-await useAsyncData('month-records', () => fetchCategories())
+  return result
+})
 </script>
 
 <style lang="scss" scoped>
@@ -109,6 +105,11 @@ await useAsyncData('month-records', () => fetchCategories())
 }
 
 :deep(.table) {
+  .row-expense {
+    color: var(--on-danger-bg);
+    background-color: var(--danger-bg);
+  }
+
   .row-income {
     color: var(--on-success-bg);
     background-color: var(--success-bg);
