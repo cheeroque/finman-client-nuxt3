@@ -1,8 +1,8 @@
 <template>
-  <form action="/search" method="get" class="search-form" @submit.prevent="handleSubmit">
+  <form action="/search" class="search-form" method="get" @submit.prevent="handleSubmit">
     <UiInput v-model="q" :placeholder="useString('searchPlaceholder')" name="q" size="lg" type="search">
       <template #append>
-        <UiButton icon="search-24" icon-size="24" type="submit" variant="link" class="form-control-icon" />
+        <UiButton class="form-control-icon" icon="search-24" icon-size="24" type="submit" variant="link" />
       </template>
     </UiInput>
   </form>
@@ -18,8 +18,7 @@ function handleSubmit() {
 
   emit('submit')
 
-  const router = useRouter()
-  router.push({ path: '/search', query: { q: q.value } })
+  return navigateTo({ path: '/search', query: { q: q.value } })
 }
 </script>
 
