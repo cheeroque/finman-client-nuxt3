@@ -4,7 +4,7 @@
 
     <SidebarMonthly class="mb-24" />
 
-    <Transition name="fade" mode="out-in">
+    <Transition mode="out-in" name="fade">
       <SidebarCalendar />
     </Transition>
   </aside>

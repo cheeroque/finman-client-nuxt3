@@ -12,7 +12,7 @@ const route = useRoute()
 const activeDate = computed(() => {
   let date
 
-  const routeDate = route.params.month as string
+  const routeDate = route.params.month ? String(route.params.month) : undefined
 
   if (routeDate) {
     date = DateTime.fromFormat(routeDate, 'yyyy-LL').toJSDate()

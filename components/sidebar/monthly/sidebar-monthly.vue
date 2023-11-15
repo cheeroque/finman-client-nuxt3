@@ -30,12 +30,12 @@
 
     <UiButton
       v-if="hasCollapse"
-      :title="useString(collapseOpen ? 'collapse' : 'expand')"
       :class="{ expanded: collapseOpen }"
+      :title="useString(collapseOpen ? 'collapse' : 'expand')"
+      class="collapse-toggle"
       icon="caret"
       icon-size="10"
       variant="primary-muted"
-      class="collapse-toggle"
       @click="toggleCollapse"
     />
   </SidebarWidget>
@@ -43,6 +43,7 @@
 
 <script setup lang="ts">
 import { useRecordsStore } from '~/store/records'
+
 import type { RecordsCategory } from '~/types/records'
 
 interface CategoryWithTotal {
@@ -50,37 +51,35 @@ interface CategoryWithTotal {
   total: number
 }
 
-const VISIBLE_LIMIT = 5
-
 const recordsStore = useRecordsStore()
+
+const VISIBLE_LIMIT = 5
 
 const collapseOpen = ref(false)
 
 const groupedExpenses = computed(() => {
   const categories: CategoryWithTotal[] = []
 
-  Object.entries(recordsStore.monthRecords ?? {}).forEach(([categoryId, records]) => {
-    const category = records?.[0]?.category
-    const total = records?.reduce((total, record) => (total += record.sum), 0)
+  if (recordsStore.monthRecords) {
+    Object.values(recordsStore.monthRecords).forEach((records) => {
+      const category = records?.[0]?.category
+      const total = records?.reduce((total, record) => (total += record.sum), 0)
 
-    if (!category.is_income) {
-      categories.push({ category, total })
-    }
-  })
+      if (!category.is_income) {
+        categories.push({ category, total })
+      }
+    })
 
-  categories.sort((a, b) => b.total - a.total)
+    categories.sort((a, b) => b.total - a.total)
+  }
 
   return categories
 })
 
 const visibleCategories = computed(() => groupedExpenses.value.slice(0, VISIBLE_LIMIT))
-
 const hiddenCategories = computed(() => groupedExpenses.value.slice(VISIBLE_LIMIT))
-
 const hasCollapse = computed(() => Boolean(hiddenCategories.value.length))
-
 const isEmpty = computed(() => !groupedExpenses.value.length)
-
 const maxTotal = computed(() => groupedExpenses.value[0].total)
 
 function toggleCollapse() {
