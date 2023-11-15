@@ -11,6 +11,7 @@
 
   <div class="datetimepicker-footer">
     <UiButton variant="neutral-muted" @click="emit('close')"> {{ useString('cancel') }} </UiButton>
+
     <UiButton variant="secondary" @click="emit('set-now')"> {{ useString('now') }} </UiButton>
   </div>
 

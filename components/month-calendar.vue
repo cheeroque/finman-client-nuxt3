@@ -2,9 +2,9 @@
   <div class="calendar">
     <header class="calendar-header">
       <UiButton
-        :title="useString('previousYear')"
         :aria-label="useString('previousYear')"
         :disabled="isBeginning"
+        :title="useString('previousYear')"
         icon="chevron-double-left-24"
         icon-size="24"
         @click="setYearPrevious"
@@ -13,9 +13,9 @@
       <span class="calendar-title">{{ currentYear }}</span>
 
       <UiButton
-        :title="useString('nextYear')"
         :aria-label="useString('nextYear')"
         :disabled="isEnd"
+        :title="useString('nextYear')"
         icon="chevron-double-right-24"
         icon-size="24"
         @click="setYearNext"
@@ -32,8 +32,8 @@
 
             <NuxtLink
               v-else
-              :to="`/months/${month.link}`"
               :class="{ active: month.link === activeMonthLink }"
+              :to="`/months/${month.link}`"
               class="calendar-link"
             >
               {{ month.month }}

@@ -1,6 +1,6 @@
 <template>
   <div v-uid ref="formGroup" :class="componentClasses">
-    <label v-if="hasLabel" :for="controlId" :class="labelClass" class="form-label">
+    <label v-if="hasLabel" :class="labelClass" :for="controlId" class="form-label">
       <slot name="label">
         {{ label }}
       </slot>

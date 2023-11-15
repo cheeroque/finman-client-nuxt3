@@ -1,8 +1,8 @@
 <template>
   <NuxtIcon
+    :class="{ 'nuxt-icon-fixed': size }"
     :fill="fill"
     :name="name"
-    :class="{ 'nuxt-icon-fixed': size }"
     :style="{ '--nuxt-icon-size': size && `${size}px` }"
   />
 </template>

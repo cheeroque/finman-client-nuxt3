@@ -75,13 +75,12 @@ const props = defineProps<{
 
 const emit = defineEmits(['click:day', 'update:modelValue'])
 
-const locale = computed(() => props.locale ?? useLocale())
+const luxonDate = ref(DateTime.fromJSDate(props.modelValue ?? new Date()).set({ day: 1 }))
 
+const locale = computed(() => props.locale ?? useLocale())
 const titleFormat = computed(() => props.titleFormat || 'LLLL y')
 
 const weekdays = Info.weekdays('short', { locale: locale.value })
-
-const luxonDate = ref(DateTime.fromJSDate(props.modelValue ?? new Date()).set({ day: 1 }))
 
 const selectedDay = computed(() => DateTime.fromJSDate(props.modelValue ?? new Date()).day)
 const selectedMonth = computed(() => luxonDate.value.month)

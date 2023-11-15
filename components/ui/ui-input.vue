@@ -103,6 +103,7 @@ const componentClasses = computed(() => {
 
 watch(
   () => props.autofocus,
+
   (event) => {
     if (event) setObserver()
     else removeObserver()

@@ -16,8 +16,8 @@
 
     <UiCollapse
       :modelValue="localVisible"
-      transition="dropdown"
       collapse-class="dropdown-menu"
+      transition="dropdown"
       @hidden="$emit('hidden')"
       @update:modelValue="handleUpdate"
     >
@@ -60,6 +60,10 @@ const localVisible = computed({
   },
 })
 
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
 function handleClickOutside(event: Event) {
   if (!dropdown.value.contains(event.target)) {
     hide()
@@ -81,8 +85,4 @@ function show() {
 function toggle() {
   handleUpdate(!localVisible.value)
 }
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
 </script>

@@ -3,7 +3,7 @@
     <thead v-if="!hideThead" class="thead">
       <tr>
         <th v-for="(field, index) in normalizedFields" :key="`th-${index}`" :class="field.thClass">
-          <slot :name="`head(${field.key})`" :column="field.key" :field="field" :label="field.label">
+          <slot :column="field.key" :field="field" :label="field.label" :name="`head(${field.key})`">
             {{ field.label }}
           </slot>
         </th>

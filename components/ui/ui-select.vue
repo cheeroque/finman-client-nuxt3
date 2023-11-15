@@ -23,7 +23,7 @@
     </select>
 
     <div class="form-control-append">
-      <span class="form-select-indicator" aria-hidden="true">
+      <span aria-hidden="true" class="form-select-indicator">
         <UiIcon name="select-indicator" />
       </span>
     </div>

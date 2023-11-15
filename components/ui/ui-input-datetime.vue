@@ -14,7 +14,7 @@
         @input="handleInput"
       >
         <template #append>
-          <UiButton icon="stopwatch-24" variant="link" class="form-control-icon" @click="show" />
+          <UiButton class="form-control-icon" icon="stopwatch-24" variant="link" @click="show" />
         </template>
       </UiInput>
     </template>
@@ -50,12 +50,12 @@ const emit = defineEmits(['update:modelValue'])
 const dropdownVisible = ref(false)
 
 const format = computed(() => props.format ?? 'dd.LL.yyyy HH:mm')
+const placeholder = computed(() => props.placeholder ?? DateTime.now().toFormat(format.value))
 
 const formattedValue = computed(() =>
   props.modelValue ? DateTime.fromJSDate(props.modelValue).toFormat(format.value) : undefined
 )
 
-const placeholder = computed(() => props.placeholder ?? DateTime.now().toFormat(format.value))
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement

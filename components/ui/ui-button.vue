@@ -50,8 +50,8 @@ const emit = defineEmits(['click', 'click-native'])
 const slots = useSlots()
 
 const isLink = computed(() => Boolean(props.to))
-
 const tagName = computed(() => (isLink.value ? resolveComponent('NuxtLink') : 'button'))
+const type = computed(() => props.type ?? 'button')
 
 const componentClasses = computed(() => {
   let classes = ['btn']
@@ -65,8 +65,6 @@ const componentClasses = computed(() => {
 
   return classes
 })
-
-const type = computed(() => props.type ?? 'button')
 
 function handleClick(event: Event) {
   emit('click')

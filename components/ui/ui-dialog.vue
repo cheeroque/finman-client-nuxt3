@@ -11,12 +11,12 @@
               </h5>
 
               <UiButton
-                :title="useString('close')"
                 :aria-label="useString('close')"
+                :title="useString('close')"
+                class="btn-close"
                 icon="close-16"
                 icon-size="16"
                 variant="primary-muted"
-                class="btn-close"
                 @click="handleClose"
               />
             </slot>
@@ -27,8 +27,8 @@
           </div>
 
           <div v-if="hasFooter" class="dialog-footer">
-            <slot name="footer" :close="handleClose">
-              <UiButton variant="secondary" class="ms-auto" @click="handleClose"> OK </UiButton>
+            <slot :close="handleClose" name="footer">
+              <UiButton class="ms-auto" variant="secondary" @click="handleClose"> OK </UiButton>
             </slot>
           </div>
         </div>
@@ -80,7 +80,7 @@ function handleClose() {
 }
 
 function toggleBodyFixed(isFixed: boolean) {
-  /** Disable body scrolling when dialog is open */
+  /* Disable body scrolling when dialog is open */
   if (!process.client) return
 
   const bodyFixed = useScrollLock(document.body)

@@ -3,7 +3,7 @@
     <Transition name="toast">
       <div v-if="modelValue" :class="componentClasses">
         <div v-if="hasHeader" class="toast-header">
-          <slot name="header" :close="close">
+          <slot :close="close" name="header">
             <h6 class="toast-title">{{ title }}</h6>
 
             <UiButton class="btn-close" @click="close">
@@ -42,7 +42,6 @@ const slots = useSlots()
 const timeout = ref()
 
 const hasHeader = computed(() => useSlotHasContent(slots.header) || Boolean(props.title))
-
 const autohide = computed(() => props.autohide ?? 5000)
 
 const componentClasses = computed(() => {
@@ -57,6 +56,7 @@ const componentClasses = computed(() => {
 
 watch(
   () => props.modelValue,
+
   (event) => {
     if (event && autohide.value) {
       timeout.value = setTimeout(() => close(), Number(autohide.value))
