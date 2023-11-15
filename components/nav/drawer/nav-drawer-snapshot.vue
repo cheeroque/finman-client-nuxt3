@@ -1,9 +1,9 @@
 <template>
   <UiButton
     :loading="pending || recordsStore.loading"
+    class="drawer-item"
     icon="datetime-24"
     icon-size="24"
-    class="drawer-item"
     @click="emit('action')"
   >
     <span class="caption">{{ caption }}</span>

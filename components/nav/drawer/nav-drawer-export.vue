@@ -1,24 +1,24 @@
 <template>
-  <UiButton :loading="loading" icon="export-24" icon-size="24" class="drawer-item" @click="handleClick">
+  <UiButton :loading="loading" class="drawer-item" icon="export-24" icon-size="24" @click="handleClick">
     <span class="caption">{{ useString('exportData') }}</span>
   </UiButton>
 </template>
 
 <script setup lang="ts">
+import { useMutation } from '@urql/vue'
+
 import RECORDS_EXPORT_MUTATION from '~/graphql/RecordsExport.gql'
 
 interface RecordsExportData {
-  result: RecordsExportDataOutput
+  result: {
+    file: {
+      path: string
+      size: number
+    }
+  }
 }
 
-interface RecordsExportDataOutput {
-  file: RecordsExportDataOutputFile
-}
-
-interface RecordsExportDataOutputFile {
-  path: string
-  size: number
-}
+const { executeMutation } = useMutation<RecordsExportData>(RECORDS_EXPORT_MUTATION)
 
 const loading = ref(false)
 
@@ -27,13 +27,11 @@ async function handleClick() {
 
   const config = useRuntimeConfig()
 
-  const { mutate } = useMutation<RecordsExportData>(RECORDS_EXPORT_MUTATION)
-
   try {
-    const response = await mutate()
+    const { data } = await executeMutation()
 
-    if (response?.data?.result) {
-      const filePath = response.data.result.file.path
+    if (data?.result) {
+      const filePath = data.result.file.path
       const link = document.createElement('a')
 
       link.href = `${config.public.staticUrl}${filePath}`

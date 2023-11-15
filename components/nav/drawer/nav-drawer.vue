@@ -1,12 +1,12 @@
 <template>
-  <div :class="drawerClasses" role="dialog" aria-modal="true">
+  <div :class="drawerClasses" aria-modal="true" role="dialog">
     <nav class="nav nav-drawer">
       <ul class="drawer-group list-unstyled">
         <li role="presentation">
           <h5 class="drawer-heading">{{ useString('pages') }}</h5>
         </li>
 
-        <li role="presentation" class="d-none d-lg-block">
+        <li class="d-none d-lg-block" role="presentation">
           <NavDrawerToggle :open="open" @click="emit('toggle')" />
         </li>
 
@@ -32,14 +32,21 @@
   </div>
 
   <Transition name="fade">
-    <div v-if="open" class="app-drawer-backdrop" aria-hidden="true" @click="emit('close')" />
+    <div v-if="open" aria-hidden="true" class="app-drawer-backdrop" @click="emit('close')" />
   </Transition>
 
   <SnapshotDialog v-model="snapshotDialogVisible" />
 </template>
 
 <script setup lang="ts">
-import type { DrawerAction, DrawerPage } from '~/types/drawer'
+import type { ConcreteComponent } from 'vue'
+import type { DrawerPage } from './nav-drawer-page.vue'
+
+interface DrawerAction {
+  component: ConcreteComponent | string
+  handler?: () => void
+  key: string
+}
 
 const props = defineProps<{
   open?: boolean
@@ -70,11 +77,13 @@ function toggleBodyFixed(isFixed: boolean) {
   if (!process.client) return
 
   const bodyFixed = useScrollLock(document.body)
+
   bodyFixed.value = isFixed
 }
 
 watch(
   () => props.open,
+
   (event) => {
     toggleBodyFixed(event)
   }

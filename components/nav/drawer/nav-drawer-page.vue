@@ -1,11 +1,14 @@
 <template>
-  <UiButton :to="page.link" :icon="`${page.key}-24`" icon-size="24" :class="componentClasses">
+  <UiButton :class="componentClasses" :icon="`${page.key}-24`" :to="page.link" icon-size="24">
     <span class="caption">{{ useString(page.key) }}</span>
   </UiButton>
 </template>
 
 <script setup lang="ts">
-import type { DrawerPage } from '~/types/drawer'
+export interface DrawerPage {
+  key: string
+  link: string
+}
 
 const props = defineProps<{
   page: DrawerPage

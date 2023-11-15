@@ -1,8 +1,8 @@
 <template>
   <UiButton
+    :aria-label="buttonTitle"
     :class="{ open: open }"
     :title="buttonTitle"
-    :aria-label="buttonTitle"
     class="drawer-toggle"
     variant="link"
     @click="emit('click')"
