@@ -29,6 +29,7 @@
 
 <script setup lang="ts">
 import { useRecordsStore } from '~/store/records'
+
 import type { RecordsSnapshot } from '~/types/records'
 
 const props = defineProps<{
@@ -37,12 +38,12 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:modelValue'])
 
+const recordsStore = useRecordsStore()
 const toast = useToast()
 
 const form = ref()
-const formId = computed(() => form.value?.form.id)
 
-const recordsStore = useRecordsStore()
+const formId = computed(() => form.value?.form.id)
 const pending = computed(() => recordsStore.loading)
 
 function handleUpdate(snapshot: RecordsSnapshot, callback?: Function) {

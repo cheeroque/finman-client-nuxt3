@@ -32,9 +32,10 @@
 </template>
 
 <script setup lang="ts">
-import { DateTime } from 'luxon'
+import { useMutation } from '@urql/vue'
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
+import { DateTime } from 'luxon'
 import { useRecordsStore } from '~/store/records'
 
 import SNAPSHOT_CREATE_MUTATION from '~/graphql/SnapshotCreate.gql'
@@ -54,6 +55,8 @@ interface SnapshotCreateResponse {
 const emit = defineEmits(['success'])
 
 const recordsStore = useRecordsStore()
+const { executeMutation } = useMutation<SnapshotCreateResponse>(SNAPSHOT_CREATE_MUTATION)
+
 const previousBalance = computed(() => recordsStore.snapshot?.balance)
 
 /* Expose form element as ref for parent */
@@ -95,23 +98,23 @@ async function handleSubmit() {
   if (!v$.value.$error) {
     const { balance, created_at, note } = formData
 
-    const data = {
-      balance,
-      created_at: DateTime.fromJSDate(created_at).toFormat('yyyy-LL-dd HH:mm:ss'),
-      note,
+    const variables = {
+      data: {
+        balance,
+        created_at: DateTime.fromJSDate(created_at).toFormat('yyyy-LL-dd HH:mm:ss'),
+        note,
+      },
     }
 
     recordsStore.pending++
 
-    const { mutate } = useMutation<SnapshotCreateResponse>(SNAPSHOT_CREATE_MUTATION)
-
     try {
       /* Create snapshot */
-      const response = await mutate({ data })
+      const { data } = await executeMutation(variables)
 
-      if (response?.data?.result) {
-        recordsStore.snapshot = response.data.result
-        emit('success', response.data.result)
+      if (data?.result) {
+        recordsStore.snapshot = data.result
+        emit('success', data.result)
       }
 
       /* Refresh stored snapshot */
