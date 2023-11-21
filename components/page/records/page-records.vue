@@ -22,7 +22,7 @@ import { useRecordsStore } from '~/store/records'
 const recordsStore = useRecordsStore()
 const route = useRoute()
 
-const { refresh } = await useAsyncData('records', () => recordsStore.fetchRecords())
+await recordsStore.fetchRecords()
 
 const viewMode = computed<ViewMode>(() => route.params.view as ViewMode)
 
@@ -30,7 +30,7 @@ watch(
   () => route.query,
 
   async () => {
-    await refresh()
+    await recordsStore.fetchRecords()
 
     /* If window is scrolled down (e.g. in mobile) scroll it back to top,
      * otherwise scroll back page element */
