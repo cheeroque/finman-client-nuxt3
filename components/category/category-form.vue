@@ -126,11 +126,8 @@ async function onSubmit() {
       if (data?.result) {
         emit('success', data.result)
 
-        /** Refetch everything that could change after category upsert */
+        /* Trigger refetch of all globally available data */
         refetchTrigger.value = true
-        // await Promise.all([
-        //   recordsStore.fetchMonthRecords(),
-        // ])
       }
     } catch (error: any) {}
 

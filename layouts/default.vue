@@ -83,8 +83,6 @@ watch(
   }
 )
 
-await Promise.all([recordsStore.fetchMonthRecords()])
-
 function handleToggleDrawer() {
   drawerOpen.value = !drawerOpen.value
 }

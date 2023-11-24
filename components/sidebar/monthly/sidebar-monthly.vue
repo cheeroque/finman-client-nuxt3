@@ -42,45 +42,60 @@
 </template>
 
 <script setup lang="ts">
-import { useRecordsStore } from '~/store/records'
+import { useQuery } from '@urql/vue'
+import { DateTime } from 'luxon'
+import RECORDS_QUERY from '~/graphql/Records.gql'
 
-import type { RecordsCategory } from '~/types/records'
-
-interface CategoryWithTotal {
-  category: RecordsCategory
-  total: number
-}
-
-const recordsStore = useRecordsStore()
+import type { RecordsQueryResponse } from '~/types/records'
 
 const VISIBLE_LIMIT = 5
 
+const refetchTrigger = useRefetchTrigger()
+
 const collapseOpen = ref(false)
 
-const groupedExpenses = computed(() => {
-  const categories: CategoryWithTotal[] = []
+/* Fetch records made from the start of current month until its end */
 
-  if (recordsStore.monthRecords) {
-    Object.values(recordsStore.monthRecords).forEach((records) => {
-      const category = records?.[0]?.category
-      const total = records?.reduce((total, record) => (total += record.sum), 0)
+const now = DateTime.now()
 
-      if (!category.is_income) {
-        categories.push({ category, total })
-      }
-    })
+const from = now.set({ hour: 0, minute: 0, second: 0, day: 1 })
+const to = from.plus({ month: 1 }).minus({ second: 1 })
 
-    categories.sort((a, b) => b.total - a.total)
-  }
+const variables = {
+  first: 1000,
+  where: {
+    AND: [
+      { column: 'CREATED_AT', operator: 'GTE', value: from.toFormat('yyyy-LL-dd HH:mm:ss') },
+      { column: 'CREATED_AT', operator: 'LTE', value: to.toFormat('yyyy-LL-dd HH:mm:ss') },
+    ],
+  },
+}
 
-  return categories
-})
+const { data, executeQuery } = useQuery<RecordsQueryResponse>({ query: RECORDS_QUERY, variables })
+
+const groupedExpenses = computed(() =>
+  useCategoriesSubtotal(data.value?.records.data)
+    .filter((group) => !group.category.is_income)
+    .sort((a, b) => b.total - a.total)
+)
 
 const visibleCategories = computed(() => groupedExpenses.value.slice(0, VISIBLE_LIMIT))
 const hiddenCategories = computed(() => groupedExpenses.value.slice(VISIBLE_LIMIT))
 const hasCollapse = computed(() => Boolean(hiddenCategories.value.length))
 const isEmpty = computed(() => !groupedExpenses.value.length)
 const maxTotal = computed(() => groupedExpenses.value[0].total)
+
+watch(
+  /* Refetch records if external trigger was set to true, then reset trigger */
+  () => refetchTrigger.value,
+
+  async (event) => {
+    if (event) {
+      await executeQuery()
+      refetchTrigger.value = false
+    }
+  }
+)
 
 function toggleCollapse() {
   collapseOpen.value = !collapseOpen.value

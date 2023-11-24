@@ -94,9 +94,8 @@ async function handleRecordDelete() {
       emit('update:modelValue', false)
     }
 
-    /* Refetch everything that changes after record upsert */
+    /* Trigger refetch of all globally available data */
     refetchTrigger.value = true
-    // await Promise.all([recordsStore.fetchMonthRecords()])
   } catch (error: any) {}
 
   recordsStore.pending--
