@@ -4,7 +4,7 @@
       <div v-if="modelValue" :class="componentClasses">
         <div class="dialog-content">
           <div v-if="hasHeader" class="dialog-header">
-            <slot name="header" :close="handleClose">
+            <slot :close="handleClose" name="header">
               <h5 class="dialog-title">
                 {{ title }}
                 <UiSpinner v-if="loading" variant="primary" />
@@ -49,6 +49,9 @@ const props = defineProps<{
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
+const bodyEl = ref<HTMLElement | undefined>()
+
+const bodyFixed = useScrollLock(bodyEl)
 const slots = useSlots()
 
 const hasHeader = computed(() => useSlotHasContent(slots.header) || Boolean(props.title))
@@ -64,6 +67,10 @@ const componentClasses = computed(() => {
   }
 
   return classes
+})
+
+onMounted(() => {
+  bodyEl.value = document.body
 })
 
 function handleAfterLeave() {
@@ -83,7 +90,6 @@ function toggleBodyFixed(isFixed: boolean) {
   /* Disable body scrolling when dialog is open */
   if (!process.client) return
 
-  const bodyFixed = useScrollLock(document.body)
   bodyFixed.value = isFixed
 }
 </script>
