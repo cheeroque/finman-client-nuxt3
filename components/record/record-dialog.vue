@@ -62,6 +62,7 @@ const props = defineProps<{
 const emit = defineEmits(['closed', 'delete:record', 'update:modelValue', 'update:record'])
 
 const recordsStore = useRecordsStore()
+const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
 const { executeMutation } = useMutation<RecordDeleteResponseData>(RECORD_DELETE_MUTATION)
@@ -94,7 +95,8 @@ async function handleRecordDelete() {
     }
 
     /* Refetch everything that changes after record upsert */
-    await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchMonthRecords(), recordsStore.fetchRecords()])
+    refetchTrigger.value = true
+    // await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchMonthRecords()])
   } catch (error: any) {}
 
   recordsStore.pending--

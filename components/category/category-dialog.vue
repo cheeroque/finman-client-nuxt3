@@ -69,6 +69,7 @@ const props = defineProps<{
 const emit = defineEmits(['closed', 'update:modelValue'])
 
 const recordsStore = useRecordsStore()
+const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
 const { executeMutation } = useMutation<CategoryDeleteResponseData>(CATEGORY_DELETE_MUTATION)
@@ -111,12 +112,8 @@ async function handleCategoryDelete() {
       emit('update:modelValue', false)
 
       /* Refetch everything that could change after category delete */
-      await Promise.all([
-        recordsStore.fetchBalance(),
-        recordsStore.fetchCategories(),
-        recordsStore.fetchMonthRecords(),
-        recordsStore.fetchRecords(),
-      ])
+      refetchTrigger.value = true
+      // await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchCategories(), recordsStore.fetchMonthRecords()])
     }
   } catch (error: any) {}
 

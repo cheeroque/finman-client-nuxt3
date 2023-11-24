@@ -1,6 +1,3 @@
-/* TODO: fix same records query not working with different variables
- * Variables do not seem to be applied at all */
-
 import { useQuery } from '@urql/vue'
 import { DateTime } from 'luxon'
 import { defineStore } from 'pinia'
@@ -10,25 +7,7 @@ import RECORDS_QUERY from '~/graphql/Records.gql'
 import RECORDS_TOTAL_QUERY from '~/graphql/RecordsTotal.gql'
 import SNAPSHOTS_QUERY from '~/graphql/Snapshots.gql'
 
-import type {
-  RecordsCategory,
-  RecordsItem,
-  RecordsQueryResponse,
-  RecordsQueryVariables,
-  RecordsSnapshot,
-} from '~/types/records'
-
-interface RecordsState {
-  balance: number
-  categories: RecordsCategory[]
-  error?: string
-  firstRecord?: RecordsItem
-  monthRecords?: MonthRecords
-  pending: number
-  records: RecordsItem[]
-  snapshot?: RecordsSnapshot
-  totalPages: number
-}
+import type { RecordsCategory, RecordsItem, RecordsQueryResponse, RecordsSnapshot } from '~/types/records'
 
 interface MonthRecords {
   [key: string]: RecordsItem[]
@@ -54,11 +33,10 @@ interface SnapshotsQueryResponse {
 }
 
 export const useRecordsStore = defineStore('records', () => {
-  /* Initialize state */
+  /* Store state */
 
   const balance = ref<number>(0)
   const categories = ref<RecordsCategory[]>([])
-  const error = ref<string>()
   const firstRecord = ref<RecordsItem>()
   const monthRecords = ref<MonthRecords>()
   const pending = ref<number>(0)
@@ -66,60 +44,38 @@ export const useRecordsStore = defineStore('records', () => {
   const snapshot = ref<RecordsSnapshot>()
   const totalPages = ref<number>(1)
 
-  /* Declare queries and composables */
-
-  const route = useRoute()
-
-  const balanceQuery = useQuery<RecordsTotalResponse>({ query: RECORDS_TOTAL_QUERY })
-  const categoriesQuery = useQuery<CategoriesQueryResponse>({ query: CATEGORIES_QUERY })
-  const firstRecordQuery = useQuery<RecordsQueryResponse>({ query: RECORDS_QUERY })
-  const recordsQuery = useQuery<RecordsQueryResponse>({ query: RECORDS_QUERY })
-  const snapshotsQuery = useQuery<SnapshotsQueryResponse>({ query: SNAPSHOTS_QUERY })
-
-  /* Getters */
+  /* Store getters */
 
   const loading = computed(() => Boolean(pending.value))
 
-  const firstRecordVariables = computed(() => ({
-    first: 1,
-    orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
-  }))
+  /* All queries are declared below, before being used inside actions,
+   * because useQuery composable only works inside store context */
 
-  /* Actions */
+  /* Total balance query */
+  const balanceQuery = useQuery<RecordsTotalResponse>({ query: RECORDS_TOTAL_QUERY })
 
-  async function fetchBalance() {
-    const { data } = await balanceQuery.executeQuery()
+  /* Record categories query */
+  const categoriesQuery = useQuery<CategoriesQueryResponse>({ query: CATEGORIES_QUERY })
 
-    if (data.value) {
-      const { expensesTotal, incomesTotal } = data.value
-      balance.value = incomesTotal - expensesTotal
-    }
-  }
+  /* First record query (to start SidebarCalendar months from) */
+  const firstRecordQuery = useQuery<RecordsQueryResponse>({
+    query: RECORDS_QUERY,
+    variables: {
+      first: 1,
+      orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
+    },
+  })
 
-  async function fetchCategories() {
-    const { data } = await categoriesQuery.executeQuery()
+  /* Query for records made from the start of the current month util its end,
+   * displayed in SidebarMonthly component */
+  const now = DateTime.now()
 
-    if (data.value) {
-      categories.value = data.value.categories.data
-    }
-  }
+  const from = now.set({ hour: 0, minute: 0, second: 0, day: 1 })
+  const to = from.plus({ month: 1 }).minus({ second: 1 })
 
-  async function fetchFirstRecord() {
-    const { data } = await firstRecordQuery.executeQuery({ variables: firstRecordVariables })
-
-    firstRecord.value = data.value?.records.data?.[0]
-  }
-
-  async function fetchMonthRecords() {
-    const now = DateTime.now()
-
-    /* 00:00:00, first day of current month */
-    const from = now.set({ hour: 0, minute: 0, second: 0, day: 1 })
-
-    /* 23:59:59, last day of current month */
-    const to = from.plus({ month: 1 }).minus({ second: 1 })
-
-    const variables = {
+  const monthRecordsQuery = useQuery<RecordsQueryResponse>({
+    query: RECORDS_QUERY,
+    variables: {
       first: 1000,
       where: {
         AND: [
@@ -127,9 +83,53 @@ export const useRecordsStore = defineStore('records', () => {
           { column: 'CREATED_AT', operator: 'LTE', value: to.toFormat('yyyy-LL-dd HH:mm:ss') },
         ],
       },
+    },
+  })
+
+  /* Latest snapshot query, displayed in NavDrawerSnapshot component */
+  const snapshotsQuery = useQuery<SnapshotsQueryResponse>({ query: SNAPSHOTS_QUERY })
+
+  /* Store actions */
+
+  async function fetchBalance() {
+    pending.value++
+
+    const { data } = await balanceQuery.executeQuery()
+
+    if (data.value) {
+      const { expensesTotal, incomesTotal } = data.value
+      balance.value = incomesTotal - expensesTotal
     }
 
-    const { data } = await recordsQuery.executeQuery({ variables, requestPolicy: 'network-only' })
+    pending.value--
+  }
+
+  async function fetchCategories() {
+    pending.value++
+
+    const { data } = await categoriesQuery.executeQuery()
+
+    if (data.value) {
+      categories.value = data.value.categories.data
+    }
+
+    pending.value--
+  }
+
+  async function fetchFirstRecord() {
+    pending.value++
+
+    const { data } = await firstRecordQuery.executeQuery()
+
+    firstRecord.value = data.value?.records.data?.[0]
+
+    pending.value--
+  }
+
+  async function fetchMonthRecords() {
+    pending.value++
+
+    const { data } = await monthRecordsQuery.executeQuery()
 
     if (data.value?.records.data) {
       /* Group records by category id */
@@ -144,64 +144,31 @@ export const useRecordsStore = defineStore('records', () => {
         return acc
       }, {})
     }
-  }
 
-  async function fetchRecords() {
-    const viewMode = route.params.view as ViewMode
-
-    /** Build query variables */
-    const column = route.query.orderBy ? String(route.query.orderBy) : 'CREATED_AT'
-    const order = route.query.order ? String(route.query.order) : 'DESC'
-    const first = Number(route.query.perPage) || 50
-    const page = Number(route.query.page) || 1
-
-    /** Set filter by is_income if needed */
-    const isExpense = viewMode === 'expense'
-    const isIncome = viewMode === 'income'
-
-    const hasCategory =
-      isExpense || isIncome
-        ? {
-            column: 'IS_INCOME',
-            operator: 'EQ',
-            value: isIncome,
-          }
-        : undefined
-
-    const variables = {
-      first,
-      hasCategory,
-      orderBy: [{ column, order }],
-      page,
-    }
-
-    const { data } = await recordsQuery.executeQuery({ variables, requestPolicy: 'network-only' })
-
-    records.value = data.value?.records.data ?? []
-    totalPages.value = data.value?.records.paginatorInfo?.lastPage ?? 1
+    pending.value--
   }
 
   async function fetchSnapshot() {
+    pending.value++
+
     const variables = { first: 1 }
 
     const { data } = await snapshotsQuery.executeQuery({ variables })
 
     snapshot.value = data.value?.snapshots.data?.[0]
+
+    pending.value--
   }
 
   return {
     balance,
     categories,
-    error,
     fetchBalance,
     fetchCategories,
     fetchFirstRecord,
     fetchMonthRecords,
-    fetchRecords,
-    fetchRecordsDirect: recordsQuery.executeQuery,
     fetchSnapshot,
     firstRecord,
-    firstRecordVariables,
     loading,
     monthRecords,
     pending,

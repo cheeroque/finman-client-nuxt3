@@ -5,7 +5,7 @@
     <div class="app-content">
       <Sidebar />
 
-      <div :class="{ loading: 'pending' }" class="page">
+      <div :class="{ loading: recordsStore.loading }" class="page">
         <slot />
       </div>
     </div>
@@ -20,24 +20,16 @@
 import { useRecordsStore } from '~/store/records'
 
 const recordsStore = useRecordsStore()
-
 const toast = useToast()
 
 const drawerOpen = ref(false)
 
-const { data } = await recordsStore.fetchRecordsDirect({ variables: recordsStore.firstRecordVariables })
-recordsStore.firstRecord = data.value?.records.data?.[0]
-
-console.log('first record in layout', data.value?.records.data?.[0])
-
-await recordsStore.fetchMonthRecords()
-
-await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchCategories()])
-
-onMounted(async () => {
-  const { data } = await recordsStore.fetchRecordsDirect({ variables: recordsStore.firstRecordVariables })
-  console.log('first record in layout after mount', data.value?.records.data?.[0])
-})
+await Promise.all([
+  recordsStore.fetchBalance(),
+  recordsStore.fetchCategories(),
+  recordsStore.fetchFirstRecord(),
+  recordsStore.fetchMonthRecords(),
+])
 
 function handleToggleDrawer() {
   drawerOpen.value = !drawerOpen.value

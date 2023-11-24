@@ -67,6 +67,8 @@ const props = defineProps<{
 const emit = defineEmits(['success'])
 
 const recordsStore = useRecordsStore()
+const refetchTrigger = useRefetchTrigger()
+
 const categories = computed(() => recordsStore.categories.map(({ id, name }) => ({ text: name, value: id })))
 
 /* Expose form element as ref for parent */
@@ -149,7 +151,8 @@ async function handleSubmit() {
       }
 
       /* Refetch everything that changes after record upsert */
-      await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchMonthRecords(), recordsStore.fetchRecords()])
+      refetchTrigger.value = true
+      // await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchMonthRecords()])
     } catch (error: any) {}
 
     recordsStore.pending--

@@ -60,6 +60,7 @@ const props = defineProps<{
 const emit = defineEmits(['success'])
 
 const recordsStore = useRecordsStore()
+const refetchTrigger = useRefetchTrigger()
 
 /* Expose form element as ref for parent */
 const form = ref()
@@ -126,12 +127,12 @@ async function onSubmit() {
         emit('success', data.result)
 
         /** Refetch everything that could change after category upsert */
-        await Promise.all([
-          recordsStore.fetchBalance(),
-          recordsStore.fetchCategories(),
-          recordsStore.fetchMonthRecords(),
-          recordsStore.fetchRecords(),
-        ])
+        refetchTrigger.value = true
+        // await Promise.all([
+        //   recordsStore.fetchBalance(),
+        //   recordsStore.fetchCategories(),
+        //   recordsStore.fetchMonthRecords(),
+        // ])
       }
     } catch (error: any) {}
 
