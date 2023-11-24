@@ -4,7 +4,6 @@ import { defineStore } from 'pinia'
 
 import CATEGORIES_QUERY from '~/graphql/Categories.gql'
 import RECORDS_QUERY from '~/graphql/Records.gql'
-import RECORDS_TOTAL_QUERY from '~/graphql/RecordsTotal.gql'
 import SNAPSHOTS_QUERY from '~/graphql/Snapshots.gql'
 
 import type { RecordsCategory, RecordsItem, RecordsQueryResponse, RecordsSnapshot } from '~/types/records'
@@ -18,11 +17,6 @@ interface CategoriesQueryResponse {
     data: RecordsCategory[]
     paginatorInfo: PaginatorInfo
   }
-}
-
-interface RecordsTotalResponse {
-  expensesTotal: number
-  incomesTotal: number
 }
 
 interface SnapshotsQueryResponse {
@@ -51,9 +45,6 @@ export const useRecordsStore = defineStore('records', () => {
   /* All queries are declared below, before being used inside actions,
    * because useQuery composable only works inside store context */
 
-  /* Total balance query */
-  const balanceQuery = useQuery<RecordsTotalResponse>({ query: RECORDS_TOTAL_QUERY })
-
   /* Record categories query */
   const categoriesQuery = useQuery<CategoriesQueryResponse>({ query: CATEGORIES_QUERY })
 
@@ -81,19 +72,6 @@ export const useRecordsStore = defineStore('records', () => {
   const snapshotsQuery = useQuery<SnapshotsQueryResponse>({ query: SNAPSHOTS_QUERY })
 
   /* Store actions */
-
-  async function fetchBalance() {
-    pending.value++
-
-    const { data } = await balanceQuery.executeQuery()
-
-    if (data.value) {
-      const { expensesTotal, incomesTotal } = data.value
-      balance.value = incomesTotal - expensesTotal
-    }
-
-    pending.value--
-  }
 
   async function fetchCategories() {
     pending.value++
@@ -144,7 +122,6 @@ export const useRecordsStore = defineStore('records', () => {
   return {
     balance,
     categories,
-    fetchBalance,
     fetchCategories,
     fetchMonthRecords,
     fetchSnapshot,

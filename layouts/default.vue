@@ -17,14 +17,47 @@
 </template>
 
 <script setup lang="ts">
+import { useQuery } from '@urql/vue'
 import { useRecordsStore } from '~/store/records'
 
+import RECORDS_TOTAL_QUERY from '~/graphql/RecordsTotal.gql'
+
+interface RecordsTotalResponse {
+  expensesTotal: number
+  incomesTotal: number
+}
+
+const balance = useBalance()
 const recordsStore = useRecordsStore()
+const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
 const drawerOpen = ref(false)
 
-await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchCategories(), recordsStore.fetchMonthRecords()])
+/* Fetch total balance */
+
+const { data, executeQuery } = await useQuery<RecordsTotalResponse>({ query: RECORDS_TOTAL_QUERY })
+
+const localBalance = computed(() => (Number(data.value?.incomesTotal) || 0) - (Number(data.value?.expensesTotal) || 0))
+
+watchEffect(
+  /* Save balance to the global state */
+  () => (balance.value = localBalance.value)
+)
+
+watch(
+  /* Refetch balance if external trigger was set to true, then reset trigger */
+  () => refetchTrigger.value,
+
+  async (event) => {
+    if (event) {
+      await executeQuery()
+      refetchTrigger.value = false
+    }
+  }
+)
+
+await Promise.all([recordsStore.fetchCategories(), recordsStore.fetchMonthRecords()])
 
 function handleToggleDrawer() {
   drawerOpen.value = !drawerOpen.value

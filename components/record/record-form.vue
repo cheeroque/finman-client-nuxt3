@@ -152,7 +152,7 @@ async function handleSubmit() {
 
       /* Refetch everything that changes after record upsert */
       refetchTrigger.value = true
-      // await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchMonthRecords()])
+      // await Promise.all([recordsStore.fetchMonthRecords()])
     } catch (error: any) {}
 
     recordsStore.pending--

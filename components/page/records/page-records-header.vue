@@ -1,7 +1,7 @@
 <template>
   <div class="page-records-header">
     <h1 class="page-records-title">
-      <NuxtLink to="/"> {{ useNumberFormat(recordsStore.balance) }}&nbsp;₽ </NuxtLink>
+      <NuxtLink to="/"> {{ useNumberFormat(balance) }}&nbsp;₽ </NuxtLink>
     </h1>
 
     <PageRecordsNav />
@@ -9,9 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRecordsStore } from '~/store/records'
-
-const recordsStore = useRecordsStore()
+const balance = useBalance()
 </script>
 
 <style lang="scss" scoped>

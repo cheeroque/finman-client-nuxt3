@@ -1,3 +1,5 @@
+export const useBalance = () => useState('balance', () => 0)
+
 export const useRefetchTrigger = () => useState('refetch-trigger', () => false)
 
 export const useToast = () =>
