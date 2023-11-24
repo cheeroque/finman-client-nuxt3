@@ -35,12 +35,17 @@
     <div v-if="open" aria-hidden="true" class="app-drawer-backdrop" @click="emit('close')" />
   </Transition>
 
-  <SnapshotDialog v-model="snapshotDialogVisible" />
+  <SnapshotDialog v-model="snapshotDialogVisible" @success="refetchSnapshot" />
 </template>
 
 <script setup lang="ts">
+import { useQuery } from '@urql/vue'
+import { useRecordsStore } from '~/store/records'
+import SNAPSHOTS_QUERY from '~/graphql/Snapshots.gql'
+
 import type { ConcreteComponent } from 'vue'
 import type { DrawerPage } from './nav-drawer-page.vue'
+import type { RecordsSnapshot } from '~/types/records'
 
 interface DrawerAction {
   component: ConcreteComponent | string
@@ -48,11 +53,26 @@ interface DrawerAction {
   key: string
 }
 
+interface SnapshotsQueryResponse {
+  snapshots: {
+    data: RecordsSnapshot[]
+    paginatorInfo: PaginatorInfo
+  }
+}
+
 const props = defineProps<{
   open?: boolean
 }>()
 
 const emit = defineEmits(['close', 'toggle'])
+
+const bodyEl = ref<HTMLElement | undefined>()
+
+const bodyFixed = useScrollLock(bodyEl)
+const recordsStore = useRecordsStore()
+const refetchTrigger = useRefetchTrigger()
+
+const snapshotDialogVisible = ref(false)
 
 const drawerActions: DrawerAction[] = [
   { key: 'snapshot', component: resolveComponent('NavDrawerSnapshot'), handler: handleSnapshotClick },
@@ -72,16 +92,32 @@ const drawerClasses = computed(() => {
   return classes
 })
 
-function toggleBodyFixed(isFixed: boolean) {
-  /** Disable body scrolling when drawer is open */
-  if (!process.client) return
+onMounted(() => {
+  bodyEl.value = document.body
+})
 
-  const bodyFixed = useScrollLock(document.body)
+/* Fetch latest snapshot and save it to the store */
 
-  bodyFixed.value = isFixed
-}
+const { data, executeQuery: refetchSnapshot } = useQuery<SnapshotsQueryResponse>({ query: SNAPSHOTS_QUERY })
+
+watchEffect(() => {
+  recordsStore.snapshot = data.value?.snapshots.data?.[0]
+})
 
 watch(
+  /* Refetch snapshot if external trigger was set to true, then reset trigger */
+  () => refetchTrigger.value,
+
+  async (event) => {
+    if (event) {
+      await refetchSnapshot()
+      refetchTrigger.value = false
+    }
+  }
+)
+
+watch(
+  /* Disable body scrolling when drawer is open */
   () => props.open,
 
   (event) => {
@@ -89,10 +125,14 @@ watch(
   }
 )
 
-const snapshotDialogVisible = ref(false)
-
 function handleSnapshotClick() {
   snapshotDialogVisible.value = true
+}
+
+function toggleBodyFixed(isFixed: boolean) {
+  if (!process.client) return
+
+  bodyFixed.value = isFixed
 }
 </script>
 

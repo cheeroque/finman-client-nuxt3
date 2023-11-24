@@ -36,7 +36,7 @@ const props = defineProps<{
   modelValue?: boolean
 }>()
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['success', 'update:modelValue'])
 
 const recordsStore = useRecordsStore()
 const toast = useToast()
@@ -51,6 +51,8 @@ function handleUpdate(snapshot: RecordsSnapshot, callback?: Function) {
   toast.value.modelValue = true
   toast.value.message = useString('snapshotSaved', `#${snapshot?.id}`)
   toast.value.variant = 'success'
+
+  emit('success')
 
   if (typeof callback === 'function') {
     callback()

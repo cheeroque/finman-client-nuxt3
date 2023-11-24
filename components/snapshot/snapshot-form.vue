@@ -117,9 +117,6 @@ async function handleSubmit() {
         recordsStore.snapshot = data.result
         emit('success', data.result)
       }
-
-      /* Refresh stored snapshot */
-      await recordsStore.fetchSnapshot()
     } catch (error: any) {}
 
     recordsStore.pending--

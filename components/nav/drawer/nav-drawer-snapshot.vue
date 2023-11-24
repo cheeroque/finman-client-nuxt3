@@ -1,6 +1,6 @@
 <template>
   <UiButton
-    :loading="pending || recordsStore.loading"
+    :loading="recordsStore.loading"
     class="drawer-item"
     icon="datetime-24"
     icon-size="24"
@@ -38,6 +38,4 @@ const caption = computed(() => {
 
   return strings.join(', ')
 })
-
-const { pending } = await useAsyncData('latest-snapshot', () => recordsStore.fetchSnapshot())
 </script>
