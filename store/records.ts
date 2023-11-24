@@ -57,15 +57,6 @@ export const useRecordsStore = defineStore('records', () => {
   /* Record categories query */
   const categoriesQuery = useQuery<CategoriesQueryResponse>({ query: CATEGORIES_QUERY })
 
-  /* First record query (to start SidebarCalendar months from) */
-  const firstRecordQuery = useQuery<RecordsQueryResponse>({
-    query: RECORDS_QUERY,
-    variables: {
-      first: 1,
-      orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
-    },
-  })
-
   /* Query for records made from the start of the current month util its end,
    * displayed in SidebarMonthly component */
   const now = DateTime.now()
@@ -116,16 +107,6 @@ export const useRecordsStore = defineStore('records', () => {
     pending.value--
   }
 
-  async function fetchFirstRecord() {
-    pending.value++
-
-    const { data } = await firstRecordQuery.executeQuery()
-
-    firstRecord.value = data.value?.records.data?.[0]
-
-    pending.value--
-  }
-
   async function fetchMonthRecords() {
     pending.value++
 
@@ -165,7 +146,6 @@ export const useRecordsStore = defineStore('records', () => {
     categories,
     fetchBalance,
     fetchCategories,
-    fetchFirstRecord,
     fetchMonthRecords,
     fetchSnapshot,
     firstRecord,

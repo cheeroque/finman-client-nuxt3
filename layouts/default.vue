@@ -24,12 +24,7 @@ const toast = useToast()
 
 const drawerOpen = ref(false)
 
-await Promise.all([
-  recordsStore.fetchBalance(),
-  recordsStore.fetchCategories(),
-  recordsStore.fetchFirstRecord(),
-  recordsStore.fetchMonthRecords(),
-])
+await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchCategories(), recordsStore.fetchMonthRecords()])
 
 function handleToggleDrawer() {
   drawerOpen.value = !drawerOpen.value

@@ -46,8 +46,11 @@
 </template>
 
 <script setup lang="ts">
+import { useQuery } from '@urql/vue'
 import { DateTime } from 'luxon'
-import { useRecordsStore } from '~/store/records'
+import RECORDS_QUERY from '~/graphql/Records.gql'
+
+import type { RecordsQueryResponse } from '~/types/records'
 
 interface CalendarMonth {
   disabled?: boolean
@@ -65,46 +68,76 @@ const props = defineProps<{
   numericMonths?: boolean
 }>()
 
-const recordsStore = useRecordsStore()
+const monthFormat = computed(() => (props.numericMonths ? '2-digit' : 'long'))
 
-const calendarYears: CalendarYear[] = []
+/* Init currently visible calendar month */
 
-const startDate = recordsStore.firstRecord
-  ? DateTime.fromFormat(recordsStore.firstRecord.created_at, 'yyyy-LL-dd HH:mm:ss')
-  : DateTime.now()
+const currentDate = props.date ?? new Date()
+const currentYear = ref(currentDate.getFullYear())
+
+/* Fetch first record to determine calendar start date */
+
+const variables = {
+  first: 1,
+  orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
+}
+
+const { data } = await useQuery<RecordsQueryResponse>({
+  query: RECORDS_QUERY,
+  variables,
+})
+
+const firstRecord = computed(() => data.value?.records.data?.[0])
+
+const startDate = computed(() => {
+  let date = DateTime.fromFormat(firstRecord.value?.created_at ?? '', 'yyyy-LL-dd HH:mm:ss')
+
+  if (!date.isValid) {
+    date = DateTime.now()
+  }
+
+  return date
+})
+
+/* Set current date as end date */
 
 const endDate = DateTime.now()
 
-const monthFormat = props.numericMonths ? '2-digit' : 'long'
+/* Build calendar years (pages) array */
 
-for (let y = startDate.year; y <= endDate.year; y++) {
-  const months: CalendarMonth[] = []
+const calendarYears = computed<CalendarYear[]>(() => {
+  const years = []
 
-  for (let m = 1; m <= 12; m++) {
-    const date = DateTime.fromObject({ month: m, year: y })
-    const month = date.toLocaleString({ month: monthFormat }, { locale: useLocale() })
-    const link = date.toFormat('yyyy-LL')
+  for (let y = startDate.value.year; y <= endDate.year; y++) {
+    const months: CalendarMonth[] = []
 
-    const isTooEarly = y <= startDate.year && m < startDate.month
-    const isTooLate = y >= endDate.year && m > endDate.month
+    for (let m = 1; m <= 12; m++) {
+      const date = DateTime.fromObject({ month: m, year: y })
+      const month = date.toLocaleString({ month: monthFormat.value }, { locale: useLocale() })
+      const link = date.toFormat('yyyy-LL')
 
-    months.push({
-      month,
-      link,
-      disabled: isTooEarly || isTooLate,
-    })
+      const isTooEarly = y <= startDate.value.year && m < startDate.value.month
+      const isTooLate = y >= endDate.year && m > endDate.month
+
+      months.push({
+        month,
+        link,
+        disabled: isTooEarly || isTooLate,
+      })
+    }
+
+    years.push({ year: y, months })
   }
 
-  calendarYears.push({ year: y, months })
-}
+  return years
+})
 
-const currentDate = props.date || new Date()
-const currentYear = ref(currentDate.getFullYear())
+/* Calendar beginning/end state to disable back/forward buttons */
 
-const isBeginning = computed(() => startDate.year >= currentYear.value)
+const isBeginning = computed(() => startDate.value.year >= currentYear.value)
 const isEnd = computed(() => endDate.year <= currentYear.value)
 
-const yearOffset = computed(() => startDate.year - currentYear.value)
+const yearOffset = computed(() => startDate.value.year - currentYear.value)
 
 const activeMonthLink = computed(() => {
   if (!props.date) return
