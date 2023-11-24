@@ -46,7 +46,12 @@ import { useQuery } from '@urql/vue'
 import { DateTime } from 'luxon'
 import RECORDS_QUERY from '~/graphql/Records.gql'
 
-import type { RecordsQueryResponse } from '~/types/records'
+import type { RecordsCategory, RecordsItem, RecordsQueryResponse } from '~/types/records'
+
+interface CategoryWithTotal {
+  category: RecordsCategory
+  total: number
+}
 
 const VISIBLE_LIMIT = 5
 
@@ -74,7 +79,7 @@ const variables = {
 const { data, executeQuery } = useQuery<RecordsQueryResponse>({ query: RECORDS_QUERY, variables })
 
 const groupedExpenses = computed(() =>
-  useCategoriesSubtotal(data.value?.records.data)
+  getCategoriesWithSubtotal(data.value?.records.data)
     .filter((group) => !group.category.is_income)
     .sort((a, b) => b.total - a.total)
 )
@@ -96,6 +101,28 @@ watch(
     }
   }
 )
+
+/* Get an array of records, then return array of all the categories
+ * with total sum of their records */
+
+function getCategoriesWithSubtotal(records?: RecordsItem[]): CategoryWithTotal[] {
+  const categories: CategoryWithTotal[] = []
+
+  records?.forEach((record: RecordsItem) => {
+    const categoryIndex = Number(record.category?.id)
+
+    if (categories[categoryIndex]) {
+      categories[categoryIndex].total += record.sum
+    } else {
+      categories[categoryIndex] = {
+        category: record.category,
+        total: record.sum ?? 0,
+      }
+    }
+  })
+
+  return categories.filter(Boolean)
+}
 
 function toggleCollapse() {
   collapseOpen.value = !collapseOpen.value
