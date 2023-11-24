@@ -113,7 +113,7 @@ async function handleCategoryDelete() {
 
       /* Refetch everything that could change after category delete */
       refetchTrigger.value = true
-      // await Promise.all([recordsStore.fetchCategories(), recordsStore.fetchMonthRecords()])
+      // await Promise.all([recordsStore.fetchMonthRecords()])
     }
   } catch (error: any) {}
 

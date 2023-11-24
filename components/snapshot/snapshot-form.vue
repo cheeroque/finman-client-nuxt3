@@ -54,7 +54,6 @@ interface SnapshotCreateResponse {
 
 const emit = defineEmits(['success'])
 
-const balance = useBalance()
 const recordsStore = useRecordsStore()
 
 const { executeMutation } = useMutation<SnapshotCreateResponse>(SNAPSHOT_CREATE_MUTATION)
@@ -67,7 +66,7 @@ defineExpose({ form })
 
 /* Initialize form & watch for record changes */
 const formData = reactive<SnapshotForm>({
-  balance: balance.value,
+  balance: recordsStore.balance,
   created_at: new Date(),
   note: recordsStore.snapshot?.note,
 })

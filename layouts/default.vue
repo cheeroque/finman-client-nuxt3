@@ -20,44 +20,70 @@
 import { useQuery } from '@urql/vue'
 import { useRecordsStore } from '~/store/records'
 
+import CATEGORIES_QUERY from '~/graphql/Categories.gql'
 import RECORDS_TOTAL_QUERY from '~/graphql/RecordsTotal.gql'
+
+import type { RecordsCategory } from '~/types/records'
+
+interface CategoriesQueryResponse {
+  categories: {
+    data: RecordsCategory[]
+    paginatorInfo: PaginatorInfo
+  }
+}
 
 interface RecordsTotalResponse {
   expensesTotal: number
   incomesTotal: number
 }
 
-const balance = useBalance()
 const recordsStore = useRecordsStore()
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
 const drawerOpen = ref(false)
 
-/* Fetch total balance */
+/* Fetch record categories and save them to the store */
 
-const { data, executeQuery } = await useQuery<RecordsTotalResponse>({ query: RECORDS_TOTAL_QUERY })
+const { data: categoryData, executeQuery: refetchCategories } = useQuery<CategoriesQueryResponse>({
+  query: CATEGORIES_QUERY,
+})
 
-const localBalance = computed(() => (Number(data.value?.incomesTotal) || 0) - (Number(data.value?.expensesTotal) || 0))
+watchEffect(() => {
+  if (categoryData.value) {
+    recordsStore.categories = categoryData.value.categories.data
+  }
+})
 
-watchEffect(
-  /* Save balance to the global state */
-  () => (balance.value = localBalance.value)
-)
+/* Fetch total balance and save it to the store */
+
+const { data: balanceData, executeQuery: refetchBalance } = await useQuery<RecordsTotalResponse>({
+  query: RECORDS_TOTAL_QUERY,
+})
+
+watchEffect(() => {
+  if (balanceData.value) {
+    const incomesTotal = Number(balanceData.value?.incomesTotal) || 0
+    const expensesTotal = Number(balanceData.value?.expensesTotal) || 0
+
+    recordsStore.balance = incomesTotal - expensesTotal
+  }
+})
 
 watch(
-  /* Refetch balance if external trigger was set to true, then reset trigger */
+  /* Refetch categories & total balance if external trigger was set to true,
+   * then reset trigger */
   () => refetchTrigger.value,
 
   async (event) => {
     if (event) {
-      await executeQuery()
+      await Promise.all([refetchBalance(), refetchCategories()])
       refetchTrigger.value = false
     }
   }
 )
 
-await Promise.all([recordsStore.fetchCategories(), recordsStore.fetchMonthRecords()])
+await Promise.all([recordsStore.fetchMonthRecords()])
 
 function handleToggleDrawer() {
   drawerOpen.value = !drawerOpen.value

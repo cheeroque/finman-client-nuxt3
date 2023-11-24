@@ -2,7 +2,6 @@ import { useQuery } from '@urql/vue'
 import { DateTime } from 'luxon'
 import { defineStore } from 'pinia'
 
-import CATEGORIES_QUERY from '~/graphql/Categories.gql'
 import RECORDS_QUERY from '~/graphql/Records.gql'
 import SNAPSHOTS_QUERY from '~/graphql/Snapshots.gql'
 
@@ -10,13 +9,6 @@ import type { RecordsCategory, RecordsItem, RecordsQueryResponse, RecordsSnapsho
 
 interface MonthRecords {
   [key: string]: RecordsItem[]
-}
-
-interface CategoriesQueryResponse {
-  categories: {
-    data: RecordsCategory[]
-    paginatorInfo: PaginatorInfo
-  }
 }
 
 interface SnapshotsQueryResponse {
@@ -45,9 +37,6 @@ export const useRecordsStore = defineStore('records', () => {
   /* All queries are declared below, before being used inside actions,
    * because useQuery composable only works inside store context */
 
-  /* Record categories query */
-  const categoriesQuery = useQuery<CategoriesQueryResponse>({ query: CATEGORIES_QUERY })
-
   /* Query for records made from the start of the current month util its end,
    * displayed in SidebarMonthly component */
   const now = DateTime.now()
@@ -72,18 +61,6 @@ export const useRecordsStore = defineStore('records', () => {
   const snapshotsQuery = useQuery<SnapshotsQueryResponse>({ query: SNAPSHOTS_QUERY })
 
   /* Store actions */
-
-  async function fetchCategories() {
-    pending.value++
-
-    const { data } = await categoriesQuery.executeQuery()
-
-    if (data.value) {
-      categories.value = data.value.categories.data
-    }
-
-    pending.value--
-  }
 
   async function fetchMonthRecords() {
     pending.value++
@@ -122,7 +99,6 @@ export const useRecordsStore = defineStore('records', () => {
   return {
     balance,
     categories,
-    fetchCategories,
     fetchMonthRecords,
     fetchSnapshot,
     firstRecord,
