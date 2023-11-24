@@ -76,7 +76,7 @@ const variables = {
   },
 }
 
-const { data, executeQuery } = useQuery<RecordsQueryResponse>({ query: RECORDS_QUERY, variables })
+const { data, executeQuery } = await useQuery<RecordsQueryResponse>({ query: RECORDS_QUERY, variables })
 
 const groupedExpenses = computed(() =>
   getCategoriesWithSubtotal(data.value?.records.data)
