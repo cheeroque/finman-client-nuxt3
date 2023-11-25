@@ -133,7 +133,10 @@ function handleToastUpdate(event: boolean) {
   }
 
   :deep(.sidebar) {
+    min-height: 0;
+    max-height: 100%;
     padding: $grid-gap 0;
+    overflow-y: auto;
   }
 }
 </style>
