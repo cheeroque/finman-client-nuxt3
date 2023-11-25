@@ -98,7 +98,7 @@ onMounted(() => {
 
 /* Fetch latest snapshot and save it to the store */
 
-const { data, executeQuery: refetchSnapshot } = useQuery<SnapshotsQueryResponse>({ query: SNAPSHOTS_QUERY })
+const { data, executeQuery: refetchSnapshot } = await useQuery<SnapshotsQueryResponse>({ query: SNAPSHOTS_QUERY })
 
 watchEffect(() => {
   recordsStore.snapshot = data.value?.snapshots.data?.[0]
