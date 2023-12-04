@@ -31,7 +31,7 @@ const paginationVisible = ref(false)
 
 const viewMode = computed<ViewMode>(() => route.params.view as ViewMode)
 
-const { data } = useAsyncData(() => fetchRecords())
+const { data } = await useAsyncData(() => fetchRecords())
 
 watch(
   /* Refetch records if external trigger was set to true, then reset trigger */
