@@ -17,71 +17,48 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue'
 import { useRecordsStore } from '~/store/records'
 
 import CATEGORIES_QUERY from '~/graphql/Categories.gql'
 import RECORDS_TOTAL_QUERY from '~/graphql/RecordsTotal.gql'
 
-import type { RecordsCategory } from '~/types/records'
-
-interface CategoriesQueryResponse {
-  categories: {
-    data: RecordsCategory[]
-    paginatorInfo: PaginatorInfo
-  }
-}
-
-interface RecordsTotalResponse {
-  expensesTotal: number
-  incomesTotal: number
-}
-
+const { $urql } = useNuxtApp()
 const recordsStore = useRecordsStore()
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
 const drawerOpen = ref(false)
 
-/* Fetch record categories and save them to the store */
-
-const { data: categoryData, executeQuery: refetchCategories } = useQuery<CategoriesQueryResponse>({
-  query: CATEGORIES_QUERY,
-})
-
-watchEffect(() => {
-  if (categoryData.value) {
-    recordsStore.categories = categoryData.value.categories.data
-  }
-})
-
-/* Fetch total balance and save it to the store */
-
-const { data: balanceData, executeQuery: refetchBalance } = await useQuery<RecordsTotalResponse>({
-  query: RECORDS_TOTAL_QUERY,
-})
-
-watchEffect(() => {
-  if (balanceData.value) {
-    const incomesTotal = Number(balanceData.value?.incomesTotal) || 0
-    const expensesTotal = Number(balanceData.value?.expensesTotal) || 0
-
-    recordsStore.balance = incomesTotal - expensesTotal
-  }
-})
+await useAsyncData(() => fetchBalanceAndCategories())
 
 watch(
   /* Refetch categories & total balance if external trigger was set to true,
    * then reset trigger */
+
   () => refetchTrigger.value,
 
   async (event) => {
     if (event) {
-      await Promise.all([refetchBalance(), refetchCategories()])
+      await fetchBalanceAndCategories()
       refetchTrigger.value = false
     }
   }
 )
+
+/* Fetch total balance & record categories and save all to the store */
+
+async function fetchBalanceAndCategories() {
+  const [{ data: balanceData }, { data: categoriesData }] = await Promise.all([
+    $urql.query(RECORDS_TOTAL_QUERY, {}),
+    $urql.query(CATEGORIES_QUERY, {}),
+  ])
+
+  const incomesTotal = Number(balanceData?.incomesTotal) || 0
+  const expensesTotal = Number(balanceData?.expensesTotal) || 0
+  recordsStore.balance = incomesTotal - expensesTotal
+
+  recordsStore.categories = categoriesData?.categories.data ?? []
+}
 
 function handleToggleDrawer() {
   drawerOpen.value = !drawerOpen.value
