@@ -4,9 +4,9 @@
       <PageRecordsHeader />
     </template>
 
-    <RecordTable :records="data?.records" :view-mode="viewMode" @update:records="fetchRecords" />?
+    <RecordTable :records="data?.records" :view-mode="viewMode" @update:records="refresh" />
 
-    <RecordFab :show="!paginationVisible" @update:records="fetchRecords" />
+    <RecordFab :show="!paginationVisible" @update:records="refresh" />
 
     <template #footer>
       <div ref="paginationAnchor" v-if="data?.totalPages > 1">
@@ -31,7 +31,7 @@ const paginationVisible = ref(false)
 
 const viewMode = computed<ViewMode>(() => route.params.view as ViewMode)
 
-const { data } = await useAsyncData(() => fetchRecords())
+const { data, refresh } = await useAsyncData(() => fetchRecords())
 
 watch(
   /* Refetch records if external trigger was set to true, then reset trigger */
@@ -40,7 +40,7 @@ watch(
 
   async (event) => {
     if (event) {
-      await fetchRecords()
+      await refresh()
       refetchTrigger.value = false
     }
   }
@@ -52,7 +52,7 @@ watch(
   () => route.query,
 
   async () => {
-    await fetchRecords()
+    await refresh()
 
     setTimeout(() => {
       const windowTop = useWindowTop()
