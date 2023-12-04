@@ -22,8 +22,8 @@
       />
     </header>
 
-    <div :style="{ transform: `translateX(${yearOffset * 100}%)` }" class="calendar-body">
-      <nav v-for="item in calendarYears" :key="`year-${item.year}`" class="calendar-year">
+    <div :style="{ transform: `translateX(${translateOffset}%)` }" class="calendar-body">
+      <nav v-for="item in data?.calendarYears" :key="`year-${item.year}`" class="calendar-year">
         <ul class="list-unstyled calendar-months">
           <li v-for="month in item.months" :key="`${month}-${item.year}`" class="calendar-month">
             <span v-if="month.disabled" class="calendar-link disabled">
@@ -32,7 +32,7 @@
 
             <NuxtLink
               v-else
-              :class="{ active: month.link === activeMonthLink }"
+              :class="{ active: isLinkActive(month.link) }"
               :to="`/months/${month.link}`"
               class="calendar-link"
             >
@@ -46,11 +46,8 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue'
 import { DateTime } from 'luxon'
 import RECORDS_QUERY from '~/graphql/Records.gql'
-
-import type { RecordsQueryResponse } from '~/types/records'
 
 interface CalendarMonth {
   disabled?: boolean
@@ -68,55 +65,67 @@ const props = defineProps<{
   numericMonths?: boolean
 }>()
 
-const monthFormat = computed(() => (props.numericMonths ? '2-digit' : 'long'))
+const LINK_FORMAT = 'yyyy-LL'
 
-/* Init currently visible calendar month */
+const { $urql } = useNuxtApp()
 
 const currentDate = props.date ?? new Date()
 const currentYear = ref(currentDate.getFullYear())
 
-/* Fetch first record to determine calendar start date */
+const { data } = await useAsyncData(() => fetchFirstRecord())
 
-const variables = {
-  first: 1,
-  orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
-}
+/* Calendar beginning/end state to disable back/forward buttons */
 
-const { data } = await useQuery<RecordsQueryResponse>({
-  query: RECORDS_QUERY,
-  variables,
-})
+const isBeginning = computed(() => Number(data.value?.startYear) >= currentYear.value)
+const isEnd = computed(() => Number(data.value?.endYear) <= currentYear.value)
 
-const firstRecord = computed(() => data.value?.records.data?.[0])
+/* Percent value to translate current calendar page with CSS */
 
-const startDate = computed(() => {
-  let date = DateTime.fromFormat(firstRecord.value?.created_at ?? '', 'yyyy-LL-dd HH:mm:ss')
+const translateOffset = computed(() => (Number(data.value?.startYear) - currentYear.value || 0) * 100)
 
-  if (!date.isValid) {
-    date = DateTime.now()
+/* Fetch record with the earliest creation date to determine year and month
+ * to start calendar from */
+
+async function fetchFirstRecord() {
+  const variables = {
+    first: 1,
+    orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
   }
 
-  return date
-})
+  const { data } = await $urql.query(RECORDS_QUERY, variables)
+  const firstRecord = data?.records.data?.[0] ?? {}
 
-/* Set current date as end date */
+  const dateTime = DateTime.fromFormat(firstRecord.created_at ?? '', 'yyyy-LL-dd HH:mm:ss')
 
-const endDate = DateTime.now()
+  const endDate = DateTime.now()
+  const endYear = endDate.year
 
-/* Build calendar years (pages) array */
+  const startDate = dateTime.isValid ? dateTime : endDate
+  const startYear = startDate.year
 
-const calendarYears = computed<CalendarYear[]>(() => {
+  const calendarYears = buildCalendar(startDate, endDate)
+
+  return { calendarYears, endYear, startYear }
+}
+
+/* Build an array of calendar pages (years). Each page contains an array
+ * of 12 months. Months that are before the earliest or after the latest record
+ * creation date are disabled */
+
+function buildCalendar(startDate: DateTime, endDate: DateTime) {
   const years = []
 
-  for (let y = startDate.value.year; y <= endDate.year; y++) {
+  const monthFormat = props.numericMonths ? '2-digit' : 'long'
+
+  for (let y = startDate.year; y <= endDate.year; y++) {
     const months: CalendarMonth[] = []
 
     for (let m = 1; m <= 12; m++) {
       const date = DateTime.fromObject({ month: m, year: y })
-      const month = date.toLocaleString({ month: monthFormat.value }, { locale: useLocale() })
-      const link = date.toFormat('yyyy-LL')
+      const month = date.toLocaleString({ month: monthFormat }, { locale: useLocale() })
+      const link = date.toFormat(LINK_FORMAT)
 
-      const isTooEarly = y <= startDate.value.year && m < startDate.value.month
+      const isTooEarly = y <= startDate.year && m < startDate.month
       const isTooLate = y >= endDate.year && m > endDate.month
 
       months.push({
@@ -130,19 +139,13 @@ const calendarYears = computed<CalendarYear[]>(() => {
   }
 
   return years
-})
+}
 
-/* Calendar beginning/end state to disable back/forward buttons */
+function isLinkActive(link: string) {
+  if (!props.date) return false
 
-const isBeginning = computed(() => startDate.value.year >= currentYear.value)
-const isEnd = computed(() => endDate.year <= currentYear.value)
-
-const yearOffset = computed(() => startDate.value.year - currentYear.value)
-
-const activeMonthLink = computed(() => {
-  if (!props.date) return
-  return DateTime.fromJSDate(props.date).toFormat('yyyy-LL')
-})
+  return link === DateTime.fromJSDate(props.date).toFormat(LINK_FORMAT)
+}
 
 function setYearNext() {
   currentYear.value++
