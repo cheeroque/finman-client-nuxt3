@@ -42,11 +42,10 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue'
 import { DateTime } from 'luxon'
 import RECORDS_QUERY from '~/graphql/Records.gql'
 
-import type { RecordsCategory, RecordsItem, RecordsQueryResponse } from '~/types/records'
+import type { RecordsCategory, RecordsItem } from '~/types/records'
 
 interface CategoryWithTotal {
   category: RecordsCategory
@@ -55,31 +54,42 @@ interface CategoryWithTotal {
 
 const VISIBLE_LIMIT = 5
 
+const { $urql } = useNuxtApp()
 const refetchTrigger = useRefetchTrigger()
 
 const collapseOpen = ref(false)
+const records = ref<RecordsItem[]>([])
+
+await useAsyncData(() => fetchRecords())
 
 /* Fetch records made from the start of current month until its end */
 
-const now = DateTime.now()
+async function fetchRecords() {
+  const now = DateTime.now()
 
-const from = now.set({ hour: 0, minute: 0, second: 0, day: 1 })
-const to = from.plus({ month: 1 }).minus({ second: 1 })
+  const from = now.set({ hour: 0, minute: 0, second: 0, day: 1 })
+  const to = from.plus({ month: 1 }).minus({ second: 1 })
 
-const variables = {
-  first: 1000,
-  where: {
-    AND: [
-      { column: 'CREATED_AT', operator: 'GTE', value: from.toFormat('yyyy-LL-dd HH:mm:ss') },
-      { column: 'CREATED_AT', operator: 'LTE', value: to.toFormat('yyyy-LL-dd HH:mm:ss') },
-    ],
-  },
+  const variables = {
+    first: 1000,
+    where: {
+      AND: [
+        { column: 'CREATED_AT', operator: 'GTE', value: from.toFormat('yyyy-LL-dd HH:mm:ss') },
+        { column: 'CREATED_AT', operator: 'LTE', value: to.toFormat('yyyy-LL-dd HH:mm:ss') },
+      ],
+    },
+  }
+
+  const { data } = await $urql.query(RECORDS_QUERY, variables)
+
+  /* Update existing ref instead of returning data due to data not updating
+   * on refresh otherwise */
+
+  records.value = data?.records.data
 }
 
-const { data, executeQuery } = await useQuery<RecordsQueryResponse>({ query: RECORDS_QUERY, variables })
-
 const groupedExpenses = computed(() =>
-  getCategoriesWithSubtotal(data.value?.records.data)
+  getCategoriesWithSubtotal(records.value)
     .filter((group) => !group.category.is_income)
     .sort((a, b) => b.total - a.total)
 )
@@ -92,11 +102,12 @@ const maxTotal = computed(() => groupedExpenses.value[0].total)
 
 watch(
   /* Refetch records if external trigger was set to true, then reset trigger */
+
   () => refetchTrigger.value,
 
   async (event) => {
     if (event) {
-      await executeQuery()
+      await fetchRecords()
       refetchTrigger.value = false
     }
   }
