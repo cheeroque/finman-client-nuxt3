@@ -4,32 +4,71 @@
       <PageRecordsHeader />
     </template>
 
-    <RecordTable :records="records" :view-mode="viewMode" @update:records="executeQuery" />
+    <RecordTable :records="data?.records" :view-mode="viewMode" @update:records="fetchRecords" />?
 
-    <RecordFab :show="!paginationVisible" @update:records="executeQuery" />
+    <RecordFab :show="!paginationVisible" @update:records="fetchRecords" />
 
     <template #footer>
-      <div ref="paginationAnchor" v-if="totalPages > 1">
-        <UiPagination :disabled="recordsStore.loading" :total-pages="totalPages" hide-prev-next />
+      <div ref="paginationAnchor" v-if="data?.totalPages > 1">
+        <UiPagination :disabled="recordsStore.loading" :total-pages="data?.totalPages" hide-prev-next />
       </div>
     </template>
   </PageContent>
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue'
 import { useRecordsStore } from '~/store/records'
 import RECORDS_QUERY from '~/graphql/Records.gql'
 
-import type { RecordsQueryResponse } from '~/types/records'
-
+const { $urql } = useNuxtApp()
 const recordsStore = useRecordsStore()
 const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
 
+const observer = ref()
+const paginationAnchor = ref()
+const paginationVisible = ref(false)
+
 const viewMode = computed<ViewMode>(() => route.params.view as ViewMode)
 
-const variables = computed(() => {
+const { data } = useAsyncData(() => fetchRecords())
+
+watch(
+  /* Refetch records if external trigger was set to true, then reset trigger */
+
+  () => refetchTrigger.value,
+
+  async (event) => {
+    if (event) {
+      await fetchRecords()
+      refetchTrigger.value = false
+    }
+  }
+)
+
+watch(
+  /* Refetch records and scroll page to the top on route query change */
+
+  () => route.query,
+
+  async () => {
+    await fetchRecords()
+
+    setTimeout(() => {
+      const windowTop = useWindowTop()
+      const target = !windowTop ? '.page' : undefined
+
+      useScrollTo(target)
+    }, 250)
+  }
+)
+
+/* Observe pagination element to hide/show FAB on scroll */
+
+onMounted(() => setObserver())
+onUnmounted(() => removeObserver())
+
+async function fetchRecords() {
   const column = route.query.orderBy ? String(route.query.orderBy) : 'CREATED_AT'
   const order = route.query.order ? String(route.query.order) : 'DESC'
   const first = Number(route.query.perPage) || 50
@@ -47,59 +86,15 @@ const variables = computed(() => {
         }
       : undefined
 
-  return {
-    first,
-    hasCategory,
-    orderBy: [{ column, order }],
-    page,
-  }
-})
+  const variables = { first, hasCategory, orderBy: [{ column, order }], page }
 
-const { data, executeQuery } = await useQuery<RecordsQueryResponse>({ query: RECORDS_QUERY, variables })
+  const { data } = await $urql.query(RECORDS_QUERY, variables)
 
-const records = computed(() => data.value?.records.data ?? [])
-const totalPages = computed(() => data.value?.records.paginatorInfo?.lastPage ?? 1)
+  const records = data?.records.data ?? []
+  const totalPages = data?.records.paginatorInfo?.lastPage ?? 1
 
-watch(
-  /* Refetch records if external trigger was set to true, then reset trigger */
-  () => refetchTrigger.value,
-
-  async (event) => {
-    if (event) {
-      await executeQuery()
-      refetchTrigger.value = false
-    }
-  }
-)
-
-watch(
-  /* Refetch records and scroll page to the top on route query change */
-  () => route.query,
-
-  async () => {
-    await executeQuery()
-
-    setTimeout(() => {
-      const windowTop = useWindowTop()
-      const target = !windowTop ? '.page' : undefined
-
-      useScrollTo(target)
-    }, 250)
-  }
-)
-
-/** Observe pagination element to hide/show FAB on scroll */
-onMounted(() => {
-  setObserver()
-})
-
-onUnmounted(() => {
-  removeObserver()
-})
-
-const observer = ref()
-const paginationAnchor = ref()
-const paginationVisible = ref(false)
+  return { records, totalPages }
+}
 
 function setObserver() {
   if (!process.client || !paginationAnchor.value) return
