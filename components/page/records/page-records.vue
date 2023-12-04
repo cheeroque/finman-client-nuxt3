@@ -4,13 +4,13 @@
       <PageRecordsHeader />
     </template>
 
-    <RecordTable :records="data?.records" :view-mode="viewMode" @update:records="refresh" />
+    <RecordTable :records="records" :view-mode="viewMode" @update:records="fetchRecords" />
 
-    <RecordFab :show="!paginationVisible" @update:records="refresh" />
+    <RecordFab :show="!paginationVisible" @update:records="fetchRecords" />
 
     <template #footer>
-      <div ref="paginationAnchor" v-if="data?.totalPages > 1">
-        <UiPagination :disabled="recordsStore.loading" :total-pages="data?.totalPages" hide-prev-next />
+      <div ref="paginationAnchor" v-if="totalPages > 1">
+        <UiPagination :disabled="recordsStore.loading" :total-pages="totalPages" hide-prev-next />
       </div>
     </template>
   </PageContent>
@@ -19,6 +19,8 @@
 <script setup lang="ts">
 import { useRecordsStore } from '~/store/records'
 import RECORDS_QUERY from '~/graphql/Records.gql'
+
+import type { RecordsItem } from '~/types/records'
 
 const { $urql } = useNuxtApp()
 const recordsStore = useRecordsStore()
@@ -29,9 +31,12 @@ const observer = ref()
 const paginationAnchor = ref()
 const paginationVisible = ref(false)
 
+const records = ref<RecordsItem[]>([])
+const totalPages = ref(0)
+
 const viewMode = computed<ViewMode>(() => route.params.view as ViewMode)
 
-const { data, refresh } = await useAsyncData(() => fetchRecords())
+await useAsyncData(() => fetchRecords())
 
 watch(
   /* Refetch records if external trigger was set to true, then reset trigger */
@@ -40,7 +45,7 @@ watch(
 
   async (event) => {
     if (event) {
-      await refresh()
+      await fetchRecords()
       refetchTrigger.value = false
     }
   }
@@ -52,7 +57,7 @@ watch(
   () => route.query,
 
   async () => {
-    await refresh()
+    await fetchRecords()
 
     setTimeout(() => {
       const windowTop = useWindowTop()
@@ -90,10 +95,11 @@ async function fetchRecords() {
 
   const { data } = await $urql.query(RECORDS_QUERY, variables)
 
-  const records = data?.records.data ?? []
-  const totalPages = data?.records.paginatorInfo?.lastPage ?? 1
+  /* Update existing refs instead of returning data due to data not updating
+   * on refresh otherwise */
 
-  return { records, totalPages }
+  records.value = data?.records.data ?? []
+  totalPages.value = data?.records.paginatorInfo?.lastPage ?? 1
 }
 
 function setObserver() {
