@@ -14,7 +14,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   async function fetchUser() {
     try {
-      const { data } = await $urql.query(ME_QUERY, {})
+      const { data } = await $urql.query(ME_QUERY, {}).toPromise()
 
       if (!data?.me) {
         throw createError({ statusCode: 401 })

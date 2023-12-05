@@ -26,7 +26,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     const $urql = nuxtApp.$urql as Client
 
-    const { data, error } = await $urql.mutation(LOGIN_MUTATION, credentials)
+    const { data, error } = await $urql.mutation(LOGIN_MUTATION, credentials).toPromise()
 
     if (data?.login) {
       const { access_token, refresh_token, user } = data.login
@@ -48,7 +48,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     const $urql = nuxtApp.$urql as Client
 
     try {
-      await $urql.mutation(LOGOUT_MUTATION, {})
+      await $urql.mutation(LOGOUT_MUTATION, {}).toPromise()
     } catch (error) {
       /* Ignore error when trying to log out without token */
     }
