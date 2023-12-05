@@ -30,13 +30,7 @@
       />
     </div>
 
-    <RecordDialog
-      v-model="dialogVisible"
-      :record="currentRecord"
-      @closed="handleDialogClosed"
-      @delete:record="emit('update:records')"
-      @update:record="emit('update:records')"
-    />
+    <RecordDialog v-model="dialogVisible" :record="currentRecord" @closed="handleDialogClosed" />
   </div>
 </template>
 

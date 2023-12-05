@@ -59,7 +59,7 @@ const props = defineProps<{
   record?: RecordsItem
 }>()
 
-const emit = defineEmits(['closed', 'delete:record', 'update:modelValue', 'update:record'])
+const emit = defineEmits(['closed', 'update:modelValue'])
 
 const recordsStore = useRecordsStore()
 const refetchTrigger = useRefetchTrigger()
@@ -90,7 +90,6 @@ async function handleRecordDelete() {
       toast.value.message = useString('recordDeleted', `#${props.record?.id}`)
       toast.value.variant = 'danger'
 
-      emit('delete:record')
       emit('update:modelValue', false)
     }
 
@@ -106,8 +105,6 @@ function handleRecordUpdate(record: RecordsItem, callback?: Function) {
   toast.value.modelValue = true
   toast.value.message = useString('recordSaved', `#${record?.id}`)
   toast.value.variant = 'success'
-
-  emit('update:record')
 
   if (typeof callback === 'function') {
     callback()
