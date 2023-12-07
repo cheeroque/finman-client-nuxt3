@@ -47,17 +47,13 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
+
 import RECORDS_QUERY from '~/graphql/Records.gql'
 
 interface CalendarMonth {
   disabled?: boolean
   link: string
   month: string
-}
-
-interface CalendarYear {
-  months: CalendarMonth[]
-  year: number
 }
 
 const props = defineProps<{
@@ -92,7 +88,8 @@ async function fetchFirstRecord() {
     orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
   }
 
-  const { data } = await $urql.query(RECORDS_QUERY, variables)
+  const { data } = await $urql.query(RECORDS_QUERY, variables).toPromise()
+
   const firstRecord = data?.records.data?.[0] ?? {}
 
   const dateTime = DateTime.fromFormat(firstRecord.created_at ?? '', 'yyyy-LL-dd HH:mm:ss')
