@@ -22,6 +22,20 @@ import { useRecordsStore } from '~/store/records'
 import CATEGORIES_QUERY from '~/graphql/Categories.gql'
 import RECORDS_TOTAL_QUERY from '~/graphql/RecordsTotal.gql'
 
+import type { RecordsCategory } from '~/types/records'
+
+interface CategoriesResponse {
+  categories: {
+    data: RecordsCategory[]
+    paginatorInfo: PaginatorInfo
+  }
+}
+
+interface RecordsTotalResponse {
+  expensesTotal: number
+  incomesTotal: number
+}
+
 const { $urql } = useNuxtApp()
 const recordsStore = useRecordsStore()
 const refetchTrigger = useRefetchTrigger()
@@ -49,14 +63,14 @@ watch(
 
 async function fetchBalanceAndCategories() {
   const [{ data: balanceData }, { data: categoriesData }] = await Promise.all([
-    $urql.query(RECORDS_TOTAL_QUERY, {}),
-    $urql.query(CATEGORIES_QUERY, {}),
+    $urql.query<RecordsTotalResponse>(RECORDS_TOTAL_QUERY, {}).toPromise(),
+    $urql.query<CategoriesResponse>(CATEGORIES_QUERY, {}).toPromise(),
   ])
 
   const incomesTotal = Number(balanceData?.incomesTotal) || 0
   const expensesTotal = Number(balanceData?.expensesTotal) || 0
-  recordsStore.balance = incomesTotal - expensesTotal
 
+  recordsStore.balance = incomesTotal - expensesTotal
   recordsStore.categories = categoriesData?.categories.data ?? []
 }
 
