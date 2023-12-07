@@ -6,9 +6,7 @@
     @closed="emit('closed')"
     @update:modelValue="emit('update:modelValue', $event)"
   >
-    <template #default="{ close }">
-      <RecordForm v-uid ref="form" :edit="isEdit" :record="record" @success="handleRecordUpdate($event, close)" />
-    </template>
+    <RecordForm v-uid ref="form" :edit="isEdit" :record="record" @submit="handleRecordUpsert" />
 
     <template #footer="{ close }">
       <div class="row flex-fill g-8">
@@ -39,33 +37,35 @@
 </template>
 
 <script setup lang="ts">
-import { useMutation } from '@urql/vue'
+import { DateTime } from 'luxon'
+import { useAuthStore } from '~/store/auth'
 import { useRecordsStore } from '~/store/records'
 
+import RECORD_CREATE_MUTATION from '~/graphql/RecordCreate.gql'
+import RECORD_UPDATE_MUTATION from '~/graphql/RecordUpdate.gql'
 import RECORD_DELETE_MUTATION from '~/graphql/RecordDelete.gql'
 
 import type { RecordsItem } from '~/types/records'
+import type { RecordsForm } from './record-form.vue'
 
-interface RecordDeleteResponseData {
-  result: {
-    id: number
-    note: string
-    sum: number
-  }
-}
-
-const props = defineProps<{
+interface RecordDialogProps {
   modelValue?: boolean
   record?: RecordsItem
-}>()
+}
+
+interface RecordMutationResponse {
+  result: RecordsItem
+}
+
+const props = defineProps<RecordDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
+const { $urql } = useNuxtApp()
+const authStore = useAuthStore()
 const recordsStore = useRecordsStore()
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
-
-const { executeMutation } = useMutation<RecordDeleteResponseData>(RECORD_DELETE_MUTATION)
 
 const form = ref()
 
@@ -73,41 +73,70 @@ const formId = computed(() => form.value?.form.id)
 const isEdit = computed(() => Boolean(props.record?.id))
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeRecord' : 'createRecord'))
 
+/* Delete current record by ID. Show toast on success or error */
+
 async function handleRecordDelete() {
   if (!props.record) return
 
-  recordsStore.pending++
-
   const { id } = props.record
 
-  try {
-    /* Delete record */
-    const { data } = await executeMutation({ id })
+  recordsStore.pending++
 
-    if (data?.result) {
-      /* Show confirmation toast */
-      toast.value.modelValue = true
-      toast.value.message = useString('recordDeleted', `#${props.record?.id}`)
-      toast.value.variant = 'danger'
+  const { data, error } = await $urql.mutation<RecordMutationResponse>(RECORD_DELETE_MUTATION, { id }).toPromise()
 
-      emit('update:modelValue', false)
-    }
+  if (data?.result) {
+    showToast(useString('recordDeleted', `#${props.record?.id}`), 'danger')
+    emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
+
     refetchTrigger.value = true
-  } catch (error: any) {}
+  } else {
+    showToast(error?.message ?? useString('error'), 'danger')
+  }
 
   recordsStore.pending--
 }
 
-function handleRecordUpdate(record: RecordsItem, callback?: Function) {
-  /* Show confirmation toast */
-  toast.value.modelValue = true
-  toast.value.message = useString('recordSaved', `#${record?.id}`)
-  toast.value.variant = 'success'
+/* Create new records or update existing, if it's set with prop. Show toast
+ * on success or error */
 
-  if (typeof callback === 'function') {
-    callback()
+async function handleRecordUpsert(formData: RecordsForm) {
+  const mutation = isEdit.value ? RECORD_UPDATE_MUTATION : RECORD_CREATE_MUTATION
+
+  const { category_id, created_at, note, sum } = formData
+  const variables = {
+    data: {
+      category: { connect: category_id },
+      created_at: DateTime.fromJSDate(created_at).toFormat('yyyy-LL-dd HH:mm:ss'),
+      id: props.record?.id,
+      note,
+      sum,
+      user: { connect: authStore.user?.id },
+    },
   }
+
+  recordsStore.pending++
+
+  const { data, error } = await $urql.mutation(mutation, variables).toPromise()
+
+  if (data?.result) {
+    showToast(useString('recordSaved', `#${data.result.id}`), 'success')
+    emit('update:modelValue', false)
+
+    /* Trigger refetch of all globally available data */
+
+    refetchTrigger.value = true
+  } else {
+    showToast(error?.message ?? useString('error'), 'danger')
+  }
+
+  recordsStore.pending--
+}
+
+function showToast(message: string, variant: string) {
+  toast.value.modelValue = true
+  toast.value.message = message
+  toast.value.variant = variant
 }
 </script>
