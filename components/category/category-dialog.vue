@@ -11,29 +11,49 @@
     </template>
 
     <template #footer="{ close }">
-      <div class="row flex-fill g-8">
-        <div class="col-12 col-md-auto order-md-2 ms-md-auto">
-          <div class="row g-8">
-            <div class="col-6 d-md-none">
-              <UiButton variant="neutral-muted" block @click="close">
-                {{ useString('cancel') }}
-              </UiButton>
-            </div>
+      <Transition mode="out-in" name="fade">
+        <div v-if="deletePending" class="row flex-fill g-8">
+          <div class="col-12">
+            <p class="fs-14 lh-120 text-danger mb-8">{{ useString('confirmRemoveCategory', category?.name) }}</p>
+          </div>
 
-            <div class="col-6 col-md-auto">
-              <UiButton :form="formId" type="submit" variant="primary" block>
-                {{ useString(isEdit ? 'update' : 'save') }}
-              </UiButton>
-            </div>
+          <div class="col-6 col-md-auto">
+            <UiButton variant="success-muted" block @click="deletePending = false">
+              {{ useString('cancel') }}
+            </UiButton>
+          </div>
+
+          <div class="col-6 col-md-auto ms-md-auto">
+            <UiButton variant="danger" block @click="handleCategoryDelete">
+              {{ useString('confirm') }}
+            </UiButton>
           </div>
         </div>
 
-        <div v-if="isEdit" class="col-12 col-md-auto order-md-1">
-          <UiButton variant="danger-muted" block @click="handleCategoryDelete">
-            {{ useString('remove') }}
-          </UiButton>
+        <div v-else class="row flex-fill g-8">
+          <div class="col-12 col-md-auto order-md-2 ms-md-auto">
+            <div class="row g-8">
+              <div class="col-6 d-md-none">
+                <UiButton variant="neutral-muted" block @click="close">
+                  {{ useString('cancel') }}
+                </UiButton>
+              </div>
+
+              <div class="col-6 col-md-auto">
+                <UiButton :form="formId" type="submit" variant="primary" block>
+                  {{ useString(isEdit ? 'update' : 'save') }}
+                </UiButton>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="isEdit" class="col-12 col-md-auto order-md-1">
+            <UiButton variant="danger-muted" block @click="deletePending = true">
+              {{ useString('remove') }}
+            </UiButton>
+          </div>
         </div>
-      </div>
+      </Transition>
     </template>
   </UiDialog>
 </template>
@@ -64,6 +84,7 @@ const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
 const form = ref()
+const deletePending = ref(false)
 
 const formId = computed(() => form.value?.form.id)
 const isEdit = computed(() => Boolean(props.category?.id))
@@ -72,8 +93,6 @@ const dialogTitle = computed(() => useString(isEdit.value ? 'changeCategory' : '
 /* Delete current category by ID. Show toast on success or error */
 
 async function handleCategoryDelete() {
-  /* TODO: add confirmation before deleting category */
-
   if (!props.category) return
 
   const { id } = props.category
@@ -93,6 +112,7 @@ async function handleCategoryDelete() {
     showToast(error?.message ?? useString('error'), 'danger')
   }
 
+  deletePending.value = false
   recordsStore.pending--
 }
 
