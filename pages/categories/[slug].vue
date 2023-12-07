@@ -1,12 +1,18 @@
 <template>
   <PageContent
-    :key="totalPages > 1"
-    :loading="fetching"
-    :title="category.name"
+    :key="pageKey"
+    :loading="pending"
+    :title="category?.name"
     class="overflow-hidden"
     spinner-variant="primary"
   >
-    <GroupTable :group-label="useString('date')" :items="tableItems" :loading="fetching">
+    <GroupTable
+      v-if="data"
+      :key="tableKey"
+      :group-label="useString('date')"
+      :items="data.tableItems"
+      :loading="pending"
+    >
       <template #cell(group)="{ item }">
         <span class="d-md-none" v-text="formatDate(item.timestamp, true)" />
 
@@ -14,14 +20,13 @@
       </template>
     </GroupTable>
 
-    <template #footer v-if="totalPages > 1">
-      <UiPagination :disabled="fetching" :total-pages="totalPages" hide-prev-next />
+    <template #footer v-if="Number(data?.totalPages) > 1">
+      <UiPagination :disabled="pending" :total-pages="data?.totalPages" hide-prev-next />
     </template>
   </PageContent>
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue'
 import { DateTime } from 'luxon'
 import { useRecordsStore } from '~/store/records'
 
@@ -41,6 +46,7 @@ interface RecordsByPeriodQueryResponseData {
   records: RecordsItem[]
 }
 
+const { $urql } = useNuxtApp()
 const route = useRoute()
 const recordsStore = useRecordsStore()
 
@@ -51,20 +57,53 @@ if (!category.value) {
   throw createError({ fatal: true, message, statusCode: 404 })
 }
 
-const variables = computed(() => ({
-  category_id: Number(category.value?.id),
-  first: Number(route.query.perPage) || 18,
-  page: Number(route.query.page) || 1,
-}))
+const { data, pending, refresh } = await useAsyncData(async () => {
+  const variables = {
+    category_id: Number(category.value?.id),
+    first: Number(route.query.perPage) || 18,
+    page: Number(route.query.page) || 1,
+  }
 
-const { data, executeQuery, fetching } = await useQuery<RecordsByPeriodQueryResponse>({
-  query: RECORDS_BY_PERIOD_QUERY,
-  variables,
+  const { data: recordsData } = await $urql
+    .query<RecordsByPeriodQueryResponse>(RECORDS_BY_PERIOD_QUERY, variables)
+    .toPromise()
+
+  const tableItems = ref(buildTableItems(recordsData?.records))
+  const totalPages = ref(recordsData?.records?.paginatorInfo.lastPage ?? 1)
+
+  return reactive({ tableItems, totalPages })
 })
 
-const tableItems = computed(
-  () =>
-    data.value?.records?.data.map(({ period, records }) => {
+/* Key to remount page when pagination appears / disappears */
+
+const pageKey = computed(() => String(Number(data.value?.totalPages) > 1))
+
+/* Key to remount GroupTable when page changes */
+
+const tableKey = computed(() => String(route.query.page))
+
+watch(
+  () => route.query,
+
+  async () => {
+    await refresh()
+
+    setTimeout(() => {
+      /* If window is scrolled down (e.g. in mobile) scroll it back to top,
+       * otherwise scroll back page element */
+
+      const windowTop = useWindowTop()
+      const target = !windowTop ? '.page' : undefined
+      useScrollTo(target)
+    }, 250)
+  }
+)
+
+/* Transform records from response into table rows */
+
+function buildTableItems(records?: RecordsByPeriodQueryResponse['records']) {
+  return (
+    records?.data.map(({ period, records }) => {
       const date = DateTime.fromFormat(period, 'yyyy-LL')
       const group = date.toLocaleString({ month: 'long', year: 'numeric' }, { locale: useLocale() })
       const subtotal = records.reduce((acc, cur) => (acc += cur.sum), 0)
@@ -72,30 +111,13 @@ const tableItems = computed(
 
       return { group, subtotal, records, timestamp }
     }) ?? []
-)
-
-const totalPages = computed(() => data.value?.records?.paginatorInfo.lastPage ?? 1)
+  )
+}
 
 function formatDate(timestamp: number, short = false): string {
   const monthFormat = short ? 'LLL' : 'LLLL'
   return DateTime.fromMillis(timestamp).toFormat(`${monthFormat} yyyy`)
 }
-
-watch(
-  () => route.query,
-
-  async () => {
-    await executeQuery()
-
-    setTimeout(() => {
-      /* If window is scrolled down (e.g. in mobile) scroll it back to top,
-       * otherwise scroll back page element */
-      const windowTop = useWindowTop()
-      const target = !windowTop ? '.page' : undefined
-      useScrollTo(target)
-    }, 250)
-  }
-)
 </script>
 
 <style lang="scss" scoped>
