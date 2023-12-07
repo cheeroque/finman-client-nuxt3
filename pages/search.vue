@@ -1,31 +1,67 @@
 <template>
   <PageContent
-    :loading="fetching"
+    :loading="pending"
     :title="useString('searchResults', searchQuery)"
     class="overflow-hidden"
     spinner-variant="primary"
   >
-    <RecordTable :records="tableItems" />
+    <RecordTable v-if="data" :records="data.tableItems" />
 
     <template #footer>
-      <div v-if="totalPages > 1">
-        <UiPagination :disabled="fetching" :total-pages="totalPages" hide-prev-next />
+      <div v-if="Number(data?.totalPages) > 1">
+        <UiPagination :disabled="pending" :total-pages="data?.totalPages" hide-prev-next />
       </div>
     </template>
   </PageContent>
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue'
-
 import RECORDS_QUERY from '~/graphql/Records.gql'
 
+import type { RecordsItem } from '~/types/records'
+
+interface RecordsResponse {
+  records: {
+    data: RecordsItem[]
+    paginatorInfo: PaginatorInfo
+  }
+}
+
+const { $urql } = useNuxtApp()
 const route = useRoute()
 
-const searchQuery = computed(() => route.query.q as string)
 const perPage = computed(() => Number(route.query.perPage) || 50)
+const searchQuery = computed(() => String(route.query.q))
 
-const variables = computed(() => {
+const { data, pending, refresh } = await useAsyncData(async () => {
+  const variables = buildVariables()
+
+  const { data: recordsData } = await $urql.query<RecordsResponse>(RECORDS_QUERY, variables).toPromise()
+
+  const tableItems = ref(recordsData?.records?.data ?? [])
+  const totalPages = ref(recordsData?.records?.paginatorInfo?.lastPage ?? 1)
+
+  return reactive({ tableItems, totalPages })
+})
+
+watch(
+  () => route.query,
+
+  async () => {
+    await refresh()
+
+    setTimeout(() => {
+      /* If window is scrolled down (e.g. in mobile) scroll it back to top,
+       * otherwise scroll back page element */
+
+      const windowTop = useWindowTop()
+      const target = !windowTop ? '.page' : undefined
+      useScrollTo(target)
+    }, 250)
+  }
+)
+
+function buildVariables() {
   const column = String(route.query.orderBy ?? 'CREATED_AT')
   const order = String(route.query.order ?? 'DESC')
   const page = Number(route.query.page) || 1
@@ -48,31 +84,7 @@ const variables = computed(() => {
     page,
     where,
   }
-})
-
-const { data: result, executeQuery, fetching } = await useQuery({
-  query: RECORDS_QUERY,
-  variables,
-})
-
-const tableItems = computed(() => result.value?.records?.data ?? [])
-const totalPages = computed(() => result.value?.records?.paginatorInfo?.lastPage ?? 1)
-
-watch(
-  () => route.query,
-
-  async () => {
-    await executeQuery()
-
-    setTimeout(() => {
-      /* If window is scrolled down (e.g. in mobile) scroll it back to top,
-       * otherwise scroll back page element */
-      const windowTop = useWindowTop()
-      const target = !windowTop ? '.page' : undefined
-      useScrollTo(target)
-    }, 250)
-  }
-)
+}
 </script>
 
 <style lang="scss" scoped>
