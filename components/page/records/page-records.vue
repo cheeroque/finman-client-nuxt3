@@ -4,12 +4,12 @@
       <PageRecordsHeader />
     </template>
 
-    <RecordTable :records="data?.records" :view-mode="viewMode" />
+    <RecordTable v-if="data" :records="data.records" :view-mode="viewMode" />
 
     <RecordFab :show="!paginationVisible" />
 
     <template #footer>
-      <div ref="paginationAnchor" v-if="data?.totalPages > 1">
+      <div ref="paginationAnchor" v-if="Number(data?.totalPages) > 1">
         <UiPagination :disabled="recordsStore.loading" :total-pages="data?.totalPages" hide-prev-next />
       </div>
     </template>
@@ -18,9 +18,17 @@
 
 <script setup lang="ts">
 import { useRecordsStore } from '~/store/records'
+
 import RECORDS_QUERY from '~/graphql/Records.gql'
 
 import type { RecordsItem } from '~/types/records'
+
+interface RecordsResponse {
+  records: {
+    data: RecordsItem[]
+    paginatorInfo: PaginatorInfo
+  }
+}
 
 const { $urql } = useNuxtApp()
 const recordsStore = useRecordsStore()
@@ -92,14 +100,14 @@ async function fetchRecords() {
 
   recordsStore.pending++
 
-  const { data } = await $urql.query(RECORDS_QUERY, variables).toPromise()
+  const { data } = await $urql.query<RecordsResponse>(RECORDS_QUERY, variables).toPromise()
 
-  const records = data?.records.data ?? []
-  const totalPages = data?.records.paginatorInfo?.lastPage ?? 1
+  const records = ref(data?.records.data ?? [])
+  const totalPages = ref(data?.records.paginatorInfo?.lastPage ?? 1)
 
   recordsStore.pending--
 
-  return toRefs(reactive({ records, totalPages }))
+  return reactive({ records, totalPages })
 }
 
 function setObserver() {
