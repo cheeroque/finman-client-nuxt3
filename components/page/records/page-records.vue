@@ -100,7 +100,9 @@ async function fetchRecords() {
 
   recordsStore.pending++
 
-  const { data } = await $urql.query<RecordsResponse>(RECORDS_QUERY, variables).toPromise()
+  const { data } = await $urql
+    .query<RecordsResponse>(RECORDS_QUERY, variables, { requestPolicy: 'network-only' })
+    .toPromise()
 
   const records = ref(data?.records.data ?? [])
   const totalPages = ref(data?.records.paginatorInfo?.lastPage ?? 1)
