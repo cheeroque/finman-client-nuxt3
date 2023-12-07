@@ -1,11 +1,15 @@
 <template>
   <PageContent :loading="recordsStore.loading" :title="monthName" class="overflow-hidden" spinner-variant="primary">
-    <GroupTable :group-label="useString('category')" :items="tableItems" :loading="recordsStore.loading" />
+    <GroupTable
+      v-if="data"
+      :group-label="useString('category')"
+      :items="data.tableItems"
+      :loading="recordsStore.loading"
+    />
   </PageContent>
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@urql/vue'
 import { DateTime } from 'luxon'
 import { useRecordsStore } from '~/store/records'
 
@@ -24,10 +28,12 @@ interface CategoryWithRecords extends RecordsCategory {
   recordsTotal: number
 }
 
+const { $urql } = useNuxtApp()
 const route = useRoute()
 const recordsStore = useRecordsStore()
 
 const month = computed(() => String(route.params.month))
+
 const monthName = computed(() =>
   DateTime.fromFormat(month.value, 'yyyy-LL').toLocaleString(
     { month: 'long', year: 'numeric' },
@@ -35,10 +41,9 @@ const monthName = computed(() =>
   )
 )
 
-const variables = computed(() => {
+const { data } = await useAsyncData(async () => {
   const from = DateTime.fromFormat(month.value, 'yyyy-LL')
   const to = from.plus({ month: 1 }).minus({ second: 1 })
-
   const where = {
     AND: [
       { column: 'CREATED_AT', operator: 'GTE', value: from.toFormat('yyyy-LL-dd HH:mm:ss') },
@@ -48,21 +53,27 @@ const variables = computed(() => {
 
   /* Filter by month is the same for records & recordsTotal, but variable types
    * are different in GQL, so query variables have to be separate */
-  return { where, whereTotal: where }
+
+  const variables = { where, whereTotal: where }
+
+  const { data: categoriesData } = await $urql.query<CategoriesWithRecordsQueryResponse>(
+    CATEGORIES_WITH_RECORDS_QUERY,
+    variables
+  )
+
+  const tableItems = buildTableItems(categoriesData?.categories)
+
+  return { tableItems }
 })
 
-const { data, executeQuery, fetching } = await useQuery<CategoriesWithRecordsQueryResponse>({
-  query: CATEGORIES_WITH_RECORDS_QUERY,
-  variables,
-})
+/* Transform categories with records into the table rows */
 
-const tableItems = computed(() => {
-  const result = []
+function buildTableItems(categories?: CategoriesWithRecordsQueryResponse['categories']) {
+  const tableItems = []
   let balance = 0
   let totalExpenses = 0
 
-  /* Map categories with records to table rows */
-  data.value?.categories?.data?.forEach(({ color, id, is_income, name, records, recordsTotal, slug }) => {
+  categories?.data?.forEach(({ color, id, is_income, name, records, recordsTotal, slug }) => {
     if (is_income) {
       balance += recordsTotal
     } else {
@@ -71,7 +82,7 @@ const tableItems = computed(() => {
     }
 
     if (recordsTotal) {
-      result.push({
+      tableItems.push({
         category: { color, id, is_income, name, slug },
         group: name,
         records: records.map((record) => ({ ...record, category: { color, id, is_income, name, slug } })),
@@ -81,8 +92,9 @@ const tableItems = computed(() => {
     }
   })
 
-  /* Append table row with total balance */
-  result.push(
+  /* Append table rows with total expenses & balance */
+
+  tableItems.push(
     {
       group: useString('monthExpenses'),
       subtotal: totalExpenses,
@@ -95,8 +107,8 @@ const tableItems = computed(() => {
     }
   )
 
-  return result
-})
+  return tableItems
+}
 </script>
 
 <style lang="scss" scoped>
