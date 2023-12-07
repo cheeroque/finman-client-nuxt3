@@ -56,10 +56,9 @@ const { data } = await useAsyncData(async () => {
 
   const variables = { where, whereTotal: where }
 
-  const { data: categoriesData } = await $urql.query<CategoriesWithRecordsQueryResponse>(
-    CATEGORIES_WITH_RECORDS_QUERY,
-    variables
-  )
+  const { data: categoriesData } = await $urql
+    .query<CategoriesWithRecordsQueryResponse>(CATEGORIES_WITH_RECORDS_QUERY, variables)
+    .toPromise()
 
   const tableItems = buildTableItems(categoriesData?.categories)
 
