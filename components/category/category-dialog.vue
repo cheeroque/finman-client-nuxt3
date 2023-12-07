@@ -6,9 +6,7 @@
     @closed="emit('closed')"
     @update:modelValue="emit('update:modelValue', $event)"
   >
-    <template #default="{ close }">
-      <CategoryForm v-uid ref="form" :category="category" :edit="isEdit" @submit="handleCategoryUpsert" />
-    </template>
+    <CategoryForm v-uid ref="form" :category="category" :edit="isEdit" @submit="handleCategoryUpsert" />
 
     <template #footer="{ close }">
       <Transition mode="out-in" name="fade">
