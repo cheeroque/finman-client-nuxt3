@@ -1,35 +1,33 @@
 <template>
-  <UiButton
-    :loading="recordsStore.loading"
-    class="drawer-item"
-    icon="datetime-24"
-    icon-size="24"
-    @click="emit('action')"
-  >
+  <UiButton :loading="loading" class="drawer-item" icon="datetime-24" icon-size="24" @click="emit('click')">
     <span class="caption">{{ caption }}</span>
   </UiButton>
 </template>
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { useRecordsStore } from '~/store/records'
 
-const emit = defineEmits(['action'])
+import type { RecordsSnapshot } from '~/types/records'
 
-const recordsStore = useRecordsStore()
+interface NavDrawerSnapshotProps {
+  loading?: boolean
+  snapshot?: RecordsSnapshot
+}
+
+const props = defineProps<NavDrawerSnapshotProps>()
+
+const emit = defineEmits(['click'])
 
 const caption = computed(() => {
-  const snapshot = recordsStore.snapshot
-
-  if (!snapshot?.balance) {
+  if (!props.snapshot?.balance) {
     return useString('createSnapshot')
   }
 
-  const strings = [`${useNumberFormat(snapshot.balance)} ₽`]
+  const strings = [`${useNumberFormat(props.snapshot.balance)} ₽`]
 
-  if (snapshot.created_at) {
+  if (props.snapshot.created_at) {
     strings.push(
-      DateTime.fromFormat(snapshot.created_at, 'yyyy-LL-dd HH:mm:ss').toLocaleString(
+      DateTime.fromFormat(props.snapshot.created_at, 'yyyy-LL-dd HH:mm:ss').toLocaleString(
         { day: '2-digit', month: '2-digit', year: 'numeric' },
         { locale: useLocale() }
       )

@@ -1,13 +1,11 @@
 <template>
   <UiDialog
-    :loading="pending"
+    :loading="loading"
     :model-value="modelValue"
     :title="useString('newSnapshot')"
     @update:modelValue="emit('update:modelValue', $event)"
   >
-    <template #default="{ close }">
-      <SnapshotForm v-uid ref="form" @success="handleUpdate($event, close)" />
-    </template>
+    <SnapshotForm v-uid ref="form" @submit="handleSubmit" />
 
     <template #footer="{ close }">
       <div class="row flex-fill g-8">
@@ -29,33 +27,56 @@
 
 <script setup lang="ts">
 import { useRecordsStore } from '~/store/records'
+import SNAPSHOT_CREATE_MUTATION from '~/graphql/SnapshotCreate.gql'
 
 import type { RecordsSnapshot } from '~/types/records'
 
-const props = defineProps<{
+interface SnapshotCreateResponse {
+  result: RecordsSnapshot
+}
+
+interface SnapshotDialogProps {
   modelValue?: boolean
-}>()
+}
+
+const props = defineProps<SnapshotDialogProps>()
 
 const emit = defineEmits(['success', 'update:modelValue'])
 
+const { $urql } = useNuxtApp()
 const recordsStore = useRecordsStore()
 const toast = useToast()
 
 const form = ref()
+const loading = ref(false)
 
 const formId = computed(() => form.value?.form.id)
-const pending = computed(() => recordsStore.loading)
 
-function handleUpdate(snapshot: RecordsSnapshot, callback?: Function) {
-  /* Show confirmation toast */
-  toast.value.modelValue = true
-  toast.value.message = useString('snapshotSaved', `#${snapshot?.id}`)
-  toast.value.variant = 'success'
+/* Create new snapshot. Show toast on success or error */
 
-  emit('success')
+async function handleSubmit(snapshot: RecordsSnapshot) {
+  const { balance, created_at, note } = snapshot
+  const variables = { data: { balance, created_at, note } }
 
-  if (typeof callback === 'function') {
-    callback()
+  loading.value = true
+
+  const { data, error } = await $urql.mutation<SnapshotCreateResponse>(SNAPSHOT_CREATE_MUTATION, variables).toPromise()
+
+  if (data?.result) {
+    recordsStore.snapshot = data.result
+    showToast(useString('snapshotSaved', `#${data.result.id}`), 'success')
+
+    emit('update:modelValue', false)
+  } else {
+    showToast(error?.message ?? useString('error'), 'danger')
   }
+
+  loading.value = false
+}
+
+function showToast(message: string, variant: string) {
+  toast.value.modelValue = true
+  toast.value.message = message
+  toast.value.variant = variant
 }
 </script>
