@@ -52,19 +52,21 @@ interface CategoryWithTotal {
   total: number
 }
 
+interface RecordsResponse {
+  records: {
+    data: RecordsItem[]
+    paginatorInfo: PaginatorInfo
+  }
+}
+
 const VISIBLE_LIMIT = 5
 
 const { $urql } = useNuxtApp()
 const refetchTrigger = useRefetchTrigger()
 
 const collapseOpen = ref(false)
-const records = ref<RecordsItem[]>([])
 
-await useAsyncData(() => fetchRecords())
-
-/* Fetch records made from the start of current month until its end */
-
-async function fetchRecords() {
+const { data, refresh } = await useAsyncData(async () => {
   const now = DateTime.now()
 
   const from = now.set({ hour: 0, minute: 0, second: 0, day: 1 })
@@ -80,25 +82,26 @@ async function fetchRecords() {
     },
   }
 
-  const { data } = await $urql.query(RECORDS_QUERY, variables)
+  const { data } = await $urql
+    .query<RecordsResponse>(RECORDS_QUERY, variables, { requestPolicy: 'network-only' })
+    .toPromise()
 
-  /* Update existing ref instead of returning data due to data not updating
-   * on refresh otherwise */
+  const records = ref(data?.records.data ?? [])
 
-  records.value = data?.records.data
-}
+  return reactive({ records })
+})
 
-const groupedExpenses = computed(() =>
-  getCategoriesWithSubtotal(records.value)
+const groups = computed(() =>
+  getCategoriesWithSubtotal(data.value?.records)
     .filter((group) => !group.category.is_income)
     .sort((a, b) => b.total - a.total)
 )
 
-const visibleCategories = computed(() => groupedExpenses.value.slice(0, VISIBLE_LIMIT))
-const hiddenCategories = computed(() => groupedExpenses.value.slice(VISIBLE_LIMIT))
-const hasCollapse = computed(() => Boolean(hiddenCategories.value.length))
-const isEmpty = computed(() => !groupedExpenses.value.length)
-const maxTotal = computed(() => groupedExpenses.value[0].total)
+const visibleCategories = computed(() => groups.value?.slice(0, VISIBLE_LIMIT))
+const hiddenCategories = computed(() => groups.value?.slice(VISIBLE_LIMIT))
+const hasCollapse = computed(() => Boolean(hiddenCategories.value?.length))
+const isEmpty = computed(() => !groups.value?.length)
+const maxTotal = computed(() => groups.value?.[0].total)
 
 watch(
   /* Refetch records if external trigger was set to true, then reset trigger */
@@ -107,7 +110,7 @@ watch(
 
   async (event) => {
     if (event) {
-      await fetchRecords()
+      await refresh()
       refetchTrigger.value = false
     }
   }
