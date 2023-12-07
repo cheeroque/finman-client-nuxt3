@@ -5,11 +5,9 @@
 </template>
 
 <script setup lang="ts">
-import { useMutation } from '@urql/vue'
-
 import RECORDS_EXPORT_MUTATION from '~/graphql/RecordsExport.gql'
 
-interface RecordsExportData {
+interface RecordsExportResponse {
   result: {
     file: {
       path: string
@@ -18,17 +16,16 @@ interface RecordsExportData {
   }
 }
 
-const { executeMutation } = useMutation<RecordsExportData>(RECORDS_EXPORT_MUTATION)
+const { $urql } = useNuxtApp()
+const config = useRuntimeConfig()
 
 const loading = ref(false)
 
 async function handleClick() {
   loading.value = true
 
-  const config = useRuntimeConfig()
-
   try {
-    const { data } = await executeMutation()
+    const { data, error } = await $urql.mutation<RecordsExportResponse>(RECORDS_EXPORT_MUTATION, {}).toPromise()
 
     if (data?.result) {
       const filePath = data.result.file.path
@@ -40,7 +37,7 @@ async function handleClick() {
       document.body.appendChild(link)
       link.click()
     } else {
-      throw new Error(useString('exportFailed'))
+      throw new Error(error?.message ?? useString('exportFailed'))
     }
   } catch (error) {
     const toast = useToast()
