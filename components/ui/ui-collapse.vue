@@ -25,8 +25,8 @@ const props = defineProps<UiCollapseProps>()
 
 const emit = defineEmits(['update:modelValue', 'hidden'])
 
-const collapseClass = props.collapseClass ?? 'collapse'
-const transition = props.transition ?? 'collapse'
+const collapseClass = computed(() => props.collapseClass ?? 'collapse')
+const transition = computed(() => props.transition ?? 'collapse')
 
 function close() {
   emit('update:modelValue', false)
