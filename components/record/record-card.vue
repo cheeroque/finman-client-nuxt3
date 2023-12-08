@@ -24,10 +24,12 @@ import { DateTime } from 'luxon'
 
 import type { RecordsItem } from '~/types'
 
-const props = defineProps<{
+interface RecordCardProps {
   record: RecordsItem
   viewMode?: ViewMode
-}>()
+}
+
+const props = defineProps<RecordCardProps>()
 
 const emit = defineEmits(['edit'])
 

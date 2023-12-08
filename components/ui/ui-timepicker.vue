@@ -52,14 +52,16 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-const props = defineProps<{
+interface UiTimepickerProps {
   hideHeader?: boolean
   locale?: string
   modelValue?: Date
   showSeconds?: boolean
   stepMinutes?: number | string
   stepSeconds?: number | string
-}>()
+}
+
+const props = defineProps<UiTimepickerProps>()
 
 const emit = defineEmits(['click:hours', 'click:minutes', 'click:seconds', 'update:modelValue'])
 

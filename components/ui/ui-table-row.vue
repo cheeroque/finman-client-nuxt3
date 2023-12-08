@@ -29,11 +29,13 @@
 <script setup lang="ts">
 import type { TableField, TableItem } from '~/components/ui/ui-table.vue'
 
-const props = defineProps<{
+interface UiTableRowProps {
   fields: TableField[]
   item: TableItem
   rowIndex?: number
-}>()
+}
+
+const props = defineProps<UiTableRowProps>()
 
 const detailsVisible = ref(false)
 const collapseVisible = ref(false)

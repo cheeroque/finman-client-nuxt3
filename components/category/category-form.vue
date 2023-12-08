@@ -38,10 +38,12 @@ import type { RecordsCategory } from '~/types'
 
 type CategoryForm = Omit<RecordsCategory, 'id'>
 
-const props = defineProps<{
+interface CategoryFormProps {
   category?: RecordsCategory
   edit?: boolean
-}>()
+}
+
+const props = defineProps<CategoryFormProps>()
 
 const emit = defineEmits(['submit'])
 

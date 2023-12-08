@@ -29,11 +29,13 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface PageContentProps {
   loading?: boolean
   spinnerVariant?: string
   title?: string
-}>()
+}
+
+const props = defineProps<PageContentProps>()
 
 const slots = useSlots()
 

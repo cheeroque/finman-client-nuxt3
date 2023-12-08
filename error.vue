@@ -13,9 +13,11 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app'
 
-const props = defineProps<{
+interface ErrorPageProps {
   error: NuxtError
-}>()
+}
+
+const props = defineProps<ErrorPageProps>()
 
 const errorTitle = `${useString('error')} ${props.error.statusCode}`
 const errorMessage = useString(`errorMessage${props.error.statusCode}`)

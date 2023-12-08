@@ -56,10 +56,12 @@ import { DateTime } from 'luxon'
 import type { RecordsItem } from '~/types'
 import type { TableField, TableItem } from './ui/ui-table.vue'
 
-const props = defineProps<{
+interface GroupTableProps {
   groupLabel: string
   items: TableItem[]
-}>()
+}
+
+const props = defineProps<GroupTableProps>()
 
 const currentRecord = ref<RecordsItem>()
 const dialogVisible = ref(false)

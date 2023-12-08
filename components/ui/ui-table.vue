@@ -42,12 +42,14 @@ export interface TableItem {
   [key: string]: any
 }
 
-const props = defineProps<{
+interface UiTableProps {
   fields: TableField[] | string[]
   fixed?: boolean
   hideThead?: boolean
   items: TableItem[]
-}>()
+}
+
+const props = defineProps<UiTableProps>()
 
 const componentClasses = computed(() => {
   const classes = ['table']

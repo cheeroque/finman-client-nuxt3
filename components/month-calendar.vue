@@ -58,10 +58,12 @@ interface CalendarMonth {
   month: string
 }
 
-const props = defineProps<{
+interface MonthCalendarProps {
   date?: Date
   numericMonths?: boolean
-}>()
+}
+
+const props = defineProps<MonthCalendarProps>()
 
 const LINK_FORMAT = 'yyyy-LL'
 

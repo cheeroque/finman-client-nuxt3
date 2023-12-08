@@ -27,9 +27,11 @@
 <script setup lang="ts">
 import type { RecordsCategory } from '~/types'
 
-const props = defineProps<{
+interface CategoryCardProps {
   category: RecordsCategory
-}>()
+}
+
+const props = defineProps<CategoryCardProps>()
 
 const emit = defineEmits(['edit'])
 

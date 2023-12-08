@@ -67,11 +67,13 @@
 <script setup lang="ts">
 import { DateTime, Info } from 'luxon'
 
-const props = defineProps<{
+interface UiDatepickerProps {
   locale?: string
   modelValue?: Date
   titleFormat?: string
-}>()
+}
+
+const props = defineProps<UiDatepickerProps>()
 
 const emit = defineEmits(['click:day', 'update:modelValue'])
 

@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-const props = defineProps<{
+interface UiInputDatetimeProps {
   disabled?: boolean
   format?: string
   modelValue?: Date
@@ -43,7 +43,9 @@ const props = defineProps<{
   required?: boolean
   size?: ControlSize
   state?: ControlState
-}>()
+}
+
+const props = defineProps<UiInputDatetimeProps>()
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -55,7 +57,6 @@ const placeholder = computed(() => props.placeholder ?? DateTime.now().toFormat(
 const formattedValue = computed(() =>
   props.modelValue ? DateTime.fromJSDate(props.modelValue).toFormat(format.value) : undefined
 )
-
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement

@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import type { RouteLocationRaw } from 'vue-router'
 
-const props = defineProps<{
+interface UiPaginationProps {
   disabled?: boolean
   hideFirstLast?: boolean
   hidePrevNext?: boolean
@@ -71,7 +71,9 @@ const props = defineProps<{
   noLinks?: boolean
   size?: string
   totalPages?: number | string
-}>()
+}
+
+const props = defineProps<UiPaginationProps>()
 
 const emit = defineEmits(['update:modelValue'])
 

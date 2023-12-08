@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface UiDropdownProps {
   block?: boolean
   disabled?: boolean
   icon?: string
@@ -40,7 +40,9 @@ const props = defineProps<{
   size?: ControlSize
   text?: string
   variant?: string
-}>()
+}
+
+const props = defineProps<UiDropdownProps>()
 
 const emit = defineEmits(['update:modelValue', 'hidden'])
 

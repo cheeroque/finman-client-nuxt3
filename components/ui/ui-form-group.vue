@@ -15,14 +15,16 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface UiFormGroupProps {
   disabled?: boolean
   invalidFeedback?: string
   label?: string
   labelClass?: string
   state?: ControlState
   validFeedback?: string
-}>()
+}
+
+const props = defineProps<UiFormGroupProps>()
 
 const slots = useSlots()
 

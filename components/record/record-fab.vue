@@ -7,9 +7,11 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface RecordFabProps {
   show?: boolean
-}>()
+}
+
+const props = defineProps<RecordFabProps>()
 
 const dialogVisible = ref(false)
 

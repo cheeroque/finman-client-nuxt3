@@ -37,10 +37,12 @@
 <script setup lang="ts">
 import type { RecordsItem } from '~/types'
 
-const props = defineProps<{
+interface RecordTableProps {
   records: RecordsItem[]
   viewMode?: ViewMode
-}>()
+}
+
+const props = defineProps<RecordTableProps>()
 
 const emit = defineEmits(['update:records'])
 

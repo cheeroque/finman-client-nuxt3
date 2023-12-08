@@ -22,11 +22,13 @@
 <script setup lang="ts">
 import type { RecordsCategory } from '~/types'
 
-const props = defineProps<{
+interface SidebarMonthlyCategoryProps {
   category: RecordsCategory
   maxTotal: number
   total: number
-}>()
+}
+
+const props = defineProps<SidebarMonthlyCategoryProps>()
 
 const barWidth = ref('0')
 const caption = ref()

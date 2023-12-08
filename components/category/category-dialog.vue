@@ -65,14 +65,16 @@ import CATEGORY_DELETE_MUTATION from '~/graphql/CategoryDelete.gql'
 
 import type { RecordsCategory } from '~/types'
 
+interface CategoryDialogProps {
+  category?: RecordsCategory
+  modelValue?: boolean
+}
+
 interface CategoryMutationResponse {
   result: RecordsCategory
 }
 
-const props = defineProps<{
-  category?: RecordsCategory
-  modelValue?: boolean
-}>()
+const props = defineProps<CategoryDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 

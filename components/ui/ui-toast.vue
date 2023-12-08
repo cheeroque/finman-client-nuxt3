@@ -27,13 +27,15 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface UiToastProps {
   autohide?: boolean | number | string
   message?: string
   modelValue?: boolean
   title?: string
   variant?: string
-}>()
+}
+
+const props = defineProps<UiToastProps>()
 
 const emit = defineEmits(['update:modelValue'])
 

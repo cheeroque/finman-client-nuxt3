@@ -10,9 +10,11 @@ interface DrawerPage {
   link: string
 }
 
-const props = defineProps<{
+interface NavDrawerPageProps {
   page: DrawerPage
-}>()
+}
+
+const props = defineProps<NavDrawerPageProps>()
 
 const componentClasses = computed(() => {
   const { path } = useRoute()

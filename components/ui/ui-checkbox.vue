@@ -28,7 +28,7 @@ interface CheckboxInputEventTarget extends EventTarget {
   checked: boolean
 }
 
-const props = defineProps<{
+interface UiCheckboxProps {
   disabled?: boolean
   form?: string
   modelValue?: CheckboxValue | CheckboxValue[]
@@ -39,7 +39,9 @@ const props = defineProps<{
   valid?: boolean
   validated?: boolean
   value?: CheckboxValue
-}>()
+}
+
+const props = defineProps<UiCheckboxProps>()
 
 const emit = defineEmits(['update:modelValue'])
 

@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import type { RouteLocationRaw } from 'vue-router'
 
-const props = defineProps<{
+interface UiButtonProps {
   block?: boolean
   disabled?: boolean
   form?: string
@@ -43,7 +43,9 @@ const props = defineProps<{
   to?: RouteLocationRaw
   type?: string
   variant?: string
-}>()
+}
+
+const props = defineProps<UiButtonProps>()
 
 const emit = defineEmits(['click', 'click-native'])
 

@@ -16,9 +16,11 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface NavDrawerToggleProps {
   open?: boolean
-}>()
+}
+
+const props = defineProps<NavDrawerToggleProps>()
 
 const emit = defineEmits(['click'])
 

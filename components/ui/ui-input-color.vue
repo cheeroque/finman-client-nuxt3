@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface UiInputColorProps {
   disabled?: boolean
   modelValue?: string
   name?: string
@@ -35,7 +35,9 @@ const props = defineProps<{
   required?: boolean
   size?: ControlSize
   state?: ControlState
-}>()
+}
+
+const props = defineProps<UiInputColorProps>()
 
 const emit = defineEmits(['update:modelValue'])
 

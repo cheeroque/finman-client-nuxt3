@@ -41,7 +41,7 @@ interface SelectOption {
   value: SelectValue
 }
 
-const props = defineProps<{
+interface UiSelectProps {
   disabled?: boolean
   modelValue?: SelectValue
   name?: string
@@ -49,7 +49,9 @@ const props = defineProps<{
   required?: boolean
   size?: ControlSize
   state?: ControlState
-}>()
+}
+
+const props = defineProps<UiSelectProps>()
 
 const emit = defineEmits(['input', 'update:modelValue'])
 

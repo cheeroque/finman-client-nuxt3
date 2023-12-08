@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import type { ComputedRef } from 'vue'
 
-const props = defineProps<{
+interface UiInputProps {
   append?: string
   autocomplete?: string
   autofocus?: boolean
@@ -49,7 +49,9 @@ const props = defineProps<{
   state?: ControlState
   step?: number | string
   type?: string
-}>()
+}
+
+const props = defineProps<UiInputProps>()
 
 const emit = defineEmits(['blur', 'click', 'focus', 'input', 'update:modelValue'])
 

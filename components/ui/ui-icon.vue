@@ -8,11 +8,13 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface UiIconProps {
   fill?: boolean
   name: string
   size?: number | string
-}>()
+}
+
+const props = defineProps<UiIconProps>()
 </script>
 
 <style lang="scss" scoped>

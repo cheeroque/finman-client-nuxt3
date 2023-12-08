@@ -30,7 +30,7 @@ interface FakeFocusEvent {
   target: HTMLInputElement
 }
 
-const props = defineProps<{
+interface UiInputCalcProps {
   append?: string
   autofocus?: boolean
   disabled?: boolean
@@ -39,7 +39,9 @@ const props = defineProps<{
   required?: boolean
   size?: ControlSize
   state?: ControlState
-}>()
+}
+
+const props = defineProps<UiInputCalcProps>()
 
 const emit = defineEmits(['update:modelValue'])
 
