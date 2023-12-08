@@ -5,7 +5,22 @@ import LOGOUT_MUTATION from '~/graphql/Logout.gql'
 
 import type { Client } from '@urql/core'
 import type { CookieOptions } from 'nuxt/app'
-import type { AuthPlugin, LoginCredentials } from '~/types/auth'
+import type { AuthPlugin, LoginCredentials, User } from '~/types/auth'
+
+interface LoginResponse {
+  login: {
+    access_token: string
+    refresh_token?: string
+    user: User
+  }
+}
+
+interface LogoutResponse {
+  logout: {
+    message?: string
+    status: string
+  }
+}
 
 const TOKEN_KEY = 'auth_token'
 const REFRESH_TOKEN_KEY = 'auth_refresh_token'
@@ -26,7 +41,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     const $urql = nuxtApp.$urql as Client
 
-    const { data, error } = await $urql.mutation(LOGIN_MUTATION, credentials).toPromise()
+    const { data, error } = await $urql.mutation<LoginResponse>(LOGIN_MUTATION, credentials).toPromise()
 
     if (data?.login) {
       const { access_token, refresh_token, user } = data.login
@@ -48,7 +63,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     const $urql = nuxtApp.$urql as Client
 
     try {
-      await $urql.mutation(LOGOUT_MUTATION, {}).toPromise()
+      await $urql.mutation<LogoutResponse>(LOGOUT_MUTATION, {}).toPromise()
     } catch (error) {
       /* Ignore error when trying to log out without token */
     }

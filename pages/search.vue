@@ -18,14 +18,7 @@
 <script setup lang="ts">
 import RECORDS_QUERY from '~/graphql/Records.gql'
 
-import type { RecordsItem } from '~/types/records'
-
-interface RecordsResponse {
-  records: {
-    data: RecordsItem[]
-    paginatorInfo: PaginatorInfo
-  }
-}
+import type { RecordsResponse } from '~/types/records'
 
 const { $urql } = useNuxtApp()
 const route = useRoute()

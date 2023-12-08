@@ -45,18 +45,11 @@
 import { DateTime } from 'luxon'
 import RECORDS_QUERY from '~/graphql/Records.gql'
 
-import type { RecordsCategory, RecordsItem } from '~/types/records'
+import type { RecordsCategory, RecordsItem, RecordsResponse } from '~/types/records'
 
 interface CategoryWithTotal {
   category: RecordsCategory
   total: number
-}
-
-interface RecordsResponse {
-  records: {
-    data: RecordsItem[]
-    paginatorInfo: PaginatorInfo
-  }
 }
 
 const VISIBLE_LIMIT = 5

@@ -41,6 +41,13 @@ interface RecordsQueryWhereConditions {
   [key: AND | OR]: RecordsQueryWhereConditions | WhereConditions[]
 }
 
+export interface RecordsResponse {
+  records: {
+    data: RecordsItem[]
+    paginatorInfo?: PaginatorInfo
+  }
+}
+
 export interface RecordsSnapshot {
   balance: number
   created_at: string

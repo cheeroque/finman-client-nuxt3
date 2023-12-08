@@ -118,7 +118,7 @@ async function handleRecordUpsert(formData: RecordsForm) {
 
   recordsStore.pending++
 
-  const { data, error } = await $urql.mutation(mutation, variables).toPromise()
+  const { data, error } = await $urql.mutation<RecordMutationResponse>(mutation, variables).toPromise()
 
   if (data?.result) {
     showToast(useString('recordSaved', `#${data.result.id}`), 'success')

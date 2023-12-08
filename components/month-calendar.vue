@@ -50,6 +50,8 @@ import { DateTime } from 'luxon'
 
 import RECORDS_QUERY from '~/graphql/Records.gql'
 
+import type { RecordsResponse } from '~/types/records'
+
 interface CalendarMonth {
   disabled?: boolean
   link: string
@@ -88,11 +90,11 @@ async function fetchFirstRecord() {
     orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
   }
 
-  const { data } = await $urql.query(RECORDS_QUERY, variables).toPromise()
+  const { data } = await $urql.query<RecordsResponse>(RECORDS_QUERY, variables).toPromise()
 
-  const firstRecord = data?.records.data?.[0] ?? {}
+  const firstRecord = data?.records.data?.[0]
 
-  const dateTime = DateTime.fromFormat(firstRecord.created_at ?? '', 'yyyy-LL-dd HH:mm:ss')
+  const dateTime = DateTime.fromFormat(firstRecord?.created_at ?? '', 'yyyy-LL-dd HH:mm:ss')
 
   const endDate = DateTime.now()
   const endYear = endDate.year

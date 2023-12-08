@@ -2,6 +2,12 @@ import { useAuthStore } from '~/store/auth'
 
 import ME_QUERY from '~/graphql/Me.gql'
 
+import type { User } from '~/types/auth'
+
+interface MeResponse {
+  me: User
+}
+
 export default defineNuxtRouteMiddleware(async (to) => {
   const { $auth, $urql } = useNuxtApp()
 
@@ -14,7 +20,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   async function fetchUser() {
     try {
-      const { data } = await $urql.query(ME_QUERY, {}).toPromise()
+      const { data } = await $urql.query<MeResponse>(ME_QUERY, {}).toPromise()
 
       if (!data?.me) {
         throw createError({ statusCode: 401 })
