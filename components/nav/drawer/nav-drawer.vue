@@ -51,7 +51,7 @@ import { useRecordsStore } from '~/store/records'
 
 import SNAPSHOTS_QUERY from '~/graphql/Snapshots.gql'
 
-import type { RecordsSnapshot } from '~/types/records'
+import type { RecordsSnapshot } from '~/types'
 
 interface SnapshotsQueryResponse {
   snapshots: {

@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-export interface DrawerPage {
+interface DrawerPage {
   key: string
   link: string
 }

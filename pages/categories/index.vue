@@ -17,7 +17,8 @@
 
 <script setup lang="ts">
 import { useRecordsStore } from '~/store/records'
-import type { RecordsCategory } from '~/types/records'
+
+import type { RecordsCategory } from '~/types'
 
 const recordsStore = useRecordsStore()
 

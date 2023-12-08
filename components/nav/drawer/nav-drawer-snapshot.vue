@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-import type { RecordsSnapshot } from '~/types/records'
+import type { RecordsSnapshot } from '~/types'
 
 interface NavDrawerSnapshotProps {
   loading?: boolean

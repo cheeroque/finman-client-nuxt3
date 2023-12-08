@@ -41,7 +41,7 @@ import { useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
 import { useRecordsStore } from '~/store/records'
 
-import type { RecordsItem } from '~/types/records'
+import type { RecordsItem } from '~/types'
 
 export interface RecordsForm {
   category_id: number

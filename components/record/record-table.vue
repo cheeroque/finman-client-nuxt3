@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import type { RecordsItem } from '~/types/records'
+import type { RecordsItem } from '~/types'
 
 const props = defineProps<{
   records: RecordsItem[]

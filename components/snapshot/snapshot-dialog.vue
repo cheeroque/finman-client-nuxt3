@@ -29,7 +29,7 @@
 import { useRecordsStore } from '~/store/records'
 import SNAPSHOT_CREATE_MUTATION from '~/graphql/SnapshotCreate.gql'
 
-import type { RecordsSnapshot } from '~/types/records'
+import type { RecordsSnapshot } from '~/types'
 
 interface SnapshotCreateResponse {
   result: RecordsSnapshot

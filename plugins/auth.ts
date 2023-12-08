@@ -5,7 +5,7 @@ import LOGOUT_MUTATION from '~/graphql/Logout.gql'
 
 import type { Client } from '@urql/core'
 import type { CookieOptions } from 'nuxt/app'
-import type { AuthPlugin, LoginCredentials, User } from '~/types/auth'
+import type { AuthPlugin, LoginCredentials, User } from '~/types'
 
 interface LoginResponse {
   login: {

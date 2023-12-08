@@ -50,7 +50,7 @@ import { DateTime } from 'luxon'
 
 import RECORDS_QUERY from '~/graphql/Records.gql'
 
-import type { RecordsResponse } from '~/types/records'
+import type { RecordsResponse } from '~/types'
 
 interface CalendarMonth {
   disabled?: boolean

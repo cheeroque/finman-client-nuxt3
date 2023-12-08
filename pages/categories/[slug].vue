@@ -32,7 +32,7 @@ import { useRecordsStore } from '~/store/records'
 
 import RECORDS_BY_PERIOD_QUERY from '~/graphql/RecordsByPeriod.gql'
 
-import type { RecordsItem } from '~/types/records'
+import type { RecordsItem } from '~/types'
 
 interface RecordsByPeriodQueryResponse {
   records: {

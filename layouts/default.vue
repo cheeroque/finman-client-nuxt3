@@ -22,7 +22,7 @@ import { useRecordsStore } from '~/store/records'
 import CATEGORIES_QUERY from '~/graphql/Categories.gql'
 import RECORDS_TOTAL_QUERY from '~/graphql/RecordsTotal.gql'
 
-import type { RecordsCategory } from '~/types/records'
+import type { RecordsCategory } from '~/types'
 
 interface CategoriesResponse {
   categories: {

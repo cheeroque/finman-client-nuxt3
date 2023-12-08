@@ -63,7 +63,7 @@ import CATEGORY_CREATE_MUTATION from '~/graphql/CategoryCreate.gql'
 import CATEGORY_UPDATE_MUTATION from '~/graphql/CategoryUpdate.gql'
 import CATEGORY_DELETE_MUTATION from '~/graphql/CategoryDelete.gql'
 
-import type { RecordsCategory } from '~/types/records'
+import type { RecordsCategory } from '~/types'
 
 interface CategoryMutationResponse {
   result: RecordsCategory

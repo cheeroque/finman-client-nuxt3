@@ -45,7 +45,7 @@
 import { DateTime } from 'luxon'
 import RECORDS_QUERY from '~/graphql/Records.gql'
 
-import type { RecordsCategory, RecordsItem, RecordsResponse } from '~/types/records'
+import type { RecordsCategory, RecordsItem, RecordsResponse } from '~/types'
 
 interface CategoryWithTotal {
   category: RecordsCategory

@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import type { RecordsCategory } from '~/types/records'
+import type { RecordsCategory } from '~/types'
 
 const props = defineProps<{
   category: RecordsCategory

@@ -3,7 +3,7 @@ import { authExchange } from '@urql/exchange-auth'
 
 import type { Client } from '@urql/core'
 import type { SSRData } from '@urql/vue'
-import type { AuthPlugin } from '~/types/auth'
+import type { AuthPlugin } from '~/types'
 
 const SSR_KEY = '__URQL_DATA__'
 

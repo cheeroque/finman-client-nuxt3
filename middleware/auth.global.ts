@@ -2,7 +2,7 @@ import { useAuthStore } from '~/store/auth'
 
 import ME_QUERY from '~/graphql/Me.gql'
 
-import type { User } from '~/types/auth'
+import type { User } from '~/types'
 
 interface MeResponse {
   me: User

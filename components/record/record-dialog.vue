@@ -45,8 +45,8 @@ import RECORD_CREATE_MUTATION from '~/graphql/RecordCreate.gql'
 import RECORD_UPDATE_MUTATION from '~/graphql/RecordUpdate.gql'
 import RECORD_DELETE_MUTATION from '~/graphql/RecordDelete.gql'
 
-import type { RecordsItem } from '~/types/records'
 import type { RecordsForm } from './record-form.vue'
+import type { RecordsItem } from '~/types'
 
 interface RecordDialogProps {
   modelValue?: boolean

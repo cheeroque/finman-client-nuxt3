@@ -56,7 +56,7 @@
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
 
-import type { LoginCredentials } from '~/types/auth'
+import type { LoginCredentials } from '~/types'
 
 definePageMeta({
   layout: 'auth',

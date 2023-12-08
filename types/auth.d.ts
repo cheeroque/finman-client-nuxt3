@@ -11,20 +11,6 @@ export interface LoginCredentials {
   password: string
 }
 
-export interface LoginResponseData {
-  login: LoginOutput
-}
-
-export interface LoginOutput {
-  access_token: string
-  refresh_token?: string
-  user: User
-}
-
-export interface Me {
-  me: User
-}
-
 export interface User {
   id: number
   name: string

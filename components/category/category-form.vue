@@ -34,7 +34,7 @@
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
 
-import type { RecordsCategory } from '~/types/records'
+import type { RecordsCategory } from '~/types'
 
 type CategoryForm = Omit<RecordsCategory, 'id'>
 

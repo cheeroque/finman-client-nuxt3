@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-import type { RecordsItem } from '~/types/records'
+import type { RecordsItem } from '~/types'
 import type { TableField, TableItem } from './ui/ui-table.vue'
 
 const props = defineProps<{

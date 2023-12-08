@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import type { RecordsCategory, RecordsSnapshot } from '~/types/records'
+import type { RecordsCategory, RecordsSnapshot } from '~/types'
 
 interface RecordsState {
   balance: number

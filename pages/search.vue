@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import RECORDS_QUERY from '~/graphql/Records.gql'
 
-import type { RecordsResponse } from '~/types/records'
+import type { RecordsResponse } from '~/types'
 
 const { $urql } = useNuxtApp()
 const route = useRoute()

@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import type { NavLink } from '~/types/nav'
+import type { NavLink } from '~/types'
 
 const emit = defineEmits(['toggle:drawer'])
 
