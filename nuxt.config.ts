@@ -1,7 +1,5 @@
 import graphql from '@rollup/plugin-graphql'
 
-import { handleNuxtReady } from './hooks/ready'
-
 /* https://nuxt.com/docs/api/configuration/nuxt-config */
 
 export default defineNuxtConfig({
@@ -38,17 +36,15 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@pinia/nuxt', '@vueuse/nuxt', 'nuxt-icons'],
+  modules: ['@pinia/nuxt', '@vueuse/nuxt', 'nuxt-icons', '~/modules/color-theme'],
 
   css: ['~/assets/styles/app.scss'],
 
-  hooks: {
-    ready: (nuxt) => handleNuxtReady(nuxt),
+  colorTheme: {
+    primary: process.env.THEME_PRIMARY_COLOR,
   },
 
   runtimeConfig: {
-    themePrimaryColor: '#6750a4',
-
     public: {
       gqlEndpoint: '',
       staticUrl: '',
