@@ -6,6 +6,31 @@
       :items="data.tableItems"
       :loading="recordsStore.loading"
     />
+
+    <template #footer>
+      <UiButton
+        :disabled="isBeginning"
+        :to="prevMonthLink"
+        class="pagination-link"
+        icon="chevron-double-left-24"
+        icon-size="24"
+      >
+        <span class="d-md-none" v-text="formatMonthName(prevMonth, true)" />
+        <span class="d-none d-md-inline" v-text="formatMonthName(prevMonth)" />
+      </UiButton>
+
+      <UiButton
+        :disabled="isEnd"
+        :to="nextMonthLink"
+        class="pagination-link"
+        icon="chevron-double-right-24"
+        icon-size="24"
+        icon-right
+      >
+        <span class="d-md-none" v-text="formatMonthName(nextMonth, true)" />
+        <span class="d-none d-md-inline" v-text="formatMonthName(nextMonth)" />
+      </UiButton>
+    </template>
   </PageContent>
 </template>
 
@@ -33,16 +58,32 @@ const route = useRoute()
 const recordsStore = useRecordsStore()
 
 const month = computed(() => String(route.params.month))
+const monthDate = computed(() => DateTime.fromFormat(month.value, 'yyyy-LL'))
+const monthName = computed(() => formatMonthName(monthDate.value))
 
-const monthName = computed(() =>
-  DateTime.fromFormat(month.value, 'yyyy-LL').toLocaleString(
-    { month: 'long', year: 'numeric' },
-    { locale: useLocale() }
-  )
+/* Get previous / next month links and labels for footer buttons */
+
+const prevMonth = computed(() => monthDate.value.minus({ month: 1 }))
+const prevMonthLink = computed(() => (!isBeginning.value ? `/months/${formatMonthLink(prevMonth.value)}` : undefined))
+
+const nextMonth = computed(() => monthDate.value.plus({ month: 1 }))
+const nextMonthLink = computed(() => (!isEnd.value ? `/months/${formatMonthLink(nextMonth.value)}` : undefined))
+
+/* Get beginning and end states to disable footer previous / next month buttons */
+
+const isBeginning = computed(
+  () =>
+    recordsStore.firstRecordDate?.year >= monthDate.value.year &&
+    recordsStore.firstRecordDate?.month >= monthDate.value.month
+)
+const isEnd = computed(
+  () => DateTime.local().year <= monthDate.value.year && DateTime.local().month <= monthDate.value.month
 )
 
+/* Fetch current month records */
+
 const { data } = await useAsyncData(async () => {
-  const from = DateTime.fromFormat(month.value, 'yyyy-LL')
+  const from = monthDate.value
   const to = from.plus({ month: 1 }).minus({ second: 1 })
   const where = {
     AND: [
@@ -108,11 +149,32 @@ function buildTableItems(categories?: CategoriesWithRecordsQueryResponse['catego
 
   return tableItems
 }
+
+function formatMonthLink(dateTime: DateTime): string {
+  return dateTime.toFormat('yyyy-LL')
+}
+
+function formatMonthName(dateTime: DateTime, short?: boolean): string {
+  const format = short ? 'LL.yyyy' : 'LLLL yyyy'
+  const name = dateTime.toFormat(format, { locale: useLocale() })
+
+  return `${name[0].toUpperCase()}${name.slice(1)}`
+}
 </script>
 
 <style lang="scss" scoped>
+.pagination-link {
+  border-radius: $control-border-radius;
+}
+
 :deep(.page-content-body) {
   padding: 0;
+}
+
+:deep(.page-content-footer) {
+  display: flex;
+  gap: 0 $grid-gap;
+  justify-content: space-between;
 }
 
 :deep(.table) {

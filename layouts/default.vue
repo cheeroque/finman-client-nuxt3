@@ -20,9 +20,10 @@
 import { useRecordsStore } from '~/store/records'
 
 import CATEGORIES_QUERY from '~/graphql/Categories.gql'
+import RECORDS_QUERY from '~/graphql/Records.gql'
 import RECORDS_TOTAL_QUERY from '~/graphql/RecordsTotal.gql'
 
-import type { RecordsCategory } from '~/types'
+import type { RecordsCategory, RecordsResponse } from '~/types'
 
 interface CategoriesResponse {
   categories: {
@@ -43,7 +44,7 @@ const toast = useToast()
 
 const drawerOpen = ref(false)
 
-await useAsyncData(() => fetchBalanceAndCategories())
+const { refresh } = await useAsyncData(() => fetchGlobalData())
 
 watch(
   /* Refetch categories & total balance if external trigger was set to true,
@@ -53,25 +54,33 @@ watch(
 
   async (event) => {
     if (event) {
-      await fetchBalanceAndCategories()
+      await refresh()
       refetchTrigger.value = false
     }
   }
 )
 
-/* Fetch total balance & record categories and save all to the store */
+/* Fetch total balance, record categories and first record (for calendar)
+ * and save everything to the store */
 
-async function fetchBalanceAndCategories() {
-  const [{ data: balanceData }, { data: categoriesData }] = await Promise.all([
+async function fetchGlobalData() {
+  const variables = {
+    first: 1,
+    orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
+  }
+
+  const [{ data: balanceData }, { data: categoriesData }, { data: firstRecordData }] = await Promise.all([
     $urql.query<RecordsTotalResponse>(RECORDS_TOTAL_QUERY, {}).toPromise(),
     $urql.query<CategoriesResponse>(CATEGORIES_QUERY, {}).toPromise(),
+    $urql.query<RecordsResponse>(RECORDS_QUERY, variables).toPromise(),
   ])
 
-  const incomesTotal = Number(balanceData?.incomesTotal) || 0
   const expensesTotal = Number(balanceData?.expensesTotal) || 0
+  const incomesTotal = Number(balanceData?.incomesTotal) || 0
 
   recordsStore.balance = incomesTotal - expensesTotal
   recordsStore.categories = categoriesData?.categories.data ?? []
+  recordsStore.firstRecord = firstRecordData?.records.data?.[0]
 }
 
 function handleToggleDrawer() {

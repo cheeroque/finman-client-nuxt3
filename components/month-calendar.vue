@@ -23,7 +23,7 @@
     </header>
 
     <div :style="{ transform: `translateX(${translateOffset}%)` }" class="calendar-body">
-      <nav v-for="item in data?.calendarYears" :key="`year-${item.year}`" class="calendar-year">
+      <nav v-for="item in calendarYears" :key="`year-${item.year}`" class="calendar-year">
         <ul class="list-unstyled calendar-months">
           <li v-for="month in item.months" :key="`${month}-${item.year}`" class="calendar-month">
             <span v-if="month.disabled" class="calendar-link disabled">
@@ -47,10 +47,7 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-
-import RECORDS_QUERY from '~/graphql/Records.gql'
-
-import type { RecordsResponse } from '~/types'
+import { useRecordsStore } from '~/store/records'
 
 interface CalendarMonth {
   disabled?: boolean
@@ -68,57 +65,24 @@ const props = defineProps<MonthCalendarProps>()
 const LINK_FORMAT = 'yyyy-LL'
 
 const { $urql } = useNuxtApp()
+const recordsStore = useRecordsStore()
 
 const currentDate = props.date ?? new Date()
 const currentYear = ref(currentDate.getFullYear())
 
-const { data } = await useAsyncData(() => fetchFirstRecord())
+const startYear = computed(() => recordsStore.firstRecordDate?.year)
+const endYear = computed(() => DateTime.now().year)
 
-/* Calendar beginning/end state to disable back/forward buttons */
+/* Array of calendar pages (years). Each page contains an array of 12 months.
+ * Months that are before the earliest or after the latest record creation date
+ * are disabled */
 
-const isBeginning = computed(() => Number(data.value?.startYear) >= currentYear.value)
-const isEnd = computed(() => Number(data.value?.endYear) <= currentYear.value)
-
-/* Percent value to translate current calendar page with CSS */
-
-const translateOffset = computed(() => (Number(data.value?.startYear) - currentYear.value || 0) * 100)
-
-/* Fetch record with the earliest creation date to determine year and month
- * to start calendar from */
-
-async function fetchFirstRecord() {
-  const variables = {
-    first: 1,
-    orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
-  }
-
-  const { data } = await $urql.query<RecordsResponse>(RECORDS_QUERY, variables).toPromise()
-
-  const firstRecord = data?.records.data?.[0]
-
-  const dateTime = DateTime.fromFormat(firstRecord?.created_at ?? '', 'yyyy-LL-dd HH:mm:ss')
-
-  const endDate = DateTime.now()
-  const endYear = endDate.year
-
-  const startDate = dateTime.isValid ? dateTime : endDate
-  const startYear = startDate.year
-
-  const calendarYears = buildCalendar(startDate, endDate)
-
-  return { calendarYears, endYear, startYear }
-}
-
-/* Build an array of calendar pages (years). Each page contains an array
- * of 12 months. Months that are before the earliest or after the latest record
- * creation date are disabled */
-
-function buildCalendar(startDate: DateTime, endDate: DateTime) {
+const calendarYears = computed(() => {
   const years = []
 
   const monthFormat = props.numericMonths ? '2-digit' : 'long'
 
-  for (let y = startDate.year; y <= endDate.year; y++) {
+  for (let y = startYear.value; y <= endYear.value; y++) {
     const months: CalendarMonth[] = []
 
     for (let m = 1; m <= 12; m++) {
@@ -126,8 +90,8 @@ function buildCalendar(startDate: DateTime, endDate: DateTime) {
       const month = date.toLocaleString({ month: monthFormat }, { locale: useLocale() })
       const link = date.toFormat(LINK_FORMAT)
 
-      const isTooEarly = y <= startDate.year && m < startDate.month
-      const isTooLate = y >= endDate.year && m > endDate.month
+      const isTooEarly = y <= startYear.value && m < recordsStore.firstRecordDate?.month
+      const isTooLate = y >= endYear.value && m > DateTime.now().month
 
       months.push({
         month,
@@ -140,7 +104,16 @@ function buildCalendar(startDate: DateTime, endDate: DateTime) {
   }
 
   return years
-}
+})
+
+/* Calendar beginning/end state to disable back/forward buttons */
+
+const isBeginning = computed(() => Number(startYear.value) >= currentYear.value)
+const isEnd = computed(() => Number(endYear.value) <= currentYear.value)
+
+/* Percent value to translate current calendar page with CSS */
+
+const translateOffset = computed(() => (Number(startYear.value) - currentYear.value || 0) * 100)
 
 function isLinkActive(link: string) {
   if (!props.date) return false
