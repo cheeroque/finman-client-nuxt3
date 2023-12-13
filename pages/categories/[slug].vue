@@ -13,10 +13,10 @@
       :items="data.tableItems"
       :loading="pending"
     >
-      <template #cell(group)="{ item }">
-        <span class="d-md-none" v-text="formatDate(item.timestamp, true)" />
+      <template #cell(group)="{ value }">
+        <span class="text-capitalize d-md-none" v-text="formatDate(value, true)" />
 
-        <span class="d-none d-md-inline" v-text="formatDate(item.timestamp)" />
+        <span class="text-capitalize d-none d-md-inline" v-text="formatDate(value)" />
       </template>
     </GroupTable>
 
@@ -105,18 +105,17 @@ function buildTableItems(records?: RecordsByPeriodQueryResponse['records']) {
   return (
     records?.data.map(({ period, records }) => {
       const date = DateTime.fromFormat(period, 'yyyy-LL')
-      const group = date.toLocaleString({ month: 'long', year: 'numeric' }, { locale: useLocale() })
+      const group = date.valueOf()
       const subtotal = records.reduce((acc, cur) => (acc += cur.sum), 0)
-      const timestamp = date.valueOf()
 
-      return { group, subtotal, records, timestamp }
+      return { group, subtotal, records }
     }) ?? []
   )
 }
 
 function formatDate(timestamp: number, short = false): string {
   const monthFormat = short ? 'LLL' : 'LLLL'
-  return DateTime.fromMillis(timestamp).toFormat(`${monthFormat} yyyy`)
+  return DateTime.fromMillis(timestamp).toFormat(`${monthFormat} yyyy`, { locale: useLocale() })
 }
 </script>
 
