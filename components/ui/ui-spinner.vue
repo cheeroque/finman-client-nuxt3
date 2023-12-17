@@ -9,10 +9,12 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface UiSpinnerProps {
   size?: number | string
   variant?: string
-}>()
+}
+
+const props = defineProps<UiSpinnerProps>()
 
 const parsedSize = computed(() => {
   if (!props.size) return

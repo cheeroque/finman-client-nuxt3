@@ -1,22 +1,51 @@
 <template>
-  <PageContent :loading="recordsStore.loading" :title="monthName" spinner-variant="primary" class="overflow-hidden">
-    <GroupTable :group-label="useString('category')" :items="tableItems" :loading="recordsStore.loading" />
+  <PageContent :loading="recordsStore.loading" :title="monthName" class="overflow-hidden" spinner-variant="primary">
+    <GroupTable
+      v-if="data"
+      :group-label="useString('category')"
+      :items="data.tableItems"
+      :loading="recordsStore.loading"
+    />
+
+    <template #footer>
+      <UiButton
+        :disabled="isBeginning"
+        :to="prevMonthLink"
+        class="pagination-link"
+        icon="chevron-double-left-24"
+        icon-size="24"
+      >
+        <span class="d-md-none" v-text="formatMonthName(prevMonth, true)" />
+        <span class="d-none d-md-inline" v-text="formatMonthName(prevMonth)" />
+      </UiButton>
+
+      <UiButton
+        :disabled="isEnd"
+        :to="nextMonthLink"
+        class="pagination-link"
+        icon="chevron-double-right-24"
+        icon-size="24"
+        icon-right
+      >
+        <span class="d-md-none" v-text="formatMonthName(nextMonth, true)" />
+        <span class="d-none d-md-inline" v-text="formatMonthName(nextMonth)" />
+      </UiButton>
+    </template>
   </PageContent>
 </template>
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { RecordsCategory, RecordsItem } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
-import CATEGORIES_WITH_RECORDS_QUERY from '@/graphql/CategoriesWithRecords.gql'
+import CATEGORIES_WITH_RECORDS_QUERY from '~/graphql/CategoriesWithRecords.gql'
+
+import type { RecordsCategory, RecordsItem } from '~/types'
 
 interface CategoriesWithRecordsQueryResponse {
-  categories: CategoriesWithRecordsQueryResponseCategories
-}
-
-interface CategoriesWithRecordsQueryResponseCategories {
-  data: CategoryWithRecords[]
+  categories: {
+    data: CategoryWithRecords[]
+  }
 }
 
 interface CategoryWithRecords extends RecordsCategory {
@@ -24,29 +53,38 @@ interface CategoryWithRecords extends RecordsCategory {
   recordsTotal: number
 }
 
-interface MonthRecordsGroup {
-  category?: RecordsCategory
-  group?: string
-  records?: RecordsItem[]
-  subtotal: number
-  trClass?: string
-}
-
+const { $urql } = useNuxtApp()
 const route = useRoute()
 const recordsStore = useRecordsStore()
 
-const month = route.params.month as string
-const monthName = DateTime.fromFormat(month, 'yyyy-LL').toLocaleString(
-  { month: 'long', year: 'numeric' },
-  { locale: useLocale() }
+const month = computed(() => String(route.params.month))
+const monthDate = computed(() => DateTime.fromFormat(month.value, 'yyyy-LL'))
+const monthName = computed(() => formatMonthName(monthDate.value))
+
+/* Get previous / next month links and labels for footer buttons */
+
+const prevMonth = computed(() => monthDate.value.minus({ month: 1 }))
+const prevMonthLink = computed(() => (!isBeginning.value ? `/months/${formatMonthLink(prevMonth.value)}` : undefined))
+
+const nextMonth = computed(() => monthDate.value.plus({ month: 1 }))
+const nextMonthLink = computed(() => (!isEnd.value ? `/months/${formatMonthLink(nextMonth.value)}` : undefined))
+
+/* Get beginning and end states to disable footer previous / next month buttons */
+
+const isBeginning = computed(
+  () =>
+    recordsStore.firstRecordDate?.year >= monthDate.value.year &&
+    recordsStore.firstRecordDate?.month >= monthDate.value.month
+)
+const isEnd = computed(
+  () => DateTime.local().year <= monthDate.value.year && DateTime.local().month <= monthDate.value.month
 )
 
-const tableItems = ref<MonthRecordsGroup[]>([])
+/* Fetch current month records */
 
-async function fetchCategories() {
-  const from = DateTime.fromFormat(month, 'yyyy-LL')
+const { data } = await useAsyncData(async () => {
+  const from = monthDate.value
   const to = from.plus({ month: 1 }).minus({ second: 1 })
-
   const where = {
     AND: [
       { column: 'CREATED_AT', operator: 'GTE', value: from.toFormat('yyyy-LL-dd HH:mm:ss') },
@@ -56,58 +94,95 @@ async function fetchCategories() {
 
   /* Filter by month is the same for records & recordsTotal, but variable types
    * are different in GQL, so query variables have to be separate */
+
   const variables = { where, whereTotal: where }
 
-  recordsStore.pending++
+  const { data: categoriesData } = await $urql
+    .query<CategoriesWithRecordsQueryResponse>(CATEGORIES_WITH_RECORDS_QUERY, variables)
+    .toPromise()
 
-  try {
-    const { data, error } = await useAsyncQuery<CategoriesWithRecordsQueryResponse>(
-      CATEGORIES_WITH_RECORDS_QUERY,
-      variables
-    )
+  const tableItems = buildTableItems(categoriesData?.categories)
 
-    if (error.value) throw error.value
+  return { tableItems }
+})
 
-    if (data.value?.categories?.data) {
-      let balance = 0
+/* Transform categories with records into the table rows */
 
-      /* Map categories with records to table rows */
-      data.value.categories.data.forEach(({ color, id, is_income, name, records, recordsTotal, slug }) => {
-        if (is_income) balance += recordsTotal
-        else balance -= recordsTotal
+function buildTableItems(categories?: CategoriesWithRecordsQueryResponse['categories']) {
+  const tableItems = []
+  let balance = 0
+  let totalExpenses = 0
 
-        if (recordsTotal) {
-          tableItems.value.push({
-            category: { color, id, is_income, name, slug },
-            group: name,
-            records: records.map((record) => ({ ...record, category: { color, id, is_income, name, slug } })),
-            subtotal: recordsTotal,
-            trClass: is_income ? 'row-income' : undefined,
-          })
-        }
-      })
+  categories?.data?.forEach(({ color, id, is_income, name, records, recordsTotal, slug }) => {
+    if (is_income) {
+      balance += recordsTotal
+    } else {
+      balance -= recordsTotal
+      totalExpenses += recordsTotal
+    }
 
-      /* Append table row with total balance */
-      tableItems.value.push({
-        group: useString('monthBalance'),
-        subtotal: balance,
-        trClass: `row-balance ${balance > 0 ? 'row-balance-positive' : 'row-balance-negative'}`,
+    if (recordsTotal) {
+      tableItems.push({
+        category: { color, id, is_income, name, slug },
+        group: name,
+        records: records.map((record) => ({ ...record, category: { color, id, is_income, name, slug } })),
+        subtotal: recordsTotal,
+        trClass: is_income ? 'row-income' : undefined,
       })
     }
-  } catch (error) {}
+  })
 
-  recordsStore.pending--
+  /* Append table rows with total expenses & balance */
+
+  tableItems.push(
+    {
+      group: useString('monthExpenses'),
+      subtotal: totalExpenses,
+      trClass: 'row-expense',
+    },
+    {
+      group: useString('monthBalance'),
+      subtotal: balance,
+      trClass: `row-balance ${balance > 0 ? 'row-balance-positive' : 'row-balance-negative'}`,
+    }
+  )
+
+  return tableItems
 }
 
-await useAsyncData('month-records', () => fetchCategories())
+function formatMonthLink(dateTime: DateTime): string {
+  return dateTime.toFormat('yyyy-LL')
+}
+
+function formatMonthName(dateTime: DateTime, short?: boolean): string {
+  const format = short ? 'LL.yyyy' : 'LLLL yyyy'
+  const name = dateTime.toFormat(format, { locale: useLocale() })
+
+  return `${name[0].toUpperCase()}${name.slice(1)}`
+}
 </script>
 
 <style lang="scss" scoped>
+.pagination-link {
+  border-radius: $control-border-radius;
+}
+
 :deep(.page-content-body) {
   padding: 0;
 }
 
+:deep(.page-content-footer) {
+  display: flex;
+  gap: 0 $grid-gap;
+  justify-content: space-between;
+}
+
 :deep(.table) {
+  .row-expense {
+    color: var(--on-danger-bg);
+    background-color: var(--danger-bg);
+  }
+
   .row-income {
     color: var(--on-success-bg);
     background-color: var(--success-bg);

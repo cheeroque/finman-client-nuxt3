@@ -1,5 +1,5 @@
 <template>
-  <form ref="form" class="record-form" @submit.prevent="onSubmit">
+  <form ref="form" class="record-form" @submit.prevent="handleSubmit">
     <UiFormGroup
       :invalid-feedback="useValidationErrors(v$, 'name')"
       :label="useString('name')"
@@ -33,108 +33,51 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
-import { RecordsCategory } from '~~/types/records'
-import { useRecordsStore } from '~/store/records'
 
-import CATEGORY_CREATE_MUTATION from '@/graphql/CategoryCreate.gql'
-import CATEGORY_UPDATE_MUTATION from '@/graphql/CategoryUpdate.gql'
+import type { RecordsCategory } from '~/types'
 
-interface CategoryForm {
-  color?: string
-  is_income: boolean
-  name: string
-  slug: string
-}
+type CategoryForm = Omit<RecordsCategory, 'id'>
 
-interface CategoryUpsertResponse {
-  result: RecordsCategory
-}
-
-const props = defineProps<{
+interface CategoryFormProps {
   category?: RecordsCategory
   edit?: boolean
-}>()
+}
 
-const emit = defineEmits(['success'])
+const props = defineProps<CategoryFormProps>()
 
-const recordsStore = useRecordsStore()
+const emit = defineEmits(['submit'])
 
 /* Expose form element as ref for parent */
+
 const form = ref()
 defineExpose({ form })
 
-/* Initialize form & watch for record changes */
+/* Initialize form values from props category (if set) */
+
 const formData = reactive<CategoryForm>({
-  color: '#fff',
-  is_income: false,
-  name: '',
-  slug: '',
+  color: props.category?.color ?? '#fff',
+  is_income: props.category?.is_income ?? false,
+  name: props.category?.name ?? '',
+  slug: props.category?.slug ?? '',
 })
 
-function initFormData() {
-  if (props.edit && props.category) {
-    const { color, is_income, name, slug } = props.category
+/* Declare validation rules */
 
-    formData.color = color
-    formData.is_income = is_income
-    formData.name = name
-    formData.slug = slug
-  }
-}
-
-watchEffect(() => {
-  initFormData()
-})
-
-/* Form validation */
 const rules = computed(() => ({
   color: { required: helpers.withMessage(useString('fieldRequired'), required) },
-
   name: { required: helpers.withMessage(useString('fieldRequired'), required) },
-
   slug: { required: helpers.withMessage(useString('fieldRequired'), required) },
 }))
 
 const v$ = useVuelidate<CategoryForm>(rules, formData, { $lazy: true })
 
-/* Submit form */
-async function onSubmit() {
+/* Validate form, emit 'submit' with form values on success */
+
+function handleSubmit() {
   v$.value.$validate()
 
   if (!v$.value.$error) {
-    const { color, is_income, name, slug } = formData
-
-    const data = {
-      color,
-      id: props.category?.id,
-      is_income,
-      name,
-      slug,
-    }
-
-    const mutation = props.edit ? CATEGORY_UPDATE_MUTATION : CATEGORY_CREATE_MUTATION
-
-    recordsStore.pending++
-
-    const { mutate } = useMutation<CategoryUpsertResponse>(mutation)
-
-    try {
-      const response = await mutate({ data })
-
-      if (response?.data?.result) {
-        emit('success', response.data.result)
-
-        /** Refetch everything that could change after category upsert */
-        await Promise.all([
-          recordsStore.fetchBalance(),
-          recordsStore.fetchCategories(),
-          recordsStore.fetchMonthRecords(),
-          recordsStore.fetchRecords(),
-        ])
-      }
-    } catch (error: any) {}
-
-    recordsStore.pending--
+    emit('submit', formData)
   }
 }
 </script>

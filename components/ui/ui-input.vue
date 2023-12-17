@@ -31,9 +31,9 @@
 </template>
 
 <script setup lang="ts">
-import { ComputedRef } from 'vue'
+import type { ComputedRef } from 'vue'
 
-const props = defineProps<{
+interface UiInputProps {
   append?: string
   autocomplete?: string
   autofocus?: boolean
@@ -49,7 +49,9 @@ const props = defineProps<{
   state?: ControlState
   step?: number | string
   type?: string
-}>()
+}
+
+const props = defineProps<UiInputProps>()
 
 const emit = defineEmits(['blur', 'click', 'focus', 'input', 'update:modelValue'])
 
@@ -103,6 +105,7 @@ const componentClasses = computed(() => {
 
 watch(
   () => props.autofocus,
+
   (event) => {
     if (event) setObserver()
     else removeObserver()

@@ -7,9 +7,9 @@
     <UiButton
       v-for="(link, index) in menuLinks"
       :key="`menu-link-${index}`"
+      :class="getLinkClasses(link)"
       :icon="link.icon"
       :to="link.link"
-      :class="getLinkClasses(link)"
       icon-size="24"
     >
       {{ link.text }}
@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { NavLink } from '~~/types/nav'
+import type { NavLink } from '~/types'
 
 const emit = defineEmits(['toggle:drawer'])
 

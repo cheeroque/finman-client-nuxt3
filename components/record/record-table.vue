@@ -4,19 +4,22 @@
       <div class="record-table-th record-date">
         {{ useString('date') }}
       </div>
+
       <div class="record-table-th record-sum">
         {{ useString('sum') }}
       </div>
+
       <div class="record-table-th record-category">
         {{ useString('category') }}
       </div>
+
       <div class="record-table-th record-note">
         {{ useString('note') }}
       </div>
     </div>
 
     <div class="record-table-body">
-      <RecordCardEmpty v-if="isEmpty" />
+      <RecordCardEmpty v-show="isEmpty" />
 
       <RecordCard
         v-for="record in records"
@@ -27,25 +30,21 @@
       />
     </div>
 
-    <RecordDialog
-      v-model="dialogVisible"
-      :record="currentRecord"
-      @closed="handleDialogClosed"
-      @record:delete="emit('records:update')"
-      @record:update="emit('records:update')"
-    />
+    <RecordDialog v-model="dialogVisible" :record="currentRecord" @closed="handleDialogClosed" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { RecordsItem } from '~~/types/records'
+import type { RecordsItem } from '~/types'
 
-const props = defineProps<{
+interface RecordTableProps {
   records: RecordsItem[]
   viewMode?: ViewMode
-}>()
+}
 
-const emit = defineEmits(['records:update'])
+const props = defineProps<RecordTableProps>()
+
+const emit = defineEmits(['update:records'])
 
 const currentRecord = ref<RecordsItem>()
 const dialogVisible = ref(false)

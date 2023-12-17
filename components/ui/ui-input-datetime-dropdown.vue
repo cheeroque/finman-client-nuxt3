@@ -8,17 +8,27 @@
       </div>
     </div>
   </div>
+
+  <div class="datetimepicker-footer">
+    <UiButton variant="neutral-muted" @click="emit('close')"> {{ useString('cancel') }} </UiButton>
+
+    <UiButton variant="secondary" @click="emit('set-now')"> {{ useString('now') }} </UiButton>
+  </div>
+
+  <div class="datetimepicker-backdrop" @click="emit('close')" />
 </template>
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-const props = defineProps<{
+interface UiInputDatetimeDropdownProps {
   hideTime?: boolean
   modelValue?: Date
-}>()
+}
 
-const emit = defineEmits(['update:modelValue', 'close'])
+const props = defineProps<UiInputDatetimeDropdownProps>()
+
+const emit = defineEmits(['update:modelValue', 'close', 'set-now'])
 
 const savedDate = ref()
 

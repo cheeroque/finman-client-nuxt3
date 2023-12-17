@@ -23,7 +23,7 @@
     </select>
 
     <div class="form-control-append">
-      <span class="form-select-indicator" aria-hidden="true">
+      <span aria-hidden="true" class="form-select-indicator">
         <UiIcon name="select-indicator" />
       </span>
     </div>
@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ComputedRef } from 'vue'
+import type { ComputedRef } from 'vue'
 
 type SelectValue = number | string | null
 
@@ -41,7 +41,7 @@ interface SelectOption {
   value: SelectValue
 }
 
-const props = defineProps<{
+interface UiSelectProps {
   disabled?: boolean
   modelValue?: SelectValue
   name?: string
@@ -49,7 +49,9 @@ const props = defineProps<{
   required?: boolean
   size?: ControlSize
   state?: ControlState
-}>()
+}
+
+const props = defineProps<UiSelectProps>()
 
 const emit = defineEmits(['input', 'update:modelValue'])
 

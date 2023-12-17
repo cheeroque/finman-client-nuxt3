@@ -67,21 +67,22 @@
 <script setup lang="ts">
 import { DateTime, Info } from 'luxon'
 
-const props = defineProps<{
+interface UiDatepickerProps {
   locale?: string
   modelValue?: Date
   titleFormat?: string
-}>()
+}
+
+const props = defineProps<UiDatepickerProps>()
 
 const emit = defineEmits(['click:day', 'update:modelValue'])
 
-const locale = computed(() => props.locale ?? useLocale())
+const luxonDate = ref(DateTime.fromJSDate(props.modelValue ?? new Date()).set({ day: 1 }))
 
+const locale = computed(() => props.locale ?? useLocale())
 const titleFormat = computed(() => props.titleFormat || 'LLLL y')
 
 const weekdays = Info.weekdays('short', { locale: locale.value })
-
-const luxonDate = ref(DateTime.fromJSDate(props.modelValue ?? new Date()).set({ day: 1 }))
 
 const selectedDay = computed(() => DateTime.fromJSDate(props.modelValue ?? new Date()).day)
 const selectedMonth = computed(() => luxonDate.value.month)
@@ -94,7 +95,7 @@ const monthdays = computed(() => {
 
   const leftPad = luxonDate.value.weekday - 1
   const rightPad = 7 - luxonDate.value.plus({ months: 1 }).minus({ days: 1 }).weekday
-  const monthLength = luxonDate.value.daysInMonth
+  const monthLength = luxonDate.value.daysInMonth ?? 0
 
   for (let i = -leftPad; i < monthLength + rightPad; i++) {
     days.push(luxonDate.value.plus({ days: i }))

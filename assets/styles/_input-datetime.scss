@@ -6,7 +6,7 @@
   display: flex;
   transition: $transition;
   transition-property: transform;
-  transform : translateX(0);
+  transform: translateX(0);
 
   &.panel-time {
     transform: translateX(-100%);
@@ -35,5 +35,43 @@
   .timepicker-body {
     flex: 1 1 auto;
     min-height: 0;
+  }
+}
+
+.datetimepicker-footer {
+  display: flex;
+  gap: $dropdown-padding-y $dropdown-padding-x;
+  padding-top: $dropdown-padding-y;
+
+  & > * {
+    flex: 1 1 0;
+  }
+}
+
+@include media-max-width(sm) {
+  .datetimepicker {
+    .dropdown-menu {
+      position: fixed;
+      top: $grid-gap;
+      right: $grid-gap * 0.5;
+      left: $grid-gap * 0.5;
+      width: auto;
+    }
+
+    .dropdown-content {
+      margin-top: 0;
+      border-radius: $dialog-border-radius;
+    }
+  }
+
+  .datetimepicker-backdrop {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: $backdrop-color;
+    z-index: -1;
   }
 }

@@ -39,76 +39,55 @@
 import { DateTime } from 'luxon'
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
-import { RecordsItem } from '~~/types/records'
-import { useAuthStore } from '~/store/auth'
 import { useRecordsStore } from '~/store/records'
 
-import RECORD_CREATE_MUTATION from '@/graphql/RecordCreate.gql'
-import RECORD_UPDATE_MUTATION from '@/graphql/RecordUpdate.gql'
+import type { RecordsItem } from '~/types'
 
-interface RecordsForm {
+export interface RecordsForm {
   category_id: number
   created_at: Date
   note?: string
   sum: number
 }
 
-interface RecordUpsertResponse {
-  result: RecordsItem
-}
-
-const props = defineProps<{
+interface RecordFormProps {
   edit?: boolean
   record?: RecordsItem
-}>()
+}
 
-const emit = defineEmits(['success'])
+const props = defineProps<RecordFormProps>()
+
+const emit = defineEmits(['submit'])
 
 const recordsStore = useRecordsStore()
+
 const categories = computed(() => recordsStore.categories.map(({ id, name }) => ({ text: name, value: id })))
 
 /* Expose form element as ref for parent */
+
 const form = ref()
 defineExpose({ form })
 
-/* Initialize form & watch for record changes */
+/* Initialize form values */
+
 const formData = reactive<RecordsForm>({
-  category_id: categories.value[0]?.value,
-  created_at: new Date(),
-  note: undefined,
-  sum: 0,
+  category_id: props.record?.category?.id ?? categories.value[0]?.value,
+  created_at: props.record?.created_at
+    ? DateTime.fromFormat(props.record.created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
+    : new Date(),
+  note: props.record?.note,
+  sum: props.record?.sum ?? 0,
 })
 
-function initFormData() {
-  if (props.edit && props.record) {
-    const { category, created_at, note, sum } = props.record
-
-    formData.category_id = category.id
-    formData.created_at = DateTime.fromFormat(created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
-    formData.note = note
-    formData.sum = sum
-  }
-}
-
-watchEffect(() => {
-  initFormData()
-})
-
-/* Form validation */
-function isValidDate(value: Date): boolean {
-  return DateTime.fromJSDate(value).isValid
-}
+/* Declare form validation rules */
 
 const rules = computed(() => ({
   category_id: { required: helpers.withMessage(useString('fieldRequired'), required) },
-
   created_at: {
     required: helpers.withMessage(useString('fieldRequired'), required),
     isValidDate: helpers.withMessage(useString('invalidDate'), isValidDate),
   },
-
   note: { required: helpers.withMessage(useString('fieldRequired'), required) },
-
   sum: {
     minValue: helpers.withMessage(({ $params }) => `${useString('fieldMinimumValue')} ${$params.min}`, minValue(0)),
     required: helpers.withMessage(useString('fieldRequired'), required),
@@ -117,43 +96,17 @@ const rules = computed(() => ({
 
 const v$ = useVuelidate<RecordsForm>(rules, formData, { $lazy: true })
 
-/* Submit form */
-async function handleSubmit() {
+/* Validate form and emit "submit" with formData on success */
+
+function handleSubmit() {
   v$.value.$validate()
 
   if (!v$.value.$error) {
-    const authStore = useAuthStore()
-
-    const { category_id, created_at, note, sum } = formData
-
-    const data = {
-      category: { connect: category_id },
-      created_at: DateTime.fromJSDate(created_at).toFormat('yyyy-LL-dd HH:mm:ss'),
-      id: props.record?.id,
-      note,
-      sum,
-      user: { connect: authStore.user?.id },
-    }
-
-    const mutation = props.edit ? RECORD_UPDATE_MUTATION : RECORD_CREATE_MUTATION
-
-    recordsStore.pending++
-
-    const { mutate } = useMutation<RecordUpsertResponse>(mutation)
-
-    try {
-      /* Upsert record */
-      const response = await mutate({ data })
-
-      if (response?.data?.result) {
-        emit('success', response.data.result)
-      }
-
-      /* Refetch everything that changes after record upsert */
-      await Promise.all([recordsStore.fetchBalance(), recordsStore.fetchMonthRecords(), recordsStore.fetchRecords()])
-    } catch (error: any) {}
-
-    recordsStore.pending--
+    emit('submit', formData)
   }
+}
+
+function isValidDate(value: Date): boolean {
+  return DateTime.fromJSDate(value).isValid
 }
 </script>

@@ -1,48 +1,43 @@
 <template>
-  <UiButton :loading="loading" icon="export-24" icon-size="24" class="drawer-item" @click="handleClick">
+  <UiButton :loading="loading" class="drawer-item" icon="export-24" icon-size="24" @click="handleClick">
     <span class="caption">{{ useString('exportData') }}</span>
   </UiButton>
 </template>
 
 <script setup lang="ts">
-import RECORDS_EXPORT_MUTATION from '@/graphql/RecordsExport.gql'
+import RECORDS_EXPORT_MUTATION from '~/graphql/RecordsExport.gql'
 
-interface RecordsExportData {
-  result: RecordsExportDataOutput
+interface RecordsExportResponse {
+  result: {
+    file: {
+      path: string
+      size: number
+    }
+  }
 }
 
-interface RecordsExportDataOutput {
-  file: RecordsExportDataOutputFile
-}
-
-interface RecordsExportDataOutputFile {
-  path: string
-  size: number
-}
+const { $urql } = useNuxtApp()
+const config = useRuntimeConfig()
 
 const loading = ref(false)
 
 async function handleClick() {
   loading.value = true
 
-  const config = useRuntimeConfig()
-
-  const { mutate } = useMutation<RecordsExportData>(RECORDS_EXPORT_MUTATION)
-
   try {
-    const response = await mutate()
+    const { data, error } = await $urql.mutation<RecordsExportResponse>(RECORDS_EXPORT_MUTATION, {}).toPromise()
 
-    if (response?.data?.result) {
-      const filePath = response.data.result.file.path
+    if (data?.result) {
+      const filePath = data.result.file.path
       const link = document.createElement('a')
 
-      link.href = `${config.public.STATIC_URL}${filePath}`
+      link.href = `${config.public.staticUrl}${filePath}`
       link.target = '_blank'
 
       document.body.appendChild(link)
       link.click()
     } else {
-      throw new Error(useString('exportFailed'))
+      throw new Error(error?.message ?? useString('exportFailed'))
     }
   } catch (error) {
     const toast = useToast()

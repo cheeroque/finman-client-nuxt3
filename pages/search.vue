@@ -1,85 +1,83 @@
 <template>
   <PageContent
-    :loading="recordsStore.loading"
+    :loading="pending"
     :title="useString('searchResults', searchQuery)"
-    spinner-variant="primary"
     class="overflow-hidden"
+    spinner-variant="primary"
   >
-    <RecordTable :records="tableItems" />
+    <RecordTable v-if="data" :records="data.tableItems" />
 
     <template #footer>
-      <div v-if="totalPages > 1">
-        <UiPagination :disabled="recordsStore.loading" :total-pages="totalPages" hide-prev-next />
+      <div v-if="Number(data?.totalPages) > 1">
+        <UiPagination :disabled="pending" :total-pages="data?.totalPages" hide-prev-next />
       </div>
     </template>
   </PageContent>
 </template>
 
 <script setup lang="ts">
-import { RecordsItem, RecordsQueryResponse, RecordsQueryVariables } from '~~/types/records'
-import { useRecordsStore } from '~/store/records'
+import RECORDS_QUERY from '~/graphql/Records.gql'
 
-import RECORDS_QUERY from '@/graphql/Records.gql'
+import type { RecordsResponse } from '~/types'
 
+const { $urql } = useNuxtApp()
 const route = useRoute()
-const recordsStore = useRecordsStore()
 
-const searchQuery = computed(() => route.query.q as string)
+const perPage = computed(() => Number(route.query.perPage) || 50)
+const searchQuery = computed(() => String(route.query.q))
 
-const tableItems = ref<RecordsItem[]>([])
+const { data, pending, refresh } = await useAsyncData(async () => {
+  const variables = buildVariables()
 
-const totalPages = ref(1)
+  const { data: recordsData } = await $urql.query<RecordsResponse>(RECORDS_QUERY, variables).toPromise()
 
-async function fetchSearchResults() {
-  /** Build query variables */
-  const column = (route.query.orderBy as string) ?? 'CREATED_AT'
-  const order = (route.query.order as string) ?? 'DESC'
-  const first = Number(route.query.perPage) || 50
-  const page = Number(route.query.page) || 1
+  const tableItems = ref(recordsData?.records?.data ?? [])
+  const totalPages = ref(recordsData?.records?.paginatorInfo?.lastPage ?? 1)
 
-  /* Find records by note */
-  const where = {
-    OR: [{ column: 'NOTE', operator: 'LIKE', value: `%${searchQuery.value}%` }],
-  }
-
-  /* Also find records by exact sum if q can be cast to number */
-  if (!isNaN(Number(searchQuery.value))) {
-    where.OR.push({ column: 'SUM', operator: 'EQ', value: searchQuery.value })
-  }
-
-  const variables: RecordsQueryVariables = {
-    first,
-    orderBy: [{ column, order }],
-    page,
-    where,
-  }
-
-  try {
-    const { data, error } = await useAsyncQuery<RecordsQueryResponse>(RECORDS_QUERY, variables)
-
-    if (error.value) throw error.value
-
-    if (data.value?.records?.data) {
-      tableItems.value = data.value.records.data
-      totalPages.value = data.value.records.paginatorInfo.lastPage
-    }
-  } catch (error) {}
-}
+  return reactive({ tableItems, totalPages })
+})
 
 watch(
   () => route.query,
+
   async () => {
-    await fetchSearchResults()
+    await refresh()
+
     setTimeout(() => {
       /* If window is scrolled down (e.g. in mobile) scroll it back to top,
        * otherwise scroll back page element */
+
       const windowTop = useWindowTop()
       const target = !windowTop ? '.page' : undefined
       useScrollTo(target)
     }, 250)
-  },
-  { immediate: true }
+  }
 )
+
+function buildVariables() {
+  const column = String(route.query.orderBy ?? 'CREATED_AT')
+  const order = String(route.query.order ?? 'DESC')
+  const page = Number(route.query.page) || 1
+
+  /* Find records by note */
+
+  const where = {
+    OR: [{ column: 'NOTE', operator: 'LIKE', value: `%${searchQuery.value}%` }],
+  }
+
+  /* Also find records by exact sum if search query can be cast to number */
+
+  if (!isNaN(Number(searchQuery.value))) {
+    where.OR.push({ column: 'SUM', operator: 'EQ', value: searchQuery.value })
+  }
+
+  return {
+    first: perPage.value,
+    orderBy: [{ column, order }],
+    page,
+    where,
+  }
+}
 </script>
 
 <style lang="scss" scoped>

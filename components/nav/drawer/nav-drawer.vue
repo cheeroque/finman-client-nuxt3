@@ -1,16 +1,16 @@
 <template>
-  <div :class="drawerClasses" role="dialog" aria-modal="true">
+  <div :class="drawerClasses" aria-modal="true" role="dialog">
     <nav class="nav nav-drawer">
       <ul class="drawer-group list-unstyled">
         <li role="presentation">
           <h5 class="drawer-heading">{{ useString('pages') }}</h5>
         </li>
 
-        <li role="presentation" class="d-none d-lg-block">
+        <li class="d-none d-lg-block" role="presentation">
           <NavDrawerToggle :open="open" @click="emit('toggle')" />
         </li>
 
-        <li v-for="page in drawerPages" :key="`link-${page.key}`" role="presentation">
+        <li v-for="page in DRAWER_PAGES" :key="`link-${page.key}`" role="presentation">
           <NavDrawerPage :page="page" @click="emit('close')" />
         </li>
       </ul>
@@ -20,8 +20,16 @@
           <h5 class="drawer-heading">{{ useString('actions') }}</h5>
         </li>
 
-        <li v-for="action in drawerActions" :key="`action-${action.key}`" role="presentation">
-          <component :is="action.component" @action="action.handler" />
+        <li role="presentation">
+          <NavDrawerSnapshot :loading="pending" :snapshot="recordsStore.snapshot" @click="dialogVisible = true" />
+        </li>
+
+        <li role="presentation">
+          <NavDrawerExport />
+        </li>
+
+        <li role="presentation">
+          <NavDrawerLogout />
         </li>
       </ul>
 
@@ -32,32 +40,48 @@
   </div>
 
   <Transition name="fade">
-    <div v-if="open" class="app-drawer-backdrop" aria-hidden="true" @click="emit('close')" />
+    <div v-if="open" aria-hidden="true" class="app-drawer-backdrop" @click="emit('close')" />
   </Transition>
 
-  <SnapshotDialog v-model="snapshotDialogVisible" />
+  <SnapshotDialog v-model="dialogVisible" @success="refresh" />
 </template>
 
 <script setup lang="ts">
-import { DrawerAction, DrawerPage } from '~~/types/drawer'
+import { useRecordsStore } from '~/store/records'
 
-const props = defineProps<{
+import SNAPSHOTS_QUERY from '~/graphql/Snapshots.gql'
+
+import type { RecordsSnapshot } from '~/types'
+
+interface SnapshotsQueryResponse {
+  snapshots: {
+    data: RecordsSnapshot[]
+    paginatorInfo: PaginatorInfo
+  }
+}
+
+interface NavDrawerProps {
   open?: boolean
-}>()
+}
 
-const emit = defineEmits(['close', 'toggle'])
-
-const drawerActions: DrawerAction[] = [
-  { key: 'snapshot', component: resolveComponent('NavDrawerSnapshot'), handler: handleSnapshotClick },
-  { key: 'export', component: resolveComponent('NavDrawerExport') },
-  { key: 'logout', component: resolveComponent('NavDrawerLogout') },
-]
-
-const drawerPages: DrawerPage[] = [
+const DRAWER_PAGES = [
   { key: 'home', link: '/' },
   { key: 'categories', link: '/categories' },
   { key: 'calendar', link: '/months' },
 ]
+
+const props = defineProps<NavDrawerProps>()
+
+const emit = defineEmits(['close', 'toggle'])
+
+const bodyEl = ref<HTMLElement | undefined>()
+
+const { $urql } = useNuxtApp()
+const bodyFixed = useScrollLock(bodyEl)
+const recordsStore = useRecordsStore()
+const refetchTrigger = useRefetchTrigger()
+
+const dialogVisible = ref(false)
 
 const drawerClasses = computed(() => {
   let classes = ['app-drawer']
@@ -65,17 +89,47 @@ const drawerClasses = computed(() => {
   return classes
 })
 
-/** Disable body scrolling when drawer is open */
-const bodyFixed = useScrollLock(document.body)
+/* Fetch latest snapshot and save it to the store */
 
-watchEffect(() => {
-  bodyFixed.value = props.open
+const { pending, refresh } = useAsyncData(async () => {
+  const { data: snapshotData } = await $urql.query<SnapshotsQueryResponse>(SNAPSHOTS_QUERY, {}).toPromise()
+
+  recordsStore.snapshot = snapshotData?.snapshots.data?.[0]
 })
 
-const snapshotDialogVisible = ref(false)
+watch(
+  /* Refetch snapshot if external trigger was set to true, then reset trigger */
 
-function handleSnapshotClick() {
-  snapshotDialogVisible.value = true
+  () => refetchTrigger.value,
+
+  async (event) => {
+    if (event) {
+      await refresh()
+      refetchTrigger.value = false
+    }
+  }
+)
+
+watch(
+  /* Disable body scrolling when drawer is open */
+
+  () => props.open,
+
+  (event) => {
+    toggleBodyFixed(event)
+  }
+)
+
+/* Update body element ref when DOM ready to use with useScrollLock */
+
+onMounted(() => {
+  bodyEl.value = document.body
+})
+
+function toggleBodyFixed(isFixed: boolean) {
+  if (!process.client) return
+
+  bodyFixed.value = isFixed
 }
 </script>
 

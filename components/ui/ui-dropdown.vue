@@ -16,8 +16,8 @@
 
     <UiCollapse
       :modelValue="localVisible"
-      transition="dropdown"
       collapse-class="dropdown-menu"
+      transition="dropdown"
       @hidden="$emit('hidden')"
       @update:modelValue="handleUpdate"
     >
@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface UiDropdownProps {
   block?: boolean
   disabled?: boolean
   icon?: string
@@ -40,7 +40,9 @@ const props = defineProps<{
   size?: ControlSize
   text?: string
   variant?: string
-}>()
+}
+
+const props = defineProps<UiDropdownProps>()
 
 const emit = defineEmits(['update:modelValue', 'hidden'])
 
@@ -58,6 +60,10 @@ const localVisible = computed({
       document.removeEventListener('click', handleClickOutside)
     }
   },
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 
 function handleClickOutside(event: Event) {
@@ -81,8 +87,4 @@ function show() {
 function toggle() {
   handleUpdate(!localVisible.value)
 }
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
 </script>

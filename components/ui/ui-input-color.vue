@@ -17,16 +17,16 @@
         :style="{ backgroundColor: bgColor, color: iconColor }"
         class="form-control-icon colorpicker-label"
       >
-        <input v-uid ref="colorInput" :value="modelValue" type="color" class="colorpicker-input" @input="handleInput" />
+        <input v-uid ref="colorInput" :value="modelValue" class="colorpicker-input" type="color" @input="handleInput" />
 
-        <UiIcon name="eyedropper-24" size="16" aria-hidden="true" />
+        <UiIcon aria-hidden="true" name="eyedropper-24" size="16" />
       </label>
     </template>
   </UiInput>
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface UiInputColorProps {
   disabled?: boolean
   modelValue?: string
   name?: string
@@ -35,7 +35,9 @@ const props = defineProps<{
   required?: boolean
   size?: ControlSize
   state?: ControlState
-}>()
+}
+
+const props = defineProps<UiInputColorProps>()
 
 const emit = defineEmits(['update:modelValue'])
 

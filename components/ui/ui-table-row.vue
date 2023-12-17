@@ -2,11 +2,11 @@
   <tr :class="item.trClass">
     <td v-for="(field, index) in fields" :key="`cell-${rowIndex}-${index}`" :class="field.tdClass">
       <slot
-        :name="`cell(${field.key})`"
         :details-visible="detailsVisible"
         :field="field"
         :index="rowIndex"
         :item="item"
+        :name="`cell(${field.key})`"
         :toggle-details="handleToggleDetails"
         :value="item[field.key]"
       >
@@ -19,7 +19,7 @@
     <td :colspan="fields?.length">
       <UiCollapse v-model="collapseVisible" @hidden="handleHidden">
         <div class="row-details-content">
-          <slot name="row-details" :index="rowIndex" :item="item" :toggle-details="handleToggleDetails" />
+          <slot :index="rowIndex" :item="item" :toggle-details="handleToggleDetails" name="row-details" />
         </div>
       </UiCollapse>
     </td>
@@ -27,13 +27,15 @@
 </template>
 
 <script setup lang="ts">
-import { TableField, TableItem } from '~/components/ui/ui-table.vue'
+import type { TableField, TableItem } from '~/components/ui/ui-table.vue'
 
-const props = defineProps<{
+interface UiTableRowProps {
   fields: TableField[]
   item: TableItem
   rowIndex?: number
-}>()
+}
+
+const props = defineProps<UiTableRowProps>()
 
 const detailsVisible = ref(false)
 const collapseVisible = ref(false)

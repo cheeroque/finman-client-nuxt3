@@ -27,9 +27,9 @@
 </template>
 
 <script setup lang="ts">
-import { RouteLocationRaw } from 'vue-router'
+import type { RouteLocationRaw } from 'vue-router'
 
-const props = defineProps<{
+interface UiButtonProps {
   block?: boolean
   disabled?: boolean
   form?: string
@@ -43,15 +43,17 @@ const props = defineProps<{
   to?: RouteLocationRaw
   type?: string
   variant?: string
-}>()
+}
+
+const props = defineProps<UiButtonProps>()
 
 const emit = defineEmits(['click', 'click-native'])
 
 const slots = useSlots()
 
 const isLink = computed(() => Boolean(props.to))
-
 const tagName = computed(() => (isLink.value ? resolveComponent('NuxtLink') : 'button'))
+const type = computed(() => props.type ?? 'button')
 
 const componentClasses = computed(() => {
   let classes = ['btn']
@@ -65,8 +67,6 @@ const componentClasses = computed(() => {
 
   return classes
 })
-
-const type = computed(() => props.type ?? 'button')
 
 function handleClick(event: Event) {
   emit('click')

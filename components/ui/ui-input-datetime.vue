@@ -11,11 +11,10 @@
         :size="size"
         :state="state"
         autocomplete="off"
-        @click="show"
         @input="handleInput"
       >
         <template #append>
-          <UiButton icon="stopwatch-24" variant="link" class="form-control-icon" @click="setNow" />
+          <UiButton class="form-control-icon" icon="stopwatch-24" variant="link" @click="show" />
         </template>
       </UiInput>
     </template>
@@ -24,6 +23,7 @@
       <UiInputDatetimeDropdown
         :model-value="modelValue"
         @close="close"
+        @set-now="setNow"
         @update:modelValue="emit('update:modelValue', $event)"
       />
     </template>
@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-const props = defineProps<{
+interface UiInputDatetimeProps {
   disabled?: boolean
   format?: string
   modelValue?: Date
@@ -43,19 +43,20 @@ const props = defineProps<{
   required?: boolean
   size?: ControlSize
   state?: ControlState
-}>()
+}
+
+const props = defineProps<UiInputDatetimeProps>()
 
 const emit = defineEmits(['update:modelValue'])
 
 const dropdownVisible = ref(false)
 
 const format = computed(() => props.format ?? 'dd.LL.yyyy HH:mm')
+const placeholder = computed(() => props.placeholder ?? DateTime.now().toFormat(format.value))
 
 const formattedValue = computed(() =>
   props.modelValue ? DateTime.fromJSDate(props.modelValue).toFormat(format.value) : undefined
 )
-
-const placeholder = computed(() => props.placeholder ?? DateTime.now().toFormat(format.value))
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement
@@ -73,6 +74,8 @@ function handleInput(event: Event) {
 }
 
 function setNow() {
+  dropdownVisible.value = false
+
   emit('update:modelValue', new Date())
 }
 </script>

@@ -1,8 +1,8 @@
-import { handleNuxtReady } from './hooks/ready'
+import graphql from '@rollup/plugin-graphql'
 
-// https://v3.nuxtjs.org/api/configuration/nuxt.config
+/* https://nuxt.com/docs/api/configuration/nuxt-config */
+
 export default defineNuxtConfig({
-  ssr: false,
   app: {
     head: {
       title: 'Finance Manager 3',
@@ -36,47 +36,18 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@nuxtjs/apollo', '@pinia/nuxt', '@vueuse/nuxt', 'nuxt-icons'],
-
-  apollo: {
-    clients: {
-      default: {
-        httpEndpoint: process.env.GQL_HOST ?? '',
-        httpLinkOptions: {
-          credentials: 'include',
-          fetchOptions: {
-            credentials: 'include',
-          },
-        },
-      },
-    },
-    cookieAttributes: {
-      httpOnly: false,
-      sameSite: 'strict',
-      secure: true,
-    },
-  },
+  modules: ['@pinia/nuxt', '@vueuse/nuxt', 'nuxt-icons', '~/modules/color-theme'],
 
   css: ['~/assets/styles/app.scss'],
 
-  hooks: {
-    ready: (nuxt) => handleNuxtReady(nuxt),
+  colorTheme: {
+    primary: process.env.THEME_PRIMARY_COLOR,
   },
 
   runtimeConfig: {
-    API_URL: process.env.API_URL,
-    STATIC_URL: process.env.STATIC_URL,
-    THEME_PRIMARY_COLOR: process.env.THEME_PRIMARY_COLOR || '#6750a4',
-    THEME_SECONDARY_COLOR: process.env.THEME_SECONDARY_COLOR,
-    THEME_TERTIARY_COLOR: process.env.THEME_TERTIARY_COLOR,
-    THEME_NEUTRAL_COLOR: process.env.THEME_NEUTRAL_COLOR,
-    THEME_NEUTRAL_VARIANT_COLOR: process.env.THEME_NEUTRAL_VARIANT_COLOR,
-    THEME_DANGER_COLOR: process.env.THEME_DANGER_COLOR,
-    THEME_SUCCESS_COLOR: process.env.THEME_SUCCESS_COLOR,
-
     public: {
-      API_URL: process.env.API_URL,
-      STATIC_URL: process.env.STATIC_URL,
+      gqlEndpoint: '',
+      staticUrl: '',
     },
   },
 
@@ -94,10 +65,7 @@ export default defineNuxtConfig({
         },
       },
     },
-  },
 
-  /* prevent unstyled content flashing on reload */
-  experimental: {
-    inlineSSRStyles: false,
+    plugins: [graphql()],
   },
 })

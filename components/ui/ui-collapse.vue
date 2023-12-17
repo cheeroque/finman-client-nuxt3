@@ -15,17 +15,18 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface UiCollapseProps {
   collapseClass?: string
   modelValue?: boolean
   transition?: string
-}>()
+}
+
+const props = defineProps<UiCollapseProps>()
 
 const emit = defineEmits(['update:modelValue', 'hidden'])
 
-const collapseClass = props.collapseClass ?? 'collapse'
-
-const transition = props.transition ?? 'collapse'
+const collapseClass = computed(() => props.collapseClass ?? 'collapse')
+const transition = computed(() => props.transition ?? 'collapse')
 
 function close() {
   emit('update:modelValue', false)
@@ -41,33 +42,9 @@ function getContentHeight(el: Element): number {
   return height
 }
 
-function handleBeforeEnter(el: Element) {
-  if (el instanceof HTMLElement) {
-    el.style.height = '0'
-  }
-}
-
-function handleEnter(el: Element) {
-  if (el instanceof HTMLElement) {
-    el.style.height = `${getContentHeight(el)}px`
-  }
-}
-
 function hanfleAfterEnter(el: Element) {
   if (el instanceof HTMLElement) {
     el.style.height = ''
-  }
-}
-
-function handleBeforeLeave(el: Element) {
-  if (el instanceof HTMLElement) {
-    el.style.height = `${getContentHeight(el)}px`
-  }
-}
-
-function handleLeave(el: Element) {
-  if (el instanceof HTMLElement) {
-    el.style.height = '0'
   }
 }
 
@@ -77,6 +54,30 @@ function handleAfterLeave(el: Element) {
   }
 
   emit('hidden')
+}
+
+function handleBeforeEnter(el: Element) {
+  if (el instanceof HTMLElement) {
+    el.style.height = '0'
+  }
+}
+
+function handleBeforeLeave(el: Element) {
+  if (el instanceof HTMLElement) {
+    el.style.height = `${getContentHeight(el)}px`
+  }
+}
+
+function handleEnter(el: Element) {
+  if (el instanceof HTMLElement) {
+    el.style.height = `${getContentHeight(el)}px`
+  }
+}
+
+function handleLeave(el: Element) {
+  if (el instanceof HTMLElement) {
+    el.style.height = '0'
+  }
 }
 </script>
 

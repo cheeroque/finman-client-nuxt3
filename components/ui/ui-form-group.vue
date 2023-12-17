@@ -1,6 +1,6 @@
 <template>
   <div v-uid ref="formGroup" :class="componentClasses">
-    <label v-if="hasLabel" :for="controlId" :class="labelClass" class="form-label">
+    <label v-if="hasLabel" :class="labelClass" :for="controlId" class="form-label">
       <slot name="label">
         {{ label }}
       </slot>
@@ -15,14 +15,16 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface UiFormGroupProps {
   disabled?: boolean
   invalidFeedback?: string
   label?: string
   labelClass?: string
   state?: ControlState
   validFeedback?: string
-}>()
+}
+
+const props = defineProps<UiFormGroupProps>()
 
 const slots = useSlots()
 

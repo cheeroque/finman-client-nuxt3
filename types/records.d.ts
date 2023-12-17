@@ -1,4 +1,4 @@
-import { User } from '~~/types/auth'
+import type { User } from '~/types'
 
 export interface RecordsCategory {
   color?: string
@@ -20,25 +20,11 @@ export interface RecordsItem {
   user?: User
 }
 
-interface RecordsQueryResponse {
-  records: RecordsQueryResponseRecords
-}
-
-interface RecordsQueryResponseRecords {
-  data: RecordsItem[]
-  paginatorInfo: PaginatorInfo
-}
-
-interface RecordsQueryVariables {
-  first?: number
-  hasCategory?: WhereConditions
-  orderBy?: OrderByClause[]
-  page?: number
-  where?: RecordsQueryWhereConditions | WhereConditions
-}
-
-interface RecordsQueryWhereConditions {
-  [key: AND | OR]: RecordsQueryWhereConditions | WhereConditions[]
+export interface RecordsResponse {
+  records: {
+    data: RecordsItem[]
+    paginatorInfo?: PaginatorInfo
+  }
 }
 
 export interface RecordsSnapshot {

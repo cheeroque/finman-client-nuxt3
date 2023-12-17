@@ -12,8 +12,8 @@
           v-for="hourIndex in 24"
           :key="`hour-${hourIndex}`"
           :class="{ active: currentHour === hourIndex - 1 }"
-          type="button"
           class="timepicker-hour"
+          type="button"
           @click="setHour(hourIndex - 1)"
         >
           {{ formatUnit(hourIndex - 1) }}
@@ -25,8 +25,8 @@
           v-for="minuteIndex in minuteCount"
           :key="`minute-${minuteIndex}`"
           :class="{ active: currentMinute === minuteIndex - 1 }"
-          type="button"
           class="timepicker-minute"
+          type="button"
           @click="setMinute((minuteIndex - 1) * stepMinutes)"
         >
           {{ formatUnit((minuteIndex - 1) * stepMinutes) }}
@@ -38,8 +38,8 @@
           v-for="secondIndex in secondCount"
           :key="`second-${secondIndex}`"
           :class="{ active: currentSecond === secondIndex - 1 }"
-          type="button"
           class="timepicker-second"
+          type="button"
           @click="setSecond((secondIndex - 1) * stepSeconds)"
         >
           {{ formatUnit((secondIndex - 1) * stepSeconds) }}
@@ -52,16 +52,22 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-const props = defineProps<{
+interface UiTimepickerProps {
   hideHeader?: boolean
   locale?: string
   modelValue?: Date
   showSeconds?: boolean
   stepMinutes?: number | string
   stepSeconds?: number | string
-}>()
+}
+
+const props = defineProps<UiTimepickerProps>()
 
 const emit = defineEmits(['click:hours', 'click:minutes', 'click:seconds', 'update:modelValue'])
+
+const currentHour = ref()
+const currentMinute = ref()
+const currentSecond = ref()
 
 const locale = computed(() => props.locale ?? useLocale())
 
@@ -74,10 +80,6 @@ const secondCount = computed(() => Math.round(60 / stepSeconds.value))
 
 const titleFormat = computed(() => `HH:mm${props.showSeconds ? ':ss' : ''}`)
 const title = computed(() => luxonDate.value.toFormat(titleFormat.value, { locale: locale.value }))
-
-const currentHour = ref()
-const currentMinute = ref()
-const currentSecond = ref()
 
 function formatUnit(unit: number): string {
   return unit.toString().padStart(2, '0')

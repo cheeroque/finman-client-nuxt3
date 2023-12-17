@@ -1,18 +1,20 @@
 <template>
   <NuxtIcon
+    :class="{ 'nuxt-icon-fixed': size }"
     :fill="fill"
     :name="name"
-    :class="{ 'nuxt-icon-fixed': size }"
     :style="{ '--nuxt-icon-size': size && `${size}px` }"
   />
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface UiIconProps {
   fill?: boolean
   name: string
   size?: number | string
-}>()
+}
+
+const props = defineProps<UiIconProps>()
 </script>
 
 <style lang="scss" scoped>

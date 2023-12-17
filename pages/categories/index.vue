@@ -16,13 +16,13 @@
 </template>
 
 <script setup lang="ts">
-import { RecordsCategory } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
+
+import type { RecordsCategory } from '~/types'
 
 const recordsStore = useRecordsStore()
 
 const currentCategory = ref<RecordsCategory>()
-
 const dialogVisible = ref(false)
 
 function handleCategoryCreate() {

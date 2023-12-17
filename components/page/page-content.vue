@@ -3,13 +3,13 @@
     <header v-if="hasHeader" class="page-content-header">
       <slot name="header">
         <UiButton
-          :title="useString('home')"
           :aria-label="useString('home')"
-          to="/"
+          :title="useString('home')"
+          class="btn-back d-lg-none"
           icon="arrow-left-24"
           icon-size="24"
+          to="/"
           variant="link"
-          class="btn-back d-lg-none"
         />
 
         <h1 class="h4 card-title">{{ title }}</h1>
@@ -19,7 +19,7 @@
     <div v-if="hasContent" class="page-content-body">
       <slot />
 
-      <UiSpinner v-if="loading" :variant="spinnerVariant" />
+      <UiSpinner v-show="loading" :variant="spinnerVariant" />
     </div>
 
     <footer v-if="hasFooter" class="page-content-footer">
@@ -29,11 +29,13 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface PageContentProps {
   loading?: boolean
   spinnerVariant?: string
   title?: string
-}>()
+}
+
+const props = defineProps<PageContentProps>()
 
 const slots = useSlots()
 

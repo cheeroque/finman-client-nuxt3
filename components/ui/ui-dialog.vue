@@ -4,19 +4,19 @@
       <div v-if="modelValue" :class="componentClasses">
         <div class="dialog-content">
           <div v-if="hasHeader" class="dialog-header">
-            <slot name="header" :close="handleClose">
+            <slot :close="handleClose" name="header">
               <h5 class="dialog-title">
                 {{ title }}
                 <UiSpinner v-if="loading" variant="primary" />
               </h5>
 
               <UiButton
-                :title="useString('close')"
                 :aria-label="useString('close')"
+                :title="useString('close')"
+                class="btn-close"
                 icon="close-16"
                 icon-size="16"
                 variant="primary-muted"
-                class="btn-close"
                 @click="handleClose"
               />
             </slot>
@@ -27,8 +27,8 @@
           </div>
 
           <div v-if="hasFooter" class="dialog-footer">
-            <slot name="footer" :close="handleClose">
-              <UiButton variant="secondary" class="ms-auto" @click="handleClose"> OK </UiButton>
+            <slot :close="handleClose" name="footer">
+              <UiButton class="ms-auto" variant="secondary" @click="handleClose"> OK </UiButton>
             </slot>
           </div>
         </div>
@@ -40,15 +40,20 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface UiDialogProps {
   loading?: boolean
   modelValue?: boolean
   size?: DialogSize
   title?: string
-}>()
+}
+
+const props = defineProps<UiDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
+const bodyEl = ref<HTMLElement | undefined>()
+
+const bodyFixed = useScrollLock(bodyEl)
 const slots = useSlots()
 
 const hasHeader = computed(() => useSlotHasContent(slots.header) || Boolean(props.title))
@@ -66,19 +71,27 @@ const componentClasses = computed(() => {
   return classes
 })
 
-/** Disable body scrolling when dialog is open */
-const bodyFixed = useScrollLock(document.body)
+onMounted(() => {
+  bodyEl.value = document.body
+})
 
 function handleAfterLeave() {
-  bodyFixed.value = false
+  toggleBodyFixed(false)
   emit('closed')
 }
 
 function handleBeforeEnter() {
-  bodyFixed.value = true
+  toggleBodyFixed(true)
 }
 
 function handleClose() {
   emit('update:modelValue', false)
+}
+
+function toggleBodyFixed(isFixed: boolean) {
+  /* Disable body scrolling when dialog is open */
+  if (!process.client) return
+
+  bodyFixed.value = isFixed
 }
 </script>

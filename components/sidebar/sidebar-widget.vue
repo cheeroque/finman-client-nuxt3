@@ -11,7 +11,9 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface SidebarWidgetProps {
   title?: string
-}>()
+}
+
+const props = defineProps<SidebarWidgetProps>()
 </script>

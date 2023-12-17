@@ -5,9 +5,9 @@
         <UiButton
           :disabled="isBeginning"
           :to="getLink(1)"
+          class="pagination-link"
           icon="chevron-double-left-24"
           icon-size="24"
-          class="pagination-link"
           @click="handleClickFirst"
         />
       </li>
@@ -16,17 +16,17 @@
         <UiButton
           :disabled="isBeginning"
           :to="getLink('previous')"
+          class="pagination-link"
           icon="chevron-left-24"
           icon-size="24"
-          class="pagination-link"
           @click="handleClickPrevious"
         />
       </li>
 
       <li v-for="page in pages" :key="`page-${page}`" class="pagination-item" role="presentation">
         <UiButton
-          :to="getLink(page)"
           :class="{ active: page === currentPage }"
+          :to="getLink(page)"
           class="pagination-link"
           @click="handleClickPage(page)"
         >
@@ -38,9 +38,9 @@
         <UiButton
           :disabled="isEnd"
           :to="getLink('next')"
+          class="pagination-link"
           icon="chevron-right-24"
           icon-size="24"
-          class="pagination-link"
           @click="handleClickNext"
         />
       </li>
@@ -49,9 +49,9 @@
         <UiButton
           :to="getLink(totalPages)"
           :disabled="isEnd"
+          class="pagination-link"
           icon="chevron-double-right-24"
           icon-size="24"
-          class="pagination-link"
           @click="handleClickLast"
         />
       </li>
@@ -60,9 +60,9 @@
 </template>
 
 <script setup lang="ts">
-import { RouteLocationRaw } from 'vue-router'
+import type { RouteLocationRaw } from 'vue-router'
 
-const props = defineProps<{
+interface UiPaginationProps {
   disabled?: boolean
   hideFirstLast?: boolean
   hidePrevNext?: boolean
@@ -71,7 +71,9 @@ const props = defineProps<{
   noLinks?: boolean
   size?: string
   totalPages?: number | string
-}>()
+}
+
+const props = defineProps<UiPaginationProps>()
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -83,11 +85,8 @@ const currentPage = computed(() => {
 })
 
 const limit = computed(() => Number(props.limit ?? 5))
-
 const totalPages = computed(() => Number(props.totalPages ?? 1))
-
 const isBeginning = computed(() => currentPage.value <= 1)
-
 const isEnd = computed(() => currentPage.value >= totalPages.value)
 
 const pages = computed(() => {

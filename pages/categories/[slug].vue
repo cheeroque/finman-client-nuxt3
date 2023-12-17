@@ -1,27 +1,44 @@
 <template>
-  <PageContent :loading="recordsStore.loading" :title="category.name" spinner-variant="primary" class="overflow-hidden">
-    <GroupTable :group-label="useString('date')" :items="tableItems" :loading="recordsStore.loading">
-      <template #cell(group)="{ item }">
-        <span class="d-md-none" v-text="formatDate(item.timestamp, true)" />
-        <span class="d-none d-md-inline" v-text="formatDate(item.timestamp)" />
+  <PageContent
+    :key="pageKey"
+    :loading="pending"
+    :title="category?.name"
+    class="overflow-hidden"
+    spinner-variant="primary"
+  >
+    <GroupTable
+      v-if="data"
+      :key="tableKey"
+      :group-label="useString('date')"
+      :items="data.tableItems"
+      :loading="pending"
+    >
+      <template #cell(group)="{ value }">
+        <span class="text-capitalize d-md-none" v-text="formatDate(value, true)" />
+
+        <span class="text-capitalize d-none d-md-inline" v-text="formatDate(value)" />
       </template>
     </GroupTable>
 
-    <template #footer v-if="totalPages > 1">
-      <UiPagination :disabled="recordsStore.loading" :total-pages="totalPages" hide-prev-next />
+    <template #footer v-if="Number(data?.totalPages) > 1">
+      <UiPagination :disabled="pending" :total-pages="data?.totalPages" hide-prev-next />
     </template>
   </PageContent>
 </template>
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { RecordsItem } from '~~/types/records'
 import { useRecordsStore } from '~/store/records'
 
-import RECORDS_BY_PERIOD_QUERY from '@/graphql/RecordsByPeriod.gql'
+import RECORDS_BY_PERIOD_QUERY from '~/graphql/RecordsByPeriod.gql'
+
+import type { RecordsItem } from '~/types'
 
 interface RecordsByPeriodQueryResponse {
-  records: RecordsByPeriodQueryResponseRecords
+  records: {
+    data: RecordsByPeriodQueryResponseData[]
+    paginatorInfo: PaginatorInfo
+  }
 }
 
 interface RecordsByPeriodQueryResponseData {
@@ -29,94 +46,77 @@ interface RecordsByPeriodQueryResponseData {
   records: RecordsItem[]
 }
 
-interface RecordsByPeriodQueryResponseRecords {
-  data: RecordsByPeriodQueryResponseData[]
-  paginatorInfo: PaginatorInfo
-}
-
-interface RecordsByPeriodQueryVariables {
-  category_id: number
-  first?: number
-  page?: number
-}
-
-interface TableItem {
-  group: string
-  records: RecordsItem[]
-  subtotal: number
-  timestamp: number
-}
-
+const { $urql } = useNuxtApp()
 const route = useRoute()
 const recordsStore = useRecordsStore()
-const category = recordsStore.categories.find(({ slug }) => slug === route.params.slug)
 
-if (!category) {
+const category = computed(() => recordsStore.categories.find(({ slug }) => slug === route.params.slug))
+
+if (!category.value) {
   const message = useString('errorMessage404')
   throw createError({ fatal: true, message, statusCode: 404 })
 }
 
-const perPage = ref<number>()
-const page = ref<number>()
-const tableItems = ref<TableItem[]>([])
-const totalPages = ref(0)
-
-async function fetchRecords() {
-  if (!category) return
-
-  perPage.value = Number(route.query.perPage) || 18
-  page.value = Number(route.query.page) || 1
-
-  const variables: RecordsByPeriodQueryVariables = {
-    category_id: Number(category.id),
-    first: perPage.value,
-    page: page.value,
+const { data, pending, refresh } = await useAsyncData(async () => {
+  const variables = {
+    category_id: Number(category.value?.id),
+    first: Number(route.query.perPage) || 18,
+    page: Number(route.query.page) || 1,
   }
 
-  recordsStore.pending++
+  const { data: recordsData } = await $urql
+    .query<RecordsByPeriodQueryResponse>(RECORDS_BY_PERIOD_QUERY, variables)
+    .toPromise()
 
-  try {
-    const { data, error } = await useAsyncQuery<RecordsByPeriodQueryResponse>(RECORDS_BY_PERIOD_QUERY, variables)
+  const tableItems = ref(buildTableItems(recordsData?.records))
+  const totalPages = ref(recordsData?.records?.paginatorInfo.lastPage ?? 1)
 
-    if (error.value) throw error.value
+  return reactive({ tableItems, totalPages })
+})
 
-    if (data.value?.records?.data) {
-      tableItems.value = data.value.records.data.map(({ period, records }) => {
-        const date = DateTime.fromFormat(period, 'yyyy-LL')
-        const group = date.toLocaleString({ month: 'long', year: 'numeric' }, { locale: useLocale() })
-        const subtotal = records.reduce((acc, cur) => (acc += cur.sum), 0)
-        const timestamp = date.valueOf()
+/* Key to remount page when pagination appears / disappears */
 
-        return { group, subtotal, records, timestamp }
-      })
+const pageKey = computed(() => String(Number(data.value?.totalPages) > 1))
 
-      totalPages.value = data.value.records.paginatorInfo.lastPage
-    }
-  } catch (error) {}
+/* Key to remount GroupTable when page changes */
 
-  recordsStore.pending--
-}
-
-function formatDate(timestamp: number, short = false): string {
-  const monthFormat = short ? 'LLL' : 'LLLL'
-  return DateTime.fromMillis(timestamp).toFormat(`${monthFormat} yyyy`)
-}
-
-const { refresh } = await useAsyncData('category-records', () => fetchRecords())
+const tableKey = computed(() => String(route.query.page))
 
 watch(
   () => route.query,
+
   async () => {
     await refresh()
+
     setTimeout(() => {
       /* If window is scrolled down (e.g. in mobile) scroll it back to top,
        * otherwise scroll back page element */
+
       const windowTop = useWindowTop()
       const target = !windowTop ? '.page' : undefined
       useScrollTo(target)
     }, 250)
   }
 )
+
+/* Transform records from response into table rows */
+
+function buildTableItems(records?: RecordsByPeriodQueryResponse['records']) {
+  return (
+    records?.data.map(({ period, records }) => {
+      const date = DateTime.fromFormat(period, 'yyyy-LL')
+      const group = date.valueOf()
+      const subtotal = records.reduce((acc, cur) => (acc += cur.sum), 0)
+
+      return { group, subtotal, records }
+    }) ?? []
+  )
+}
+
+function formatDate(timestamp: number, short = false): string {
+  const monthFormat = short ? 'LLL' : 'LLLL'
+  return DateTime.fromMillis(timestamp).toFormat(`${monthFormat} yyyy`, { locale: useLocale() })
+}
 </script>
 
 <style lang="scss" scoped>

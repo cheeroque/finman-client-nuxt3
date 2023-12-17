@@ -1,96 +1,101 @@
 import { useAuthStore } from '~/store/auth'
-import { LoginCredentials, LoginResponseData, Me, User } from '~~/types/auth'
-import ME_QUERY from '@/graphql/Me.gql'
-import LOGIN_MUTATION from '@/graphql/Login.gql'
-import LOGOUT_MUTATION from '@/graphql/Logout.gql'
 
-export class AuthError extends Error {
-  code?: string
-  message: string
+import LOGIN_MUTATION from '~/graphql/Login.gql'
+import LOGOUT_MUTATION from '~/graphql/Logout.gql'
 
-  constructor({ code, message }: { code?: string; message: string }) {
-    super()
+import type { Client } from '@urql/core'
+import type { CookieOptions } from 'nuxt/app'
+import type { AuthPlugin, LoginCredentials, User } from '~/types'
 
-    Object.setPrototypeOf(this, AuthError.prototype)
-
-    this.code = code
-    this.message = message
+interface LoginResponse {
+  login: {
+    access_token: string
+    refresh_token?: string
+    user: User
   }
 }
 
-export default defineNuxtPlugin(() => {
-  const { onLogin, onLogout } = useApollo()
+interface LogoutResponse {
+  logout: {
+    message?: string
+    status: string
+  }
+}
+
+const TOKEN_KEY = 'auth_token'
+const REFRESH_TOKEN_KEY = 'auth_refresh_token'
+
+const COOKIE_OPTIONS: CookieOptions = {
+  path: '/',
+  sameSite: 'lax',
+}
+
+export default defineNuxtPlugin((nuxtApp) => {
   const authStore = useAuthStore()
 
-  async function fetchUser() {
-    try {
-      const { data, error } = await useAsyncQuery<Me>(ME_QUERY)
-
-      if (error.value) handleAuthError(error.value)
-
-      if (data.value?.me) {
-        storeUser(data.value.me)
-      }
-    } catch (error) {
-      handleAuthError(error)
-    }
-  }
+  const tokenCookie = useCookie(TOKEN_KEY, COOKIE_OPTIONS)
+  const refreshTokenCookie = useCookie(REFRESH_TOKEN_KEY, COOKIE_OPTIONS)
 
   async function login(credentials: LoginCredentials) {
-    const { mutate } = useMutation<LoginResponseData>(LOGIN_MUTATION)
+    if (!nuxtApp.$urql) return
 
-    try {
-      const response = await mutate(credentials)
+    const $urql = nuxtApp.$urql as Client
 
-      if (response?.data?.login) {
-        const { access_token, user } = response.data.login
+    const { data, error } = await $urql.mutation<LoginResponse>(LOGIN_MUTATION, credentials).toPromise()
 
-        storeUser(user)
-        onLogin(access_token)
-      } else {
-        handleAuthError()
-      }
-    } catch (error: any) {
-      handleAuthError(error)
+    if (data?.login) {
+      const { access_token, refresh_token, user } = data.login
+
+      authStore.user = user
+      setToken(access_token)
+      setToken(refresh_token, true)
+    } else {
+      throw createError({
+        statusCode: 401,
+        statusMessage: error?.message,
+      })
     }
   }
 
   async function logout() {
-    const { mutate } = useMutation(LOGOUT_MUTATION)
-    await mutate()
+    if (!nuxtApp.$urql) return
+
+    const $urql = nuxtApp.$urql as Client
+
+    try {
+      await $urql.mutation<LogoutResponse>(LOGOUT_MUTATION, {}).toPromise()
+    } catch (error) {
+      /* Ignore error when trying to log out without token */
+    }
+
     reset()
   }
 
-  function handleAuthError(error?: any) {
-    if (error?.graphQLErrors?.length) {
-      const isAuthError = error?.message === 'Unauthenticated.'
+  function getToken(refresh?: boolean) {
+    return refresh ? refreshTokenCookie.value : tokenCookie.value
+  }
 
-      if (isAuthError) {
-        /* Apollo authentication error => reset auth */
-        reset()
-
-        const authError = new AuthError({ code: '401', message: error.message })
-        throw authError
-      } else {
-        /* Apollo non-authentication error */
-        throw error
-      }
+  function setToken(token?: string, refresh?: boolean) {
+    if (refresh) {
+      refreshTokenCookie.value = token
     } else {
-      /* NOT Apollo error */
-      throw error
+      tokenCookie.value = token
     }
   }
 
   function reset() {
-    storeUser()
-    onLogout()
+    authStore.user = undefined
+    setToken(undefined)
+    setToken(undefined, true)
   }
 
-  function storeUser(user?: User) {
-    authStore.user = user
-  }
-
-  const auth = { fetchUser, login, logout, reset }
+  const auth = { login, logout, getToken, setToken, reset }
 
   return { provide: { auth } }
 })
+
+declare module '#app' {
+  interface NuxtApp {
+    $auth: AuthPlugin
+  }
+}

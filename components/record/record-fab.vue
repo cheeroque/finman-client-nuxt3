@@ -3,15 +3,15 @@
     <UiButton v-if="show" icon="edit-24" icon-size="24" variant="tertiary" class="btn-fab" @click="handleFabClick" />
   </Transition>
 
-  <RecordDialog v-model="dialogVisible" @record:update="emit('records:update')" />
+  <RecordDialog v-model="dialogVisible" />
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface RecordFabProps {
   show?: boolean
-}>()
+}
 
-const emit = defineEmits(['records:update'])
+const props = defineProps<RecordFabProps>()
 
 const dialogVisible = ref(false)
 

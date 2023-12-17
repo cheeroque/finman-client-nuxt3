@@ -2,9 +2,9 @@
   <div class="calendar">
     <header class="calendar-header">
       <UiButton
-        :title="useString('previousYear')"
         :aria-label="useString('previousYear')"
         :disabled="isBeginning"
+        :title="useString('previousYear')"
         icon="chevron-double-left-24"
         icon-size="24"
         @click="setYearPrevious"
@@ -13,16 +13,16 @@
       <span class="calendar-title">{{ currentYear }}</span>
 
       <UiButton
-        :title="useString('nextYear')"
         :aria-label="useString('nextYear')"
         :disabled="isEnd"
+        :title="useString('nextYear')"
         icon="chevron-double-right-24"
         icon-size="24"
         @click="setYearNext"
       />
     </header>
 
-    <div :style="{ transform: `translateX(${yearOffset * 100}%)` }" class="calendar-body">
+    <div :style="{ transform: `translateX(${translateOffset}%)` }" class="calendar-body">
       <nav v-for="item in calendarYears" :key="`year-${item.year}`" class="calendar-year">
         <ul class="list-unstyled calendar-months">
           <li v-for="month in item.months" :key="`${month}-${item.year}`" class="calendar-month">
@@ -32,8 +32,8 @@
 
             <NuxtLink
               v-else
+              :class="{ active: isLinkActive(month.link) }"
               :to="`/months/${month.link}`"
-              :class="{ active: month.link === activeMonthLink }"
               class="calendar-link"
             >
               {{ month.month }}
@@ -55,61 +55,71 @@ interface CalendarMonth {
   month: string
 }
 
-interface CalendarYear {
-  months: CalendarMonth[]
-  year: number
-}
-
-const props = defineProps<{
+interface MonthCalendarProps {
   date?: Date
   numericMonths?: boolean
-}>()
-
-const recordsStore = useRecordsStore()
-
-const calendarYears: CalendarYear[] = []
-
-const startDate = recordsStore.firstRecord
-  ? DateTime.fromFormat(recordsStore.firstRecord.created_at, 'yyyy-LL-dd HH:mm:ss')
-  : DateTime.now()
-
-const endDate = DateTime.now()
-
-const monthFormat = props.numericMonths ? '2-digit' : 'long'
-
-for (let y = startDate.year; y <= endDate.year; y++) {
-  const months: CalendarMonth[] = []
-
-  for (let m = 1; m <= 12; m++) {
-    const date = DateTime.fromObject({ month: m, year: y })
-    const month = date.toLocaleString({ month: monthFormat }, { locale: useLocale() })
-    const link = date.toFormat('yyyy-LL')
-
-    const isTooEarly = y <= startDate.year && m < startDate.month
-    const isTooLate = y >= endDate.year && m > endDate.month
-
-    months.push({
-      month,
-      link,
-      disabled: isTooEarly || isTooLate,
-    })
-  }
-
-  calendarYears.push({ year: y, months })
 }
 
-const currentDate = props.date || new Date()
+const props = defineProps<MonthCalendarProps>()
+
+const LINK_FORMAT = 'yyyy-LL'
+
+const { $urql } = useNuxtApp()
+const recordsStore = useRecordsStore()
+
+const currentDate = props.date ?? new Date()
 const currentYear = ref(currentDate.getFullYear())
 
-const isBeginning = computed(() => startDate.year >= currentYear.value)
-const isEnd = computed(() => endDate.year <= currentYear.value)
+const startYear = computed(() => recordsStore.firstRecordDate?.year)
+const endYear = computed(() => DateTime.now().year)
 
-const yearOffset = computed(() => startDate.year - currentYear.value)
+/* Array of calendar pages (years). Each page contains an array of 12 months.
+ * Months that are before the earliest or after the latest record creation date
+ * are disabled */
 
-const activeMonthLink = computed(() => {
-  if (!props.date) return
-  return DateTime.fromJSDate(props.date).toFormat('yyyy-LL')
+const calendarYears = computed(() => {
+  const years = []
+
+  const monthFormat = props.numericMonths ? '2-digit' : 'long'
+
+  for (let y = startYear.value; y <= endYear.value; y++) {
+    const months: CalendarMonth[] = []
+
+    for (let m = 1; m <= 12; m++) {
+      const date = DateTime.fromObject({ month: m, year: y })
+      const month = date.toLocaleString({ month: monthFormat }, { locale: useLocale() })
+      const link = date.toFormat(LINK_FORMAT)
+
+      const isTooEarly = y <= startYear.value && m < recordsStore.firstRecordDate?.month
+      const isTooLate = y >= endYear.value && m > DateTime.now().month
+
+      months.push({
+        month,
+        link,
+        disabled: isTooEarly || isTooLate,
+      })
+    }
+
+    years.push({ year: y, months })
+  }
+
+  return years
 })
+
+/* Calendar beginning/end state to disable back/forward buttons */
+
+const isBeginning = computed(() => Number(startYear.value) >= currentYear.value)
+const isEnd = computed(() => Number(endYear.value) <= currentYear.value)
+
+/* Percent value to translate current calendar page with CSS */
+
+const translateOffset = computed(() => (Number(startYear.value) - currentYear.value || 0) * 100)
+
+function isLinkActive(link: string) {
+  if (!props.date) return false
+
+  return link === DateTime.fromJSDate(props.date).toFormat(LINK_FORMAT)
+}
 
 function setYearNext() {
   currentYear.value++

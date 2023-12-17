@@ -1,4 +1,10 @@
-import { Comment, Text, Slot, VNode } from 'vue'
+/* IMPORTANT NOTE! Due to the Vue limitations, this composable is not reactive.
+ * If you need to dynamically update something in your component based on this
+ * composable returned value, you'll have to recreate that component by using
+ * a key prop */
+
+import { Comment, Text } from 'vue'
+import type { Slot, VNode } from 'vue'
 
 export function useSlotHasContent(slot: Slot | undefined, slotProps = {}): boolean {
   if (!slot) return false

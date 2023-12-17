@@ -1,8 +1,8 @@
 <template>
   <UiButton
+    :aria-label="buttonTitle"
     :class="{ open: open }"
     :title="buttonTitle"
-    :aria-label="buttonTitle"
     class="drawer-toggle"
     variant="link"
     @click="emit('click')"
@@ -16,9 +16,11 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+interface NavDrawerToggleProps {
   open?: boolean
-}>()
+}
+
+const props = defineProps<NavDrawerToggleProps>()
 
 const emit = defineEmits(['click'])
 

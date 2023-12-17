@@ -1,16 +1,17 @@
 <template>
   <NuxtLink
-    :to="`/categories/${category.slug}`"
     :class="{ 'caption-outside': captionOutside, 'caption-visible': visible }"
     :style="{
       '--category-bar-color': category.color,
-      '--category-text-color': textColor,
       '--category-bar-width': barWidth,
+      '--category-text-color': textColor,
     }"
+    :to="`/categories/${category.slug}`"
     class="category-link"
   >
     <div ref="caption" class="category-link-caption">
       <span class="category-total"> {{ useNumberFormat(total) }}&nbsp;₽ </span>
+
       <span class="category-name">
         {{ category.name }}
       </span>
@@ -19,21 +20,22 @@
 </template>
 
 <script setup lang="ts">
-import { RecordsCategory } from '~~/types/records'
+import type { RecordsCategory } from '~/types'
 
-const props = defineProps<{
+interface SidebarMonthlyCategoryProps {
   category: RecordsCategory
   maxTotal: number
   total: number
-}>()
+}
 
-const textColor = computed(() => useContrastColor(props.category.color))
+const props = defineProps<SidebarMonthlyCategoryProps>()
 
-const barWidth = ref('100%')
-
+const barWidth = ref('0')
 const caption = ref()
 const captionOutside = ref(false)
 const visible = ref(false)
+
+const textColor = computed(() => useContrastColor(props.category.color))
 
 function initCaption() {
   /* Determine whether category caption should be inside or outside the bar */
@@ -58,14 +60,10 @@ function initCaption() {
 
 watch(
   () => [props.maxTotal, props.total],
-  () => {
-    initCaption()
-  }
+  () => initCaption()
 )
 
-onMounted(() => {
-  initCaption()
-})
+onMounted(() => initCaption())
 </script>
 
 <style lang="scss" scoped>
@@ -82,7 +80,7 @@ onMounted(() => {
   color: inherit;
   background-color: var(--category-bar-color);
   transition: $transition;
-  transition-property: color, background-color;
+  transition-property: width, color, background-color;
 
   &:not(.caption-outside) {
     color: var(--category-text-color);

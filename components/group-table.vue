@@ -9,9 +9,9 @@
         <UiButton
           v-if="item.records?.length"
           :class="{ collapsed: !detailsVisible }"
+          class="btn-details"
           icon="caret"
           icon-size="10"
-          class="btn-details"
           block
           icon-right
           @click-native="handleToggleDetails($event, detailsVisible, toggleDetails)"
@@ -23,7 +23,7 @@
       </template>
 
       <template #row-details="{ item }">
-        <UiTable :fields="detailsFields" :items="item.records" hide-thead fixed>
+        <UiTable :fields="detailsFields" :items="item.records" fixed hide-thead>
           <template #cell(created_at)="{ value }">
             {{ formatDate(value) }}
           </template>
@@ -32,9 +32,9 @@
 
           <template #cell(note)="{ item, value }">
             <UiButton
+              class="btn-edit"
               icon="edit-24"
               icon-size="24"
-              class="btn-edit"
               block
               icon-right
               @click="handleEdit(item as RecordsItem)"
@@ -52,13 +52,16 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { RecordsItem } from '~~/types/records'
-import { TableField, TableItem } from '~/components/ui/ui-table.vue'
 
-const props = defineProps<{
+import type { RecordsItem } from '~/types'
+import type { TableField, TableItem } from './ui/ui-table.vue'
+
+interface GroupTableProps {
   groupLabel: string
   items: TableItem[]
-}>()
+}
+
+const props = defineProps<GroupTableProps>()
 
 const currentRecord = ref<RecordsItem>()
 const dialogVisible = ref(false)
