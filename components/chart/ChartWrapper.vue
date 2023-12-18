@@ -32,3 +32,27 @@
   }
 }
 </style>
+
+<style lang="scss">
+$ct-text-color: var(--neutral);
+$ct-text-size: 0.875rem;
+$ct-text-line-height: 1.5;
+
+$ct-grid-color: var(--neutral-outline);
+$ct-grid-dasharray: 0;
+
+$ct-bar-width: 2rem;
+
+$ct-series-names: (a, b, c, d, e, f, g);
+$ct-series-colors: (
+  var(--primary),
+  var(--secondary),
+  var(--tertiary),
+  var(--neutral),
+  var(--neutral-variant),
+  var(--danger),
+  var(--success)
+);
+
+@import 'chartist/dist/index.scss';
+</style>

@@ -5,7 +5,6 @@
 </template>
 
 <script setup lang="ts">
-import 'chartist/dist/index.css'
 import { BarChart } from 'chartist'
 
 import type { BarChartData, BarChartOptions } from 'chartist'
