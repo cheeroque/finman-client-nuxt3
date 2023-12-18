@@ -41,7 +41,7 @@ $ct-text-line-height: 1.5;
 $ct-grid-color: var(--neutral-outline);
 $ct-grid-dasharray: 0;
 
-$ct-bar-width: 2rem;
+$ct-bar-width: var(--ct-bar-width, 2rem);
 
 $ct-series-names: (a, b, c, d, e, f, g);
 $ct-series-colors: (
