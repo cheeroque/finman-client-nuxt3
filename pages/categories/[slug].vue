@@ -1,11 +1,39 @@
 <template>
-  <PageContent
-    :key="pageKey"
-    :loading="pending"
-    :title="category?.name"
-    class="overflow-hidden"
-    spinner-variant="primary"
-  >
+  <PageContent :key="pageKey" :loading="pending" class="overflow-hidden" spinner-variant="primary">
+    <template #header>
+      <UiButton
+        :aria-label="useString('home')"
+        :title="useString('home')"
+        class="btn-back d-lg-none"
+        icon="arrow-left-24"
+        icon-size="24"
+        to="/"
+        variant="link"
+      />
+
+      <h1 class="h4 card-title">{{ category?.name }}</h1>
+
+      <UiButton
+        :aria-label="chartButtonTitle"
+        :title="chartButtonTitle"
+        class="btn-chart"
+        icon="chart-bar-24"
+        icon-size="24"
+        @click="collapseOpen = !collapseOpen"
+      />
+    </template>
+
+    <UiCollapse v-model="collapseOpen">
+      <div class="pb-12 pb-lg-0">
+        <ChartBar
+          :data="chartData"
+          :label-formatter="formatChartBarLabel"
+          :options="chartOptions"
+          :responsive-options="chartResponsiveOptions"
+        />
+      </div>
+    </UiCollapse>
+
     <GroupTable
       v-if="data"
       :key="tableKey"
@@ -14,7 +42,7 @@
       :loading="pending"
     >
       <template #cell(group)="{ value }">
-        <span class="text-capitalize d-md-none" v-text="formatDate(value, true)" />
+        <span class="text-capitalize d-md-none" v-text="formatDate(value, 'LLL yyyy')" />
 
         <span class="text-capitalize d-none d-md-inline" v-text="formatDate(value)" />
       </template>
@@ -33,6 +61,7 @@ import { useRecordsStore } from '~/store/records'
 import RECORDS_BY_PERIOD_QUERY from '~/graphql/RecordsByPeriod.gql'
 
 import type { RecordsItem } from '~/types'
+import type { ChartBarProps } from '~/components/chart/ChartBar.vue'
 
 interface RecordsByPeriodQueryResponse {
   records: {
@@ -50,6 +79,29 @@ const { $urql } = useNuxtApp()
 const route = useRoute()
 const recordsStore = useRecordsStore()
 
+const chartOptions = { reverseData: true }
+const chartResponsiveOptions: ChartBarProps['responsiveOptions'] = [
+  [
+    'screen and (max-width: 767.99998px)',
+    {
+      axisX: { offset: 0, showLabel: false },
+      axisY: { labelInterpolationFnc: (label) => formatDate(Number(label), 'LL.yy') },
+      horizontalBars: true,
+      reverseData: false,
+    },
+  ],
+  [
+    'screen and (min-width: 768px)',
+    {
+      axisX: { labelInterpolationFnc: (label) => formatDate(Number(label), 'LL.yyyy') },
+      axisY: { offset: 0, showLabel: false },
+    },
+  ],
+]
+
+const collapseOpen = ref(true)
+
+const chartButtonTitle = computed(() => useString(collapseOpen.value ? 'hideChart' : 'showChart'))
 const category = computed(() => recordsStore.categories.find(({ slug }) => slug === route.params.slug))
 
 if (!category.value) {
@@ -82,6 +134,18 @@ const pageKey = computed(() => String(Number(data.value?.totalPages) > 1))
 
 const tableKey = computed(() => String(route.query.page))
 
+const chartData = computed(() => {
+  const labels: string[] = []
+  const dataset: number[] = []
+
+  data.value?.tableItems?.forEach((row) => {
+    labels.push(String(row.group))
+    dataset.push(row.subtotal)
+  })
+
+  return { labels, series: [dataset] }
+})
+
 watch(
   () => route.query,
 
@@ -113,13 +177,23 @@ function buildTableItems(records?: RecordsByPeriodQueryResponse['records']) {
   )
 }
 
-function formatDate(timestamp: number, short = false): string {
-  const monthFormat = short ? 'LLL' : 'LLLL'
-  return DateTime.fromMillis(timestamp).toFormat(`${monthFormat} yyyy`, { locale: useLocale() })
+function formatDate(timestamp: number, format = 'LLLL yyyy'): string {
+  return DateTime.fromMillis(timestamp).toFormat(format, { locale: useLocale() })
+}
+
+function formatChartBarLabel(value?: number) {
+  return `${useNumberFormat(value)} ₽`
 }
 </script>
 
 <style lang="scss" scoped>
+.btn-chart {
+  align-self: flex-start;
+  margin-block: -$border-width;
+  margin-left: auto;
+  padding: 0.5rem;
+}
+
 :deep(.page-content-body) {
   padding: 0;
 }
@@ -130,8 +204,20 @@ function formatDate(timestamp: number, short = false): string {
 }
 
 @include media-min-width(lg) {
+  .btn-chart {
+    margin-block: calc(-#{$border-width} - 0.5rem);
+  }
+
   :deep(.page-content-footer) {
     justify-content: flex-end;
+  }
+}
+
+@include media-max-width(md) {
+  :deep(.chart-wrapper) {
+    &::before {
+      padding-bottom: 250%;
+    }
   }
 }
 </style>

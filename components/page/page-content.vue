@@ -70,7 +70,8 @@ const hasFooter = computed(() => useSlotHasContent(slots.footer))
   padding: ($grid-gap * 0.5) 0;
 }
 
-.btn-back {
+.btn-back,
+:deep(.btn-back) {
   align-self: flex-start;
   margin: 0 0.5rem 0 -0.5rem;
   padding: 0.5rem;
