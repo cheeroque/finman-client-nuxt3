@@ -21,6 +21,9 @@
     left: 0;
     width: 100% !important;
     height: 100% !important;
+    padding: $card-padding-y $card-padding-x;
+    border-radius: $card-border-radius;
+    background-color: $card-bg;
   }
 }
 
@@ -41,18 +44,23 @@ $ct-text-line-height: 1.5;
 $ct-grid-color: var(--neutral-outline);
 $ct-grid-dasharray: 0;
 
-$ct-bar-width: var(--ct-bar-width, 2rem);
-
-$ct-series-names: (a, b, c, d, e, f, g);
-$ct-series-colors: (
-  var(--primary),
-  var(--secondary),
-  var(--tertiary),
-  var(--neutral),
-  var(--neutral-variant),
-  var(--danger),
-  var(--success)
-);
+$ct-bar-width: 0;
 
 @import 'chartist/dist/index.scss';
+
+.ct-bar {
+  fill: var(--ct-bar-fill, var(--primary));
+}
+
+.ct-bar-label {
+  font-family: $font-family-alternate;
+  font-size: 0.875rem;
+  fill: var(--neutral);
+  transform: translateY(-0.5rem);
+}
+
+.ct-label {
+  font-family: $font-family-alternate;
+  font-size: 0.8125rem;
+}
 </style>
