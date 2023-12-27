@@ -56,7 +56,6 @@ $ct-bar-width: 0;
   font-family: $font-family-alternate;
   font-size: 0.875rem;
   fill: var(--neutral);
-  transform: translateY(-0.5rem);
 }
 
 .ct-label {
