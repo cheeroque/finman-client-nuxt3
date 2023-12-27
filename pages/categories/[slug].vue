@@ -99,7 +99,7 @@ const chartResponsiveOptions: ChartBarProps['responsiveOptions'] = [
   ],
 ]
 
-const collapseOpen = ref(true)
+const collapseOpen = ref(false)
 
 const chartButtonTitle = computed(() => useString(collapseOpen.value ? 'hideChart' : 'showChart'))
 const category = computed(() => recordsStore.categories.find(({ slug }) => slug === route.params.slug))
