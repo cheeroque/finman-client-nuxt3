@@ -1,6 +1,13 @@
 <template>
   <div>
-    <ChartBar :data="data" :label-formatter="formatLabel" :options="options" :responsive-options="responsiveOptions" />
+    <ChartBar
+      :data="data"
+      :label-formatter="formatLabel"
+      :options="options"
+      :responsive-options="responsiveOptions"
+      clickable
+      @click:bar="handleClickBar"
+    />
   </div>
 </template>
 
@@ -14,6 +21,8 @@ interface CategoryChartProps {
 }
 
 const props = defineProps<CategoryChartProps>()
+
+const emit = defineEmits(['click:bar'])
 
 const options = { reverseData: true }
 const responsiveOptions: ResponsiveOptions<BarChartOptions> = [
@@ -41,5 +50,10 @@ function formatDate(timestamp: number, format = 'LL.yy'): string {
 
 function formatLabel(value?: number) {
   return `${useNumberFormat(value)} ₽`
+}
+
+function handleClickBar(event: SVGElement) {
+  const group = event.dataset.group
+  emit('click:bar', group)
 }
 </script>

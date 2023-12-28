@@ -1,6 +1,6 @@
 <template>
   <ChartWrapper>
-    <div ref="chartEl" class="chart-container" />
+    <div ref="chartEl" :class="{ 'chart-container-clickable': clickable }" class="chart-container" />
   </ChartWrapper>
 </template>
 
@@ -12,6 +12,7 @@ import type { BarChartData, BarChartOptions, BarDrawEvent, DrawEvent, Responsive
 export interface ChartBarProps {
   barBorderRadius?: number | string
   barRatio?: number
+  clickable?: boolean
   data: BarChartData
   labelFormatter?: (value?: number) => string
   options?: BarChartOptions
@@ -22,6 +23,8 @@ const props = withDefaults(defineProps<ChartBarProps>(), {
   barBorderRadius: '0.25rem',
   barRatio: 0.7,
 })
+
+const emit = defineEmits(['click:bar'])
 
 const chartEl = ref()
 const chartInstance = ref()
@@ -51,6 +54,14 @@ onMounted(() => {
         data.group.append(label)
       }
     })
+
+    chartEl.value.addEventListener('click', handleChartClick)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (chartEl.value instanceof HTMLElement) {
+    chartEl.value.removeEventListener('click', handleChartClick)
   }
 })
 
@@ -70,12 +81,15 @@ function getBarElements(data: BarDrawEvent) {
   const rectWidth = isHorizontal ? Math.abs(data.x1 - data.x2) : barSize
   const rectHeight = isHorizontal ? barSize : Math.abs(data.y1 - data.y2)
 
+  const dataGroup = data.meta.group
+
   const rectAttributes = {
     x: rectX,
     y: rectY,
     width: rectWidth,
     height: rectHeight,
     rx: props.barBorderRadius,
+    'data-group': dataGroup,
   }
 
   const rect = new Svg('rect', rectAttributes, 'ct-bar')
@@ -102,6 +116,16 @@ function getBarElements(data: BarDrawEvent) {
   return { label, rect }
 }
 
+function handleChartClick(event: MouseEvent) {
+  const target = event.target
+
+  if (target instanceof SVGElement) {
+    if (target.classList.contains('ct-bar')) {
+      emit('click:bar', target)
+    }
+  }
+}
+
 function isBarData(data: DrawEvent): data is BarDrawEvent {
   return data.type === 'bar'
 }
@@ -119,6 +143,12 @@ function isHorizontalBars() {
 </script>
 
 <style lang="scss" scoped>
+.chart-container-clickable {
+  :deep(.ct-bar) {
+    cursor: pointer;
+  }
+}
+
 @include media-max-width(md) {
   :deep(.ct-bar-label) {
     font-size: 0.8125rem;
