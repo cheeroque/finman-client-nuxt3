@@ -11,27 +11,13 @@
         variant="link"
       />
 
-      <h1 class="h4 card-title">{{ category?.name }}</h1>
+      <h1 class="h4 card-title">{{ data?.category.name }}</h1>
 
-      <UiButton
-        :aria-label="chartButtonTitle"
-        :title="chartButtonTitle"
-        class="btn-chart"
-        icon="chart-bar-24"
-        icon-size="24"
-        @click="collapseOpen = !collapseOpen"
-      />
+      <ChartButton v-model="collapseOpen" />
     </template>
 
     <UiCollapse v-model="collapseOpen">
-      <div class="pb-12 pb-lg-0">
-        <ChartBar
-          :data="chartData"
-          :label-formatter="formatChartBarLabel"
-          :options="chartOptions"
-          :responsive-options="chartResponsiveOptions"
-        />
-      </div>
+      <CategoryChart v-if="data" :data="data?.chartData" class="pb-12 pb-lg-0" />
     </UiCollapse>
 
     <GroupTable
@@ -60,8 +46,9 @@ import { useRecordsStore } from '~/store/records'
 
 import RECORDS_BY_PERIOD_QUERY from '~/graphql/RecordsByPeriod.gql'
 
+import type { SeriesObjectValue } from 'chartist'
 import type { RecordsItem } from '~/types'
-import type { ChartBarProps } from '~/components/chart/ChartBar.vue'
+import type { TableItem } from '~/components/ui/ui-table.vue'
 
 interface RecordsByPeriodQueryResponse {
   records: {
@@ -79,39 +66,22 @@ const { $urql } = useNuxtApp()
 const route = useRoute()
 const recordsStore = useRecordsStore()
 
-const chartOptions = { reverseData: true }
-const chartResponsiveOptions: ChartBarProps['responsiveOptions'] = [
-  [
-    'screen and (max-width: 767.99998px)',
-    {
-      axisX: { offset: 0, showLabel: false },
-      axisY: { labelInterpolationFnc: (label) => formatDate(Number(label), 'LL.yy') },
-      horizontalBars: true,
-      reverseData: false,
-    },
-  ],
-  [
-    'screen and (min-width: 768px)',
-    {
-      axisX: { labelInterpolationFnc: (label) => formatDate(Number(label), 'LL.yyyy') },
-      axisY: { offset: 0, showLabel: false },
-    },
-  ],
-]
-
 const collapseOpen = ref(false)
 
-const chartButtonTitle = computed(() => useString(collapseOpen.value ? 'hideChart' : 'showChart'))
-const category = computed(() => recordsStore.categories.find(({ slug }) => slug === route.params.slug))
+const { data, error, pending, refresh } = await useAsyncData(async () => {
+  /* Attempt to find category by slug */
 
-if (!category.value) {
-  const message = useString('errorMessage404')
-  throw createError({ fatal: true, message, statusCode: 404 })
-}
+  const category = recordsStore.categories.find(({ slug }) => slug === route.params.slug)
 
-const { data, pending, refresh } = await useAsyncData(async () => {
+  if (!category) {
+    const message = useString('errorMessage404')
+    throw createError({ fatal: true, message, statusCode: 404 })
+  }
+
+  /* Fetch records for selected category & period */
+
   const variables = {
-    category_id: Number(category.value?.id),
+    category_id: Number(category?.id),
     first: Number(route.query.perPage) || 18,
     page: Number(route.query.page) || 1,
   }
@@ -120,11 +90,31 @@ const { data, pending, refresh } = await useAsyncData(async () => {
     .query<RecordsByPeriodQueryResponse>(RECORDS_BY_PERIOD_QUERY, variables)
     .toPromise()
 
-  const tableItems = ref(buildTableItems(recordsData?.records))
+  /* Build table items & chart data from records */
+
+  const dataset: SeriesObjectValue<number>[] = []
+  const labels: string[] = []
+  const tableItems: TableItem[] = []
+
+  recordsData?.records?.data?.forEach(({ period, records }) => {
+    const date = DateTime.fromFormat(period, 'yyyy-LL')
+    const group = date.valueOf()
+    const subtotal = records.reduce((acc, cur) => (acc += cur.sum), 0)
+
+    dataset.push({ meta: { group }, value: subtotal })
+    labels.push(String(group))
+    tableItems.push({ group, subtotal, records })
+  })
+
+  const chartData = reactive({ labels, series: [dataset] })
   const totalPages = ref(recordsData?.records?.paginatorInfo.lastPage ?? 1)
 
-  return reactive({ tableItems, totalPages })
+  return reactive({ category, chartData, tableItems, totalPages })
 })
+
+if (error.value) {
+  throw error.value
+}
 
 /* Key to remount page when pagination appears / disappears */
 
@@ -133,18 +123,6 @@ const pageKey = computed(() => String(Number(data.value?.totalPages) > 1))
 /* Key to remount GroupTable when page changes */
 
 const tableKey = computed(() => String(route.query.page))
-
-const chartData = computed(() => {
-  const labels: string[] = []
-  const dataset: number[] = []
-
-  data.value?.tableItems?.forEach((row) => {
-    labels.push(String(row.group))
-    dataset.push(row.subtotal)
-  })
-
-  return { labels, series: [dataset] }
-})
 
 watch(
   () => route.query,
@@ -163,26 +141,8 @@ watch(
   }
 )
 
-/* Transform records from response into table rows */
-
-function buildTableItems(records?: RecordsByPeriodQueryResponse['records']) {
-  return (
-    records?.data.map(({ period, records }) => {
-      const date = DateTime.fromFormat(period, 'yyyy-LL')
-      const group = date.valueOf()
-      const subtotal = records.reduce((acc, cur) => (acc += cur.sum), 0)
-
-      return { group, subtotal, records }
-    }) ?? []
-  )
-}
-
 function formatDate(timestamp: number, format = 'LLLL yyyy'): string {
   return DateTime.fromMillis(timestamp).toFormat(format, { locale: useLocale() })
-}
-
-function formatChartBarLabel(value?: number) {
-  return `${useNumberFormat(value)} ₽`
 }
 </script>
 
