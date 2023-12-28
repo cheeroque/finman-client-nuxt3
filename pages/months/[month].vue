@@ -1,5 +1,25 @@
 <template>
-  <PageContent :loading="recordsStore.loading" :title="monthName" class="overflow-hidden" spinner-variant="primary">
+  <PageContent :loading="recordsStore.loading" class="overflow-hidden" spinner-variant="primary">
+    <template #header>
+      <UiButton
+        :aria-label="useString('home')"
+        :title="useString('home')"
+        class="btn-back d-lg-none"
+        icon="arrow-left-24"
+        icon-size="24"
+        to="/"
+        variant="link"
+      />
+
+      <h1 class="h4 card-title">{{ monthName }}</h1>
+
+      <ChartButton v-model="collapseOpen" />
+    </template>
+
+    <UiCollapse v-model="collapseOpen">
+      <MonthChart v-if="data" :data="data?.chartData" class="pb-12 pb-lg-0" />
+    </UiCollapse>
+
     <GroupTable
       v-if="data"
       :group-label="useString('category')"
@@ -40,7 +60,9 @@ import { useRecordsStore } from '~/store/records'
 
 import CATEGORIES_WITH_RECORDS_QUERY from '~/graphql/CategoriesWithRecords.gql'
 
+import type { SeriesObjectValue } from 'chartist'
 import type { RecordsCategory, RecordsItem } from '~/types'
+import type { TableItem } from '~/components/ui/ui-table.vue'
 
 interface CategoriesWithRecordsQueryResponse {
   categories: {
@@ -56,6 +78,8 @@ interface CategoryWithRecords extends RecordsCategory {
 const { $urql } = useNuxtApp()
 const route = useRoute()
 const recordsStore = useRecordsStore()
+
+const collapseOpen = ref(false)
 
 const month = computed(() => String(route.params.month))
 const monthDate = computed(() => DateTime.fromFormat(month.value, 'yyyy-LL'))
@@ -101,15 +125,18 @@ const { data } = await useAsyncData(async () => {
     .query<CategoriesWithRecordsQueryResponse>(CATEGORIES_WITH_RECORDS_QUERY, variables)
     .toPromise()
 
-  const tableItems = buildTableItems(categoriesData?.categories)
+  const { chartData, tableItems } = buildTableItems(categoriesData?.categories)
 
-  return { tableItems }
+  return { chartData, tableItems }
 })
 
 /* Transform categories with records into the table rows */
 
 function buildTableItems(categories?: CategoriesWithRecordsQueryResponse['categories']) {
-  const tableItems = []
+  const dataset: SeriesObjectValue<number>[] = []
+  const labels: string[] = []
+  const tableItems: TableItem[] = []
+
   let balance = 0
   let totalExpenses = 0
 
@@ -119,6 +146,11 @@ function buildTableItems(categories?: CategoriesWithRecordsQueryResponse['catego
     } else {
       balance -= recordsTotal
       totalExpenses += recordsTotal
+
+      if (recordsTotal) {
+        dataset.push({ meta: { color, id, name }, value: recordsTotal })
+        labels.push(name)
+      }
     }
 
     if (recordsTotal) {
@@ -147,7 +179,10 @@ function buildTableItems(categories?: CategoriesWithRecordsQueryResponse['catego
     }
   )
 
-  return tableItems
+  return {
+    chartData: { labels, series: dataset },
+    tableItems,
+  }
 }
 
 function formatMonthLink(dateTime: DateTime): string {
@@ -163,6 +198,13 @@ function formatMonthName(dateTime: DateTime, short?: boolean): string {
 </script>
 
 <style lang="scss" scoped>
+.btn-chart {
+  align-self: flex-start;
+  margin-block: -$border-width;
+  margin-left: auto;
+  padding: 0.5rem;
+}
+
 .pagination-link {
   border-radius: $control-border-radius;
 }
@@ -215,6 +257,12 @@ function formatMonthName(dateTime: DateTime, short?: boolean): string {
   .row-balance-negative {
     color: var(--danger);
     border-color: var(--danger-outline);
+  }
+}
+
+@include media-min-width(lg) {
+  .btn-chart {
+    margin-block: calc(-#{$border-width} - 0.5rem);
   }
 }
 </style>
