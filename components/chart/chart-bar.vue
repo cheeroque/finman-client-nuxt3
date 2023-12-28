@@ -28,6 +28,17 @@ const chartInstance = ref()
 
 const barCount = computed(() => props.data?.labels?.length ?? 1)
 
+/* Force chart update when data changes */
+
+watch(
+  () => props.data,
+  (event) => {
+    if (event && typeof chartInstance.value?.update === 'function') {
+      chartInstance.value.update(event)
+    }
+  }
+)
+
 onMounted(() => {
   if (chartEl.value instanceof HTMLElement) {
     chartInstance.value = new BarChart(chartEl.value, props.data, props.options, props.responsiveOptions)
