@@ -1,5 +1,5 @@
 <template>
-  <PageContent :key="pageKey" :loading="pending" class="overflow-hidden" spinner-variant="primary">
+  <PageContent :key="String(hasPagination)" :loading="pending" class="overflow-hidden" spinner-variant="primary">
     <template #header>
       <UiButton
         :aria-label="useString('home')"
@@ -22,7 +22,7 @@
 
     <GroupTable
       v-if="data"
-      :key="tableKey"
+      :key="String(currentPage)"
       :group-label="useString('date')"
       :items="data.tableItems"
       :loading="pending"
@@ -34,7 +34,7 @@
       </template>
     </GroupTable>
 
-    <template #footer v-if="Number(data?.totalPages) > 1">
+    <template #footer v-if="hasPagination">
       <UiPagination :disabled="pending" :total-pages="data?.totalPages" hide-prev-next />
     </template>
   </PageContent>
@@ -116,13 +116,8 @@ if (error.value) {
   throw error.value
 }
 
-/* Key to remount page when pagination appears / disappears */
-
-const pageKey = computed(() => String(Number(data.value?.totalPages) > 1))
-
-/* Key to remount GroupTable when page changes */
-
-const tableKey = computed(() => String(route.query.page))
+const currentPage = computed(() => route.query.page ?? 1)
+const hasPagination = computed(() => Number(data.value?.totalPages) > 1)
 
 watch(
   () => route.query,
