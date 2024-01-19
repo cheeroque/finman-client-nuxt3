@@ -25,7 +25,7 @@ interface LogoutResponse {
 const TOKEN_KEY = 'auth_token'
 const REFRESH_TOKEN_KEY = 'auth_refresh_token'
 
-const COOKIE_OPTIONS: CookieOptions = {
+const COOKIE_OPTIONS: Omit<CookieOptions, 'readonly'> = {
   path: '/',
   sameSite: 'lax',
 }
