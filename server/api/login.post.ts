@@ -1,4 +1,4 @@
-import { loginMutation } from '~/gql/auth'
+import { loginMutation } from '~/gql'
 
 export default defineEventHandler(async (event) => {
   const { client } = event.context

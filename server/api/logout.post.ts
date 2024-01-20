@@ -1,4 +1,4 @@
-import { logoutMutation } from '~/gql/auth'
+import { logoutMutation } from '~/gql'
 
 export default defineEventHandler(async (event) => {
   const { client, headers } = event.context

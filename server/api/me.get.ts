@@ -1,4 +1,4 @@
-import { meQuery } from '~/gql/auth'
+import { meQuery } from '~/gql'
 
 export default defineEventHandler(async (event) => {
   const { client, headers } = event.context
