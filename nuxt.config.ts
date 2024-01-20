@@ -45,6 +45,9 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    gqlEndpoint: '',
+    staticUrl: '',
+
     public: {
       gqlEndpoint: '',
       staticUrl: '',
