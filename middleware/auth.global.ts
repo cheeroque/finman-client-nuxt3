@@ -1,15 +1,15 @@
 import { useAuthStore } from '~/store/auth'
 
-import ME_QUERY from '~/graphql/Me.gql'
-
 import type { User } from '~/types'
 
 interface MeResponse {
-  me: User
+  data?: {
+    me: User
+  }
 }
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  const { $auth, $urql } = useNuxtApp()
+  if (!process.client) return
 
   const authStore = useAuthStore()
   const isLoginPage = to.path.startsWith('/login')
@@ -20,7 +20,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   async function fetchUser() {
     try {
-      const { data } = await $urql.query<MeResponse>(ME_QUERY, {}).toPromise()
+      const { data } = await $fetch<MeResponse>('/api/me')
 
       if (!data?.me) {
         throw createError({ statusCode: 401 })
@@ -41,12 +41,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     if (user) {
       authStore.user = user
       isLoggedIn = true
-    } else {
-      $auth.reset()
-
-      if (!isLoginPage) {
-        return navigateTo('/login', { external: true })
-      }
+    } else if (!isLoginPage) {
+      return navigateTo('/login', { external: true })
     }
   }
 

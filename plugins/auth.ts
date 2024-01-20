@@ -1,25 +1,10 @@
 import { useAuthStore } from '~/store/auth'
 
-import LOGIN_MUTATION from '~/graphql/Login.gql'
-import LOGOUT_MUTATION from '~/graphql/Logout.gql'
-
-import type { Client } from '@urql/core'
 import type { CookieOptions } from 'nuxt/app'
 import type { AuthPlugin, LoginCredentials, User } from '~/types'
 
-interface LoginResponse {
-  login: {
-    access_token: string
-    refresh_token?: string
-    user: User
-  }
-}
-
-interface LogoutResponse {
-  logout: {
-    message?: string
-    status: string
-  }
+type LoginResponse = {
+  user?: User
 }
 
 const TOKEN_KEY = 'auth_token'
@@ -30,26 +15,23 @@ const COOKIE_OPTIONS: Omit<CookieOptions, 'readonly'> = {
   sameSite: 'lax',
 }
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(() => {
   const authStore = useAuthStore()
 
   const tokenCookie = useCookie(TOKEN_KEY, COOKIE_OPTIONS)
   const refreshTokenCookie = useCookie(REFRESH_TOKEN_KEY, COOKIE_OPTIONS)
 
   async function login(credentials: LoginCredentials) {
-    if (!nuxtApp.$urql) return
+    try {
+      const { user } = await $fetch<LoginResponse>('/api/login', {
+        method: 'POST',
+        body: credentials,
+      })
 
-    const $urql = nuxtApp.$urql as Client
-
-    const { data, error } = await $urql.mutation<LoginResponse>(LOGIN_MUTATION, credentials).toPromise()
-
-    if (data?.login) {
-      const { access_token, refresh_token, user } = data.login
-
-      authStore.user = user
-      setToken(access_token)
-      setToken(refresh_token, true)
-    } else {
+      if (user) {
+        authStore.user = user
+      }
+    } catch (error: any) {
       throw createError({
         statusCode: 401,
         statusMessage: error?.message,
@@ -58,12 +40,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   }
 
   async function logout() {
-    if (!nuxtApp.$urql) return
-
-    const $urql = nuxtApp.$urql as Client
-
     try {
-      await $urql.mutation<LogoutResponse>(LOGOUT_MUTATION, {}).toPromise()
+      await $fetch('/api/logout', { method: 'POST' })
     } catch (error) {
       /* Ignore error when trying to log out without token */
     }
