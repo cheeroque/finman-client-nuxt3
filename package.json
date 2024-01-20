@@ -2,12 +2,17 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "concurrently \"nuxt dev\" \"yarn codegen --watch\"",
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.ts --ignore-path .gitignore .",
-    "preview": "nuxt preview"
+    "preview": "nuxt preview",
+    "codegen": "graphql-codegen -r ts-node/register -r dotenv/config --config codegen.ts",
+    "prestart": "yarn codegen"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "5.0.0",
+    "@graphql-codegen/client-preset": "4.1.0",
+    "@parcel/watcher": "^2.4.0",
     "@rollup/plugin-graphql": "^2.0.3",
     "@types/chroma-js": "^2.1.4",
     "@types/luxon": "^3.1.0",
@@ -20,6 +25,8 @@
     "@vueuse/core": "^10.1.2",
     "@vueuse/nuxt": "^10.1.2",
     "chroma-js": "^2.4.2",
+    "concurrently": "^8.2.2",
+    "dotenv": "^16.3.1",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-nuxt": "^4.0.0",
@@ -28,7 +35,9 @@
     "nuxt": "^3.9.3",
     "nuxt-icons": "^3.0.0",
     "prettier": "^2.8.0",
-    "sass": "^1.56.1"
+    "sass": "^1.56.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.4.6",
