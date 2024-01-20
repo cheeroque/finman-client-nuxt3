@@ -1,5 +1,6 @@
 import { useAuthStore } from '~/store/auth'
 
+import type { H3Event } from 'h3'
 import type { User } from '~/types'
 
 interface MeResponse {
@@ -9,46 +10,48 @@ interface MeResponse {
 }
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  if (!process.client) return
-
   const authStore = useAuthStore()
   const isLoginPage = to.path.startsWith('/login')
-
   let isLoggedIn = Boolean(authStore.user)
 
-  /* Try to fetch user from backend. Return user on success, false on error */
+  if (!isLoggedIn) {
+    /* If no user saved in store, try to fetch it from API. On fail,
+     * return redirect to login page */
 
-  async function fetchUser() {
     try {
-      const { data } = await $fetch<MeResponse>('/api/me')
+      /* Get cookie header from initial client request */
 
-      if (!data?.me) {
+      const headers = buildHeaders(useRequestEvent())
+
+      const { data } = await $fetch<MeResponse>('/api/me', { headers })
+
+      if (data?.me) {
+        authStore.user = data.me
+        isLoggedIn = true
+      } else {
         throw createError({ statusCode: 401 })
       }
-
-      return data.me
     } catch (error: any) {
-      return false
+      if (!isLoginPage) {
+        return navigateTo('/login', { external: true })
+      }
     }
   }
 
-  /* Fetch user if not in store. On fail redirect to the login page (if not
-   * already there). On success, save user to store and set isLoggedIn to true */
-
-  if (!isLoggedIn) {
-    const user = await fetchUser()
-
-    if (user) {
-      authStore.user = user
-      isLoggedIn = true
-    } else if (!isLoginPage) {
-      return navigateTo('/login', { external: true })
-    }
-  }
-
-  /* If current route is login and isLoggedIn is true, redirect to root */
+  /* Check isLoggedIn again, it will be true if user was successfully fetched.
+   * If true, redirect from login page */
 
   if (isLoggedIn && isLoginPage) {
     return navigateTo('/')
   }
 })
+
+function buildHeaders(event: H3Event) {
+  const headers: HeadersInit = {}
+
+  if (process.server) {
+    headers.cookie = event.node.req.headers.cookie ?? ''
+  }
+
+  return headers
+}
