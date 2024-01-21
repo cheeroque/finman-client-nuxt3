@@ -11,6 +11,9 @@ const config: CodegenConfig = {
   generates: {
     'gen/gql/': {
       preset: 'client',
+      presetConfig: {
+        fragmentMasking: false,
+      },
       config: {
         useTypeImports: true,
       },
