@@ -47,15 +47,15 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { useRecordsStore } from '~/store/records'
+import { useTransactionsStore } from '~/store/transactions'
 
-interface CalendarMonth {
+type CalendarMonth = {
   disabled?: boolean
   link: string
   month: string
 }
 
-interface MonthCalendarProps {
+type MonthCalendarProps = {
   date?: Date
   numericMonths?: boolean
 }
@@ -64,17 +64,16 @@ const props = defineProps<MonthCalendarProps>()
 
 const LINK_FORMAT = 'yyyy-LL'
 
-const { $urql } = useNuxtApp()
-const recordsStore = useRecordsStore()
+const transactionsStore = useTransactionsStore()
 
 const currentDate = props.date ?? new Date()
 const currentYear = ref(currentDate.getFullYear())
 
-const startYear = computed(() => recordsStore.firstRecordDate?.year)
+const startYear = computed(() => transactionsStore.firstTransactionDate?.year)
 const endYear = computed(() => DateTime.now().year)
 
 /* Array of calendar pages (years). Each page contains an array of 12 months.
- * Months that are before the earliest or after the latest record creation date
+ * Months that are before the earliest or after the latest transaction creation date
  * are disabled */
 
 const calendarYears = computed(() => {
@@ -90,7 +89,7 @@ const calendarYears = computed(() => {
       const month = date.toLocaleString({ month: monthFormat }, { locale: useLocale() })
       const link = date.toFormat(LINK_FORMAT)
 
-      const isTooEarly = y <= startYear.value && m < recordsStore.firstRecordDate?.month
+      const isTooEarly = y <= startYear.value && m < transactionsStore.firstTransactionDate?.month
       const isTooLate = y >= endYear.value && m > DateTime.now().month
 
       months.push({
