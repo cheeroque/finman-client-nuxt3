@@ -1,26 +1,26 @@
 <template>
-  <div class="page-records-header">
-    <h1 class="page-records-title">
-      <NuxtLink to="/"> {{ useNumberFormat(recordsStore.balance) }}&nbsp;₽ </NuxtLink>
+  <div class="page-transactions-header">
+    <h1 class="page-transactions-title">
+      <NuxtLink to="/"> {{ useNumberFormat(transactionsStore.balance) }}&nbsp;₽ </NuxtLink>
     </h1>
 
-    <PageRecordsNav />
+    <TransactionPageNav />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useRecordsStore } from '~/store/records'
+import { useTransactionsStore } from '~/store/transactions'
 
-const recordsStore = useRecordsStore()
+const transactionsStore = useTransactionsStore()
 </script>
 
 <style lang="scss" scoped>
-.page-records-header {
+.page-transactions-header {
   flex: 1 1 auto;
   text-align: center;
 }
 
-.page-records-title {
+.page-transactions-title {
   a {
     transition: $transition;
     transition-property: color;
@@ -33,42 +33,42 @@ const recordsStore = useRecordsStore()
 }
 
 @include media-max-width(lg) {
-  .page-records-header {
+  .page-transactions-header {
     padding-top: 1rem;
     padding-bottom: 1rem;
   }
 
-  .page-records-title {
+  .page-transactions-title {
     margin-bottom: 0;
   }
 
-  :deep(.nav-page-records) {
+  :deep(.nav-page-transactions) {
     display: none;
   }
 }
 
 @include media-min-width(lg) {
-  .page-records-title {
+  .page-transactions-title {
     padding-left: 1rem;
     padding-right: 1rem;
   }
 }
 
 @include media-min-width(xxl) {
-  .page-records-header {
+  .page-transactions-header {
     display: flex;
     align-items: center;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
   }
 
-  .page-records-title {
+  .page-transactions-title {
     padding: 0;
     margin-bottom: 0;
     color: var(--primary-active);
   }
 
-  :deep(.nav-page-records) {
+  :deep(.nav-page-transactions) {
     margin-left: auto;
   }
 }

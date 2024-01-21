@@ -10,8 +10,8 @@ export const CategoryFragment = graphql(`
   }
 `)
 
-export const RecordFragment = graphql(`
-  fragment RecordFragment on Record {
+export const TransactionFragment = graphql(`
+  fragment TransactionFragment on Transaction {
     created_at
     id
     note

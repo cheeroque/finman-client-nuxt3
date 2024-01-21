@@ -1,25 +1,25 @@
-import { categoriesQuery, recordsQuery, recordsTotalQuery } from '~/gql'
-import { QueryRecordsOrderByColumn, SortOrder } from '~/gen/gql/graphql'
+import { categoriesQuery, transactionsQuery, transactionsTotalQuery } from '~/gql'
+import { QueryTransactionsOrderByColumn, SortOrder } from '~/gen/gql/graphql'
 
-import type { RecordsQueryVariables } from '~/gen/gql/graphql'
+import type { TransactionsQueryVariables } from '~/gen/gql/graphql'
 
 export default defineEventHandler(async (event) => {
   const { client, headers } = event.context
 
-  const variables: RecordsQueryVariables = {
+  const variables: TransactionsQueryVariables = {
     first: 1,
     orderBy: [
       {
-        column: QueryRecordsOrderByColumn.CreatedAt,
+        column: QueryTransactionsOrderByColumn.CreatedAt,
         order: SortOrder.Asc,
       },
     ],
   }
 
-  const [{ data: balanceData }, { data: categoriesData }, { data: firstRecordData }] = await Promise.all([
-    client.query(recordsTotalQuery, {}, { fetchOptions: { headers } }).toPromise(),
+  const [{ data: balanceData }, { data: categoriesData }, { data: firstTransactionData }] = await Promise.all([
+    client.query(transactionsTotalQuery, {}, { fetchOptions: { headers } }).toPromise(),
     client.query(categoriesQuery, {}, { fetchOptions: { headers } }).toPromise(),
-    client.query(recordsQuery, variables, { fetchOptions: { headers } }).toPromise(),
+    client.query(transactionsQuery, variables, { fetchOptions: { headers } }).toPromise(),
   ])
 
   const expensesTotal = Number(balanceData?.expensesTotal) || 0
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
 
   const balance = incomesTotal - expensesTotal
   const categories = categoriesData?.categories?.data ?? []
-  const firstRecord = firstRecordData?.records?.data?.[0]
+  const firstTransaction = firstTransactionData?.transactions?.data?.[0]
 
-  return { balance, categories, firstRecord }
+  return { balance, categories, firstTransaction }
 })

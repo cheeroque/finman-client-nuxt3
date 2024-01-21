@@ -1,5 +1,5 @@
 <template>
-  <PageRecords />
+  <TransactionPage />
 </template>
 
 <script setup lang="ts">

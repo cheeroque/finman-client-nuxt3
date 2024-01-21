@@ -1,5 +1,5 @@
 <template>
-  <nav class="nav nav-page-records">
+  <nav class="nav nav-page-transactions">
     <UiButton
       v-for="(link, index) in navLinks"
       :key="`nav-link-${index}`"
@@ -19,7 +19,7 @@ import type { NavLink } from '~/types'
 const route = useRoute()
 
 const navLinks: NavLink[] = [
-  { icon: 'home-24', link: '/', text: useString('allRecords') },
+  { icon: 'home-24', link: '/', text: useString('allTransactions') },
   { icon: 'expenses-24', link: '/view/expense', text: useString('expensesOnly') },
   { icon: 'incomes-24', link: '/view/income', text: useString('incomesOnly') },
 ]
@@ -36,7 +36,7 @@ function getLinkClasses(link: NavLink): string[] {
 </script>
 
 <style lang="scss" scoped>
-.nav-page-records {
+.nav-page-transactions {
   display: flex;
   border-top: $border-width solid var(--primary-outline);
 }
@@ -77,7 +77,7 @@ function getLinkClasses(link: NavLink): string[] {
 }
 
 @include media-min-width(xxl) {
-  .nav-page-records {
+  .nav-page-transactions {
     gap: 0 0.75rem;
     border-top: none;
   }

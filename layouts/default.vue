@@ -5,7 +5,7 @@
     <div class="app-content">
       <Sidebar />
 
-      <div :class="{ loading: recordsStore.loading }" class="page">
+      <div :class="{ loading: transactionsStore.loading }" class="page">
         <slot />
       </div>
     </div>
@@ -17,9 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import { useRecordsStore } from '~/store/records'
+import { useTransactionsStore } from '~/store/transactions'
 
-const recordsStore = useRecordsStore()
+const transactionsStore = useTransactionsStore()
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
@@ -27,11 +27,11 @@ const drawerOpen = ref(false)
 
 const { refresh } = await useFetch('/api/global-data', {
   onResponse({ response }) {
-    const { balance, categories, firstRecord } = response._data
+    const { balance, categories, firstTransaction } = response._data
 
-    recordsStore.balance = balance
-    recordsStore.categories = categories
-    recordsStore.firstRecord = firstRecord
+    transactionsStore.balance = balance
+    transactionsStore.categories = categories
+    transactionsStore.firstTransaction = firstTransaction
   },
 })
 
