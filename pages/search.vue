@@ -1,11 +1,11 @@
 <template>
   <PageContent
     :loading="pending"
-    :title="useString('searchResults', searchQuery)"
+    :title="useString('searchResults', String(route.query.q))"
     class="overflow-hidden"
     spinner-variant="primary"
   >
-    <RecordTable v-if="data" :records="data.tableItems" />
+    <TransactionTable v-if="data" :transactions="(data?.transactions as Transaction[])" />
 
     <template #footer>
       <div v-if="Number(data?.totalPages) > 1">
@@ -16,68 +16,27 @@
 </template>
 
 <script setup lang="ts">
-import RECORDS_QUERY from '~/graphql/Records.gql'
+import type { Transaction } from '~/gen/gql/graphql'
 
-import type { RecordsResponse } from '~/types'
-
-const { $urql } = useNuxtApp()
 const route = useRoute()
 
-const perPage = computed(() => Number(route.query.perPage) || 50)
-const searchQuery = computed(() => String(route.query.q))
-
-const { data, pending, refresh } = await useAsyncData(async () => {
-  const variables = buildVariables()
-
-  const { data: recordsData } = await $urql.query<RecordsResponse>(RECORDS_QUERY, variables).toPromise()
-
-  const tableItems = ref(recordsData?.records?.data ?? [])
-  const totalPages = ref(recordsData?.records?.paginatorInfo?.lastPage ?? 1)
-
-  return reactive({ tableItems, totalPages })
+const query = computed(() => {
+  const { q, page, perPage } = route.query
+  return { q, page, perPage }
 })
 
-watch(
-  () => route.query,
+const { data, pending } = await useFetch('/api/search', {
+  query,
 
-  async () => {
-    await refresh()
-
+  onResponse() {
     setTimeout(() => {
-      /* If window is scrolled down (e.g. in mobile) scroll it back to top,
-       * otherwise scroll back page element */
-
       const windowTop = useWindowTop()
       const target = !windowTop ? '.page' : undefined
+
       useScrollTo(target)
-    }, 250)
-  }
-)
-
-function buildVariables() {
-  const column = String(route.query.orderBy ?? 'CREATED_AT')
-  const order = String(route.query.order ?? 'DESC')
-  const page = Number(route.query.page) || 1
-
-  /* Find records by note */
-
-  const where = {
-    OR: [{ column: 'NOTE', operator: 'LIKE', value: `%${searchQuery.value}%` }],
-  }
-
-  /* Also find records by exact sum if search query can be cast to number */
-
-  if (!isNaN(Number(searchQuery.value))) {
-    where.OR.push({ column: 'SUM', operator: 'EQ', value: searchQuery.value })
-  }
-
-  return {
-    first: perPage.value,
-    orderBy: [{ column, order }],
-    page,
-    where,
-  }
-}
+    }, 100)
+  },
+})
 </script>
 
 <style lang="scss" scoped>
