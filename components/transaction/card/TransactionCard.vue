@@ -1,20 +1,20 @@
 <template>
   <div :class="cardClasses">
-    <NuxtLink :to="monthLink" class="record-date">
-      {{ formatDate(record.created_at) }}
+    <NuxtLink :to="monthLink" class="transaction-date">
+      {{ formatDate(transaction.created_at) }}
     </NuxtLink>
 
-    <UiButton class="record-sum" variant="link" @click="emit('edit')">
-      {{ useNumberFormat(record.sum) }}&nbsp;₽
+    <UiButton class="transaction-sum" variant="link" @click="emit('edit')">
+      {{ useNumberFormat(transaction.sum) }}&nbsp;₽
     </UiButton>
 
-    <NuxtLink :to="categoryLink" class="record-category">
+    <NuxtLink :to="categoryLink" class="transaction-category">
       {{ categoryName }}
     </NuxtLink>
 
-    <p class="record-note">
-      <span class="caption">{{ record.note }}</span>
-      <UiButton class="record-edit" icon="edit-24" icon-size="24" variant="link" @click="emit('edit')" />
+    <p class="transaction-note">
+      <span class="caption">{{ transaction.note }}</span>
+      <UiButton class="transaction-edit" icon="edit-24" icon-size="24" variant="link" @click="emit('edit')" />
     </p>
   </div>
 </template>
@@ -22,32 +22,32 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-import type { RecordsItem } from '~/types'
+import type { Transaction } from '~/gen/gql/graphql'
 
-interface RecordCardProps {
-  record: RecordsItem
+type TransactionCardProps = {
+  transaction: Transaction
   viewMode?: ViewMode
 }
 
-const props = defineProps<RecordCardProps>()
+const props = defineProps<TransactionCardProps>()
 
 const emit = defineEmits(['edit'])
 
-const categoryLink = computed(() => `/categories/${props.record.category.slug}`)
-const categoryName = computed(() => props.record.category.name)
+const categoryLink = computed(() => `/categories/${props.transaction.category?.slug}`)
+const categoryName = computed(() => props.transaction.category?.name)
 
 const cardClasses = computed(() => {
-  const classes = ['record-card']
+  const classes = ['transaction-card']
 
-  if (!props.viewMode && props.record.category.is_income) {
-    classes.push('record-card-income')
+  if (!props.viewMode && props.transaction.category.is_income) {
+    classes.push('transaction-card-income')
   }
 
   return classes
 })
 
 const monthLink = computed(() => {
-  const date = DateTime.fromFormat(props.record.created_at, 'yyyy-LL-dd HH:mm:ss').toFormat('yyyy-LL')
+  const date = DateTime.fromFormat(props.transaction.created_at, 'yyyy-LL-dd HH:mm:ss').toFormat('yyyy-LL')
   return `/months/${date}`
 })
 
@@ -60,31 +60,31 @@ function formatDate(datestring: string): string {
 </script>
 
 <style lang="scss" scoped>
-.record-card {
+.transaction-card {
   line-height: 1.2;
 
-  &.record-card-income {
+  &.transaction-card-income {
     color: var(--on-success-bg);
     background-color: var(--success-bg);
   }
 }
 
-.record-date {
-  .record-card-income & {
+.transaction-date {
+  .transaction-card-income & {
     &:hover {
       color: var(--success);
     }
   }
 }
 
-.record-category {
+.transaction-category {
   color: var(--outline);
 
   &:hover {
     color: var(--primary);
   }
 
-  .record-card-income & {
+  .transaction-card-income & {
     color: var(--success);
 
     &:hover {
@@ -93,10 +93,10 @@ function formatDate(datestring: string): string {
   }
 }
 
-.record-sum {
+.transaction-sum {
   font-family: $font-family-alternate;
 
-  .record-card-income & {
+  .transaction-card-income & {
     color: var(--success);
 
     &:hover {
@@ -105,12 +105,12 @@ function formatDate(datestring: string): string {
   }
 }
 
-.record-note {
+.transaction-note {
   margin-bottom: 0;
 }
 
 @include media-max-width(xl) {
-  .record-card {
+  .transaction-card {
     display: grid;
     grid-template-columns: 1fr min-content;
     grid-template-rows: repeat(3, auto);
@@ -121,13 +121,13 @@ function formatDate(datestring: string): string {
     background-color: var(--background);
   }
 
-  .record-date {
+  .transaction-date {
     justify-self: start;
     font-family: $font-family-alternate;
     font-weight: $font-weight-medium;
   }
 
-  .record-sum {
+  .transaction-sum {
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
@@ -139,32 +139,32 @@ function formatDate(datestring: string): string {
     color: var(--primary);
   }
 
-  .record-category {
+  .transaction-category {
     justify-self: start;
   }
 
-  .record-note {
+  .transaction-note {
     grid-column: 1 / span 1;
   }
 
-  .record-edit {
+  .transaction-edit {
     display: none;
   }
 }
 
 @include media-max-width(lg) {
-  .record-card {
+  .transaction-card {
     border-radius: $card-border-radius;
   }
 }
 
 @include media-min-width(lg) {
-  .record-card {
+  .transaction-card {
     &:nth-child(odd) {
       color: var(--on-surface);
       background-color: var(--surface);
 
-      &.record-card-income {
+      &.transaction-card-income {
         color: var(--on-success-bg);
         background-color: var(--success-outline);
       }
@@ -173,26 +173,26 @@ function formatDate(datestring: string): string {
 }
 
 @include media-min-width(xl) {
-  .record-card {
+  .transaction-card {
     display: flex;
     gap: 0;
   }
 
-  .record-date,
-  .record-sum,
-  .record-category,
-  .record-note {
+  .transaction-date,
+  .transaction-sum,
+  .transaction-category,
+  .transaction-note {
     padding: $table-padding-y $table-padding-x;
     line-height: $line-height-base * $font-size-base;
   }
 
-  .record-sum {
+  .transaction-sum {
     font-size: $font-size-base * 1.25;
     font-weight: $font-weight-medium;
     text-align: right;
   }
 
-  .record-note {
+  .transaction-note {
     display: flex;
     align-items: center;
 
@@ -201,14 +201,14 @@ function formatDate(datestring: string): string {
     }
   }
 
-  .record-edit {
+  .transaction-edit {
     flex: 0 0 auto;
     justify-content: flex-end;
     margin: (-$control-padding-y) (-$control-padding-y) (-$control-padding-y) auto;
     text-align: right;
     color: var(--primary-outline);
 
-    .record-card-income & {
+    .transaction-card-income & {
       color: var(--success-outline);
 
       &:hover {

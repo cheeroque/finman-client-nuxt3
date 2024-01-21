@@ -4,9 +4,9 @@
       <TransactionPageHeader />
     </template>
 
-    <RecordTable v-if="data?.transactions" :records="data.transactions" :view-mode="viewMode" />
+    <TransactionTable :transactions="(data?.transactions as Transaction[])" :view-mode="viewMode" />
 
-    <RecordFab :show="!paginationVisible" />
+    <TransactionFab :show="!paginationVisible" />
 
     <template #footer>
       <div ref="paginationAnchor" v-if="Number(data?.totalPages) > 1">
@@ -17,6 +17,8 @@
 </template>
 
 <script setup lang="ts">
+import type { Transaction } from '~/gen/gql/graphql'
+
 const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
 

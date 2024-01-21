@@ -1,11 +1,11 @@
 <template>
-  <div class="record-card record-card-empty">
+  <div class="transaction-card transaction-card-empty">
     {{ useString('tableEmpty') }}
   </div>
 </template>
 
 <style lang="scss" scoped>
-.record-card {
+.transaction-card {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,13 +17,13 @@
 }
 
 @include media-max-width(lg) {
-  .record-card {
+  .transaction-card {
     border-radius: $card-border-radius;
   }
 }
 
 @include media-min-width(xl) {
-  .record-card {
+  .transaction-card {
     padding: $table-padding-y $table-padding-x;
   }
 }

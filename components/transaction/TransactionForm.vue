@@ -1,5 +1,5 @@
 <template>
-  <form ref="form" class="record-form" @submit.prevent="handleSubmit">
+  <form ref="form" class="transaction-form" @submit.prevent="handleSubmit">
     <UiFormGroup
       :invalid-feedback="useValidationErrors(v$, 'category_id')"
       :label="useString('category')"
@@ -39,29 +39,29 @@
 import { DateTime } from 'luxon'
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
-import { useRecordsStore } from '~/store/records'
+import { useTransactionsStore } from '~/store/transactions'
 
-import type { RecordsItem } from '~/types'
+import type { Transaction } from '~/gen/gql/graphql'
 
-export interface RecordsForm {
+export type TransactionFormValues = {
   category_id: number
   created_at: Date
   note?: string
   sum: number
 }
 
-interface RecordFormProps {
+type TransactionFormProps = {
   edit?: boolean
-  record?: RecordsItem
+  transaction?: Transaction
 }
 
-const props = defineProps<RecordFormProps>()
+const props = defineProps<TransactionFormProps>()
 
 const emit = defineEmits(['submit'])
 
-const recordsStore = useRecordsStore()
+const transactionsStore = useTransactionsStore()
 
-const categories = computed(() => recordsStore.categories.map(({ id, name }) => ({ text: name, value: id })))
+const categories = computed(() => transactionsStore.categories.map(({ id, name }) => ({ text: name, value: id })))
 
 /* Expose form element as ref for parent */
 
@@ -70,13 +70,13 @@ defineExpose({ form })
 
 /* Initialize form values */
 
-const formData = reactive<RecordsForm>({
-  category_id: props.record?.category?.id ?? categories.value[0]?.value,
-  created_at: props.record?.created_at
-    ? DateTime.fromFormat(props.record.created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
+const formData = reactive<TransactionFormValues>({
+  category_id: Number(props.transaction?.category?.id ?? categories.value[0]?.value),
+  created_at: props.transaction?.created_at
+    ? DateTime.fromFormat(props.transaction.created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
     : new Date(),
-  note: props.record?.note,
-  sum: props.record?.sum ?? 0,
+  note: props.transaction?.note ?? '',
+  sum: props.transaction?.sum ?? 0,
 })
 
 /* Declare form validation rules */
@@ -94,7 +94,7 @@ const rules = computed(() => ({
   },
 }))
 
-const v$ = useVuelidate<RecordsForm>(rules, formData, { $lazy: true })
+const v$ = useVuelidate<TransactionFormValues>(rules, formData, { $lazy: true })
 
 /* Validate form and emit "submit" with formData on success */
 

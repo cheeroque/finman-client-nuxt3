@@ -3,7 +3,7 @@
     <UiButton v-if="show" icon="edit-24" icon-size="24" variant="tertiary" class="btn-fab" @click="handleFabClick" />
   </Transition>
 
-  <RecordDialog v-model="dialogVisible" />
+  <TransactionDialog v-model="dialogVisible" />
 </template>
 
 <script setup lang="ts">

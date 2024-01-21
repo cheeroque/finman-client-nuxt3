@@ -31,3 +31,27 @@ export const transactionsTotalQuery = graphql(`
     incomesTotal: transactionsAggregate(hasCategory: { column: IS_INCOME, operator: EQ, value: "1" })
   }
 `)
+
+export const transactionCreateMutation = graphql(`
+  mutation TransactionCreate($data: CreateTransactionInput!) {
+    result: createTransaction(data: $data) {
+      ...TransactionFragment
+    }
+  }
+`)
+
+export const transactionDeleteMutation = graphql(`
+  mutation TransactionDelete($id: ID!) {
+    result: deleteTransaction(id: $id) {
+      ...TransactionFragment
+    }
+  }
+`)
+
+export const transactionUpdateMutation = graphql(`
+  mutation TransactionUpdate($data: UpdateTransactionInput!) {
+    result: updateTransaction(data: $data) {
+      ...TransactionFragment
+    }
+  }
+`)

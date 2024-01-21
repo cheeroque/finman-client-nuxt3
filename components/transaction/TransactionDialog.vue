@@ -1,12 +1,12 @@
 <template>
   <UiDialog
-    :loading="recordsStore.loading"
+    :loading="transactionsStore.loading"
     :model-value="modelValue"
     :title="dialogTitle"
     @closed="emit('closed')"
     @update:modelValue="emit('update:modelValue', $event)"
   >
-    <RecordForm v-uid ref="form" :edit="isEdit" :record="record" @submit="handleRecordUpsert" />
+    <TransactionForm v-uid ref="form" :edit="isEdit" :transaction="transaction" @submit="handleTransactionUpsert" />
 
     <template #footer="{ close }">
       <div class="row flex-fill g-8">
@@ -27,7 +27,7 @@
         </div>
 
         <div v-if="isEdit" class="col-12 col-md-auto order-md-1">
-          <UiButton variant="danger-muted" block @click="handleRecordDelete">
+          <UiButton variant="danger-muted" block @click="handleTransactionDelete">
             {{ useString('remove') }}
           </UiButton>
         </div>
@@ -39,53 +39,44 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 import { useAuthStore } from '~/store/auth'
-import { useRecordsStore } from '~/store/records'
+import { useTransactionsStore } from '~/store/transactions'
 
-import RECORD_CREATE_MUTATION from '~/graphql/RecordCreate.gql'
-import RECORD_UPDATE_MUTATION from '~/graphql/RecordUpdate.gql'
-import RECORD_DELETE_MUTATION from '~/graphql/RecordDelete.gql'
+import type { Transaction } from '~/gen/gql/graphql'
+import type { TransactionFormValues } from '~/components/transaction/TransactionForm.vue'
 
-import type { RecordsForm } from './record-form.vue'
-import type { RecordsItem } from '~/types'
-
-interface RecordDialogProps {
+type TransactionDialogProps = {
   modelValue?: boolean
-  record?: RecordsItem
+  transaction?: Transaction
 }
 
-interface RecordMutationResponse {
-  result: RecordsItem
-}
-
-const props = defineProps<RecordDialogProps>()
+const props = defineProps<TransactionDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
-const { $urql } = useNuxtApp()
 const authStore = useAuthStore()
-const recordsStore = useRecordsStore()
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
+const transactionsStore = useTransactionsStore()
 
 const form = ref()
 
 const formId = computed(() => form.value?.form.id)
-const isEdit = computed(() => Boolean(props.record?.id))
-const dialogTitle = computed(() => useString(isEdit.value ? 'changeRecord' : 'createRecord'))
+const isEdit = computed(() => Boolean(props.transaction?.id))
+const dialogTitle = computed(() => useString(isEdit.value ? 'changeTransaction' : 'createTransaction'))
 
-/* Delete current record by ID. Show toast on success or error */
+/* Delete current transaction by ID. Show toast on success or error */
 
-async function handleRecordDelete() {
-  if (!props.record) return
+async function handleTransactionDelete() {
+  if (!props.transaction) return
 
-  const { id } = props.record
+  const { id } = props.transaction
 
-  recordsStore.pending++
+  transactionsStore.pending++
 
-  const { data, error } = await $urql.mutation<RecordMutationResponse>(RECORD_DELETE_MUTATION, { id }).toPromise()
+  const { data, error } = await $fetch('/api/transaction', { method: 'DELETE', query: { id } })
 
   if (data?.result) {
-    showToast(useString('recordDeleted', `#${props.record?.id}`), 'danger')
+    showToast(useString('transactionDeleted', `#${props.transaction?.id}`), 'danger')
     emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
@@ -95,33 +86,31 @@ async function handleRecordDelete() {
     showToast(error?.message ?? useString('error'), 'danger')
   }
 
-  recordsStore.pending--
+  transactionsStore.pending--
 }
 
-/* Create new records or update existing, if it's set with prop. Show toast
+/* Create new transaction or update existing, if it's set with prop. Show toast
  * on success or error */
 
-async function handleRecordUpsert(formData: RecordsForm) {
-  const mutation = isEdit.value ? RECORD_UPDATE_MUTATION : RECORD_CREATE_MUTATION
-
+async function handleTransactionUpsert(formData: TransactionFormValues) {
+  const method = isEdit.value ? 'PUT' : 'POST'
   const { category_id, created_at, note, sum } = formData
-  const variables = {
-    data: {
-      category: { connect: category_id },
-      created_at: DateTime.fromJSDate(created_at).toFormat('yyyy-LL-dd HH:mm:ss'),
-      id: props.record?.id,
-      note,
-      sum,
-      user: { connect: authStore.user?.id },
-    },
+
+  const query = {
+    category_id,
+    created_at: DateTime.fromJSDate(created_at).toFormat('yyyy-LL-dd HH:mm:ss'),
+    id: props.transaction?.id,
+    note,
+    sum,
+    user_id: authStore.user?.id,
   }
 
-  recordsStore.pending++
+  transactionsStore.pending++
 
-  const { data, error } = await $urql.mutation<RecordMutationResponse>(mutation, variables).toPromise()
+  const { data, error } = await $fetch('/api/transaction', { method, query })
 
   if (data?.result) {
-    showToast(useString('recordSaved', `#${data.result.id}`), 'success')
+    showToast(useString('transactionSaved', `#${data.result.id}`), 'success')
     emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
@@ -131,7 +120,7 @@ async function handleRecordUpsert(formData: RecordsForm) {
     showToast(error?.message ?? useString('error'), 'danger')
   }
 
-  recordsStore.pending--
+  transactionsStore.pending--
 }
 
 function showToast(message: string, variant: string) {

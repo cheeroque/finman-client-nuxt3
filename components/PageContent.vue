@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-interface PageContentProps {
+type PageContentProps = {
   loading?: boolean
   spinnerVariant?: string
   title?: string
