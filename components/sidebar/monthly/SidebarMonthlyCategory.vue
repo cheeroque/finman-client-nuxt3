@@ -56,7 +56,9 @@ function initCaption() {
     captionOutside.value = captionWidth > parentWidth
   }
 
-  barWidth.value = parentWidth ? `${parentWidth}px` : '100%'
+  /* NOTE: parentWidth could be 0, so explicitly check for `undefined` */
+
+  barWidth.value = parentWidth !== undefined ? `${parentWidth}px` : '100%'
 
   visible.value = true
 }
