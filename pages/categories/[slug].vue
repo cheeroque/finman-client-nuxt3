@@ -28,52 +28,52 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { useRecordsStore } from '~/store/records'
+import { useTransactionsStore } from '~/store/transactions'
 
-import RECORDS_BY_PERIOD_QUERY from '~/graphql/RecordsByPeriod.gql'
-
-import type { RecordsItem } from '~/types'
-
-interface RecordsByPeriodQueryResponse {
-  records: {
-    data: RecordsByPeriodQueryResponseData[]
-    paginatorInfo: PaginatorInfo
-  }
-}
-
-interface RecordsByPeriodQueryResponseData {
-  period: string
-  records: RecordsItem[]
-}
-
-const { $urql } = useNuxtApp()
+const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
-const recordsStore = useRecordsStore()
+const transactionsStore = useTransactionsStore()
 
-const category = computed(() => recordsStore.categories.find(({ slug }) => slug === route.params.slug))
+const category = computed(() => transactionsStore.categories.find(({ slug }) => slug === route.params.slug))
 
 if (!category.value) {
   const message = useString('errorMessage404')
   throw createError({ fatal: true, message, statusCode: 404 })
 }
 
-const { data, pending, refresh } = await useAsyncData(async () => {
-  const variables = {
-    category_id: Number(category.value?.id),
-    first: Number(route.query.perPage) || 18,
-    page: Number(route.query.page) || 1,
-  }
+/* Fetch transactions for current category, grouped by period */
 
-  const { data: recordsData } = await $urql
-    .query<RecordsByPeriodQueryResponse>(RECORDS_BY_PERIOD_QUERY, variables)
-    .toPromise()
+const query = computed(() => ({
+  category_id: category.value?.id,
+  first: route.query.perPage,
+  page: route.query.page,
+}))
 
-  const tableItems = ref(buildTableItems(recordsData?.records))
-  const totalPages = ref(recordsData?.records?.paginatorInfo.lastPage ?? 1)
+const { data, pending, refresh } = await useFetch('/api/category', {
+  query,
 
-  return reactive({ tableItems, totalPages })
+  onResponse() {
+    setTimeout(() => {
+      const windowTop = useWindowTop()
+      const target = !windowTop ? '.page' : undefined
+
+      useScrollTo(target)
+    }, 100)
+  },
 })
 
+watch(
+  /* Refetch transactions if external trigger was set to true, then reset trigger */
+
+  () => refetchTrigger.value,
+
+  async (event) => {
+    if (event) {
+      await refresh()
+      refetchTrigger.value = false
+    }
+  }
+)
 /* Key to remount page when pagination appears / disappears */
 
 const pageKey = computed(() => String(Number(data.value?.totalPages) > 1))
@@ -81,37 +81,6 @@ const pageKey = computed(() => String(Number(data.value?.totalPages) > 1))
 /* Key to remount GroupTable when page changes */
 
 const tableKey = computed(() => String(route.query.page))
-
-watch(
-  () => route.query,
-
-  async () => {
-    await refresh()
-
-    setTimeout(() => {
-      /* If window is scrolled down (e.g. in mobile) scroll it back to top,
-       * otherwise scroll back page element */
-
-      const windowTop = useWindowTop()
-      const target = !windowTop ? '.page' : undefined
-      useScrollTo(target)
-    }, 250)
-  }
-)
-
-/* Transform records from response into table rows */
-
-function buildTableItems(records?: RecordsByPeriodQueryResponse['records']) {
-  return (
-    records?.data.map(({ period, records }) => {
-      const date = DateTime.fromFormat(period, 'yyyy-LL')
-      const group = date.valueOf()
-      const subtotal = records.reduce((acc, cur) => (acc += cur.sum), 0)
-
-      return { group, subtotal, records }
-    }) ?? []
-  )
-}
 
 function formatDate(timestamp: number, short = false): string {
   const monthFormat = short ? 'LLL' : 'LLLL'

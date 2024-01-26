@@ -30,10 +30,13 @@ declare global {
   }
 }
 
-export type TableMonthItem = {
-  category?: Partial<Category>
-  group: string
+export type GroupTableItem = {
+  group: number | string
+  subtotal?: number
   transactions?: Partial<Transaction>[]
-  subtotal: number
   trClass?: string
+}
+
+export type TableMonthItem = GroupTableItem & {
+  category?: Partial<Category>
 }

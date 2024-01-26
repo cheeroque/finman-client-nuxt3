@@ -1,6 +1,6 @@
 <template>
   <UiDialog
-    :loading="recordsStore.loading"
+    :loading="transactionsStore.loading"
     :model-value="modelValue"
     :title="dialogTitle"
     @closed="emit('closed')"
@@ -57,29 +57,20 @@
 </template>
 
 <script setup lang="ts">
-import { useRecordsStore } from '~/store/records'
+import { useTransactionsStore } from '~/store/transactions'
 
-import CATEGORY_CREATE_MUTATION from '~/graphql/CategoryCreate.gql'
-import CATEGORY_UPDATE_MUTATION from '~/graphql/CategoryUpdate.gql'
-import CATEGORY_DELETE_MUTATION from '~/graphql/CategoryDelete.gql'
-
-import type { RecordsCategory } from '~/types'
+import type { Category } from '~/gen/gql/graphql'
 
 interface CategoryDialogProps {
-  category?: RecordsCategory
+  category?: Category
   modelValue?: boolean
-}
-
-interface CategoryMutationResponse {
-  result: RecordsCategory
 }
 
 const props = defineProps<CategoryDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
-const { $urql } = useNuxtApp()
-const recordsStore = useRecordsStore()
+const transactionsStore = useTransactionsStore()
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
@@ -97,9 +88,9 @@ async function handleCategoryDelete() {
 
   const { id } = props.category
 
-  recordsStore.pending++
+  transactionsStore.pending++
 
-  const { data, error } = await $urql.mutation<CategoryMutationResponse>(CATEGORY_DELETE_MUTATION, { id }).toPromise()
+  const { data, error } = await $fetch('/api/category', { method: 'DELETE', query: { id } })
 
   if (data?.result) {
     showToast(useString('categoryDeleted', `#${data.result.id}`), 'danger')
@@ -113,23 +104,22 @@ async function handleCategoryDelete() {
   }
 
   deletePending.value = false
-  recordsStore.pending--
+  transactionsStore.pending--
 }
 
 /* Create new category or update existing, if it's set with prop. Show toast
  * on success or error */
 
-async function handleCategoryUpsert(category: RecordsCategory) {
-  const mutation = isEdit.value ? CATEGORY_UPDATE_MUTATION : CATEGORY_CREATE_MUTATION
+async function handleCategoryUpsert(category: Category) {
+  const method = isEdit.value ? 'PUT' : 'POST'
 
-  const { color, is_income, name, slug } = category
   const id = props.category?.id
+  const { color, is_income, name, slug } = category
+  const query = { color, id, is_income, name, slug }
 
-  const variables = { data: { color, id, is_income, name, slug } }
+  transactionsStore.pending++
 
-  recordsStore.pending++
-
-  const { data, error } = await $urql.mutation<CategoryMutationResponse>(mutation, variables).toPromise()
+  const { data, error } = await $fetch('/api/category', { method, query })
 
   if (data?.result) {
     showToast(useString('categorySaved', `#${category?.id}`), 'success')
@@ -142,7 +132,7 @@ async function handleCategoryUpsert(category: RecordsCategory) {
     showToast(error?.message ?? useString('error'), 'danger')
   }
 
-  recordsStore.pending--
+  transactionsStore.pending--
 }
 
 function showToast(message: string, variant: string) {

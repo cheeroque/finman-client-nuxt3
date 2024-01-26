@@ -34,12 +34,14 @@
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
 
-import type { RecordsCategory } from '~/types'
+import type { Category } from '~/gen/gql/graphql'
 
-type CategoryForm = Omit<RecordsCategory, 'id'>
+type CategoryForm = Omit<Category, 'color' | 'id'> & {
+  color?: string
+}
 
 interface CategoryFormProps {
-  category?: RecordsCategory
+  category?: Category
   edit?: boolean
 }
 

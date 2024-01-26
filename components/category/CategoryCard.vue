@@ -1,5 +1,5 @@
 <template>
-  <div :style="{ '--icon-bg': category.color, '--icon-color': iconColor }" class="card card-category">
+  <div :style="{ '--icon-bg': String(category.color), '--icon-color': iconColor }" class="card card-category">
     <div class="card-body">
       <NuxtLink :to="`/categories/${category.slug}`" class="h5 card-title">{{ category.name }}</NuxtLink>
 
@@ -25,10 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import type { RecordsCategory } from '~/types'
+import type { Category } from '~/gen/gql/graphql'
 
 interface CategoryCardProps {
-  category: RecordsCategory
+  category: Category
 }
 
 const props = defineProps<CategoryCardProps>()

@@ -1,5 +1,9 @@
-export function useContrastColor(hex: string = '', dark: string = '#000', light: string = '#fff'): string {
-  if (!hex.length) return dark
+export function useContrastColor(
+  hex: string | null | undefined = '',
+  dark: string = '#000',
+  light: string = '#fff'
+): string {
+  if (!hex?.length) return dark
 
   const rgb = []
   let lightness = 255

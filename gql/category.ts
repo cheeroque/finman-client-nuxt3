@@ -36,3 +36,49 @@ export const categoriesWithTransactionsQuery = graphql(`
     }
   }
 `)
+
+export const categoryTransactionsQuery = graphql(`
+  query CategoryTransactions($category_id: Int!, $first: Int = 18, $page: Int = 1) {
+    transactions: transactionsByPeriod(category_id: $category_id, first: $first, page: $page) {
+      data {
+        period
+        transactions {
+          ...TransactionFragment
+
+          category {
+            ...CategoryFragment
+          }
+        }
+      }
+
+      paginatorInfo {
+        lastPage
+        total
+      }
+    }
+  }
+`)
+
+export const categoryCreateMutation = graphql(`
+  mutation CategoryCreate($data: CreateCategoryInput!) {
+    result: createCategory(data: $data) {
+      ...CategoryFragment
+    }
+  }
+`)
+
+export const categoryDeleteMutation = graphql(`
+  mutation CategoryDelete($id: ID!) {
+    result: deleteCategory(id: $id) {
+      ...CategoryFragment
+    }
+  }
+`)
+
+export const categoryUpdateMutation = graphql(`
+  mutation CategoryUpdate($data: UpdateCategoryInput!) {
+    result: updateCategory(data: $data) {
+      ...CategoryFragment
+    }
+  }
+`)
