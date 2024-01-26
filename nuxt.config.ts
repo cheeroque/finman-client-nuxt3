@@ -1,5 +1,3 @@
-import graphql from '@rollup/plugin-graphql'
-
 /* https://nuxt.com/docs/api/configuration/nuxt-config */
 
 export default defineNuxtConfig({
@@ -66,7 +64,5 @@ export default defineNuxtConfig({
         },
       },
     },
-
-    plugins: [graphql()],
   },
 })
