@@ -1,5 +1,5 @@
 export { loginMutation, logoutMutation, meQuery } from './auth'
-export { categoriesQuery } from './category'
+export { categoriesQuery, categoriesWithTransactionsQuery } from './category'
 export {
   transactionsQuery,
   transactionsTotalQuery,

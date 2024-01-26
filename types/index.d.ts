@@ -2,6 +2,8 @@ export { AuthPlugin, LoginCredentials, User } from './auth'
 export { NavLink } from './nav'
 export { RecordsCategory, RecordsItem, RecordsResponse, RecordsSnapshot } from './records'
 
+import type { Category, Transaction } from '~/gen/gql/graphql'
+
 declare global {
   type ControlSize = 'md' | 'lg' | null
 
@@ -26,4 +28,12 @@ declare global {
     operator?: string
     value?: string | number | boolean
   }
+}
+
+export type TableMonthItem = {
+  category?: Partial<Category>
+  group: string
+  transactions?: Partial<Transaction>[]
+  subtotal: number
+  trClass?: string
 }

@@ -3,10 +3,12 @@ import { graphql } from '~/gen/gql'
 export const CategoryFragment = graphql(`
   fragment CategoryFragment on Category {
     color
+    created_at
     id
     is_income
     name
     slug
+    updated_at
   }
 `)
 
@@ -16,6 +18,7 @@ export const TransactionFragment = graphql(`
     id
     note
     sum
+    updated_at
   }
 `)
 

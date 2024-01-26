@@ -13,3 +13,26 @@ export const categoriesQuery = graphql(`
     }
   }
 `)
+
+export const categoriesWithTransactionsQuery = graphql(`
+  query CategoriesWithTransactions(
+    $where: CategoryTransactionsWhereWhereConditions = {}
+    $whereTotal: CategoryTransactionsTotalWhereWhereConditions = {}
+  ) {
+    categories(orderBy: [{ column: IS_INCOME, order: ASC }]) {
+      data {
+        ...CategoryFragment
+
+        transactions(orderBy: [{ column: CREATED_AT, order: DESC }], where: $where) {
+          ...TransactionFragment
+
+          category {
+            ...CategoryFragment
+          }
+        }
+
+        transactionsTotal(where: $whereTotal)
+      }
+    }
+  }
+`)

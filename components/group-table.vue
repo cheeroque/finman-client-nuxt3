@@ -7,7 +7,7 @@
 
       <template #cell(subtotal)="{ detailsVisible, item, toggleDetails, value }">
         <UiButton
-          v-if="item.records?.length"
+          v-if="item.transactions?.length"
           :class="{ collapsed: !detailsVisible }"
           class="btn-details"
           icon="caret"
@@ -23,7 +23,7 @@
       </template>
 
       <template #row-details="{ item }">
-        <UiTable :fields="detailsFields" :items="item.records" fixed hide-thead>
+        <UiTable :fields="detailsFields" :items="item.transactions" fixed hide-thead>
           <template #cell(created_at)="{ value }">
             {{ formatDate(value) }}
           </template>
@@ -31,14 +31,7 @@
           <template #cell(sum)="{ value }"> {{ value }}&nbsp;₽ </template>
 
           <template #cell(note)="{ item, value }">
-            <UiButton
-              class="btn-edit"
-              icon="edit-24"
-              icon-size="24"
-              block
-              icon-right
-              @click="handleEdit(item as RecordsItem)"
-            >
+            <UiButton class="btn-edit" icon="edit-24" icon-size="24" block icon-right @click="handleEdit(item)">
               <span class="caption">{{ value }}</span>
             </UiButton>
           </template>
@@ -46,14 +39,14 @@
       </template>
     </UiTable>
 
-    <RecordDialog v-model="dialogVisible" :record="currentRecord" @closed="handleDialogClosed" />
+    <TransactionDialog v-model="dialogVisible" :transaction="currentTransaction" @closed="handleDialogClosed" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-import type { RecordsItem } from '~/types'
+import type { Transaction } from '~/gen/gql/graphql'
 import type { TableField, TableItem } from './ui/ui-table.vue'
 
 interface GroupTableProps {
@@ -63,7 +56,7 @@ interface GroupTableProps {
 
 const props = defineProps<GroupTableProps>()
 
-const currentRecord = ref<RecordsItem>()
+const currentTransaction = ref<Transaction>()
 const dialogVisible = ref(false)
 
 const fields = computed<TableField[]>(() => [
@@ -120,13 +113,13 @@ function handleToggleDetails(event: Event, detailsVisible: boolean, callback: Fu
   callback()
 }
 
-function handleEdit(record: RecordsItem) {
-  currentRecord.value = record
+function handleEdit(transaction: Transaction) {
+  currentTransaction.value = transaction
   dialogVisible.value = true
 }
 
 function handleDialogClosed() {
-  currentRecord.value = undefined
+  currentTransaction.value = undefined
 }
 </script>
 
