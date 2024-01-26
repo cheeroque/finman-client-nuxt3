@@ -2,30 +2,30 @@
   <NuxtLink
     :class="{ 'caption-outside': captionOutside, 'caption-visible': visible }"
     :style="{
-      '--category-bar-color': category.color,
+      '--category-bar-color': category?.color,
       '--category-bar-width': barWidth,
       '--category-text-color': textColor,
     }"
-    :to="`/categories/${category.slug}`"
+    :to="`/categories/${category?.slug}`"
     class="category-link"
   >
     <div ref="caption" class="category-link-caption">
       <span class="category-total"> {{ useNumberFormat(total) }}&nbsp;₽ </span>
 
       <span class="category-name">
-        {{ category.name }}
+        {{ category?.name }}
       </span>
     </div>
   </NuxtLink>
 </template>
 
 <script setup lang="ts">
-import type { RecordsCategory } from '~/types'
+import type { Category } from '~/gen/gql/graphql'
 
 interface SidebarMonthlyCategoryProps {
-  category: RecordsCategory
-  maxTotal: number
-  total: number
+  category?: Category
+  maxTotal?: number
+  total?: number
 }
 
 const props = defineProps<SidebarMonthlyCategoryProps>()
@@ -35,10 +35,9 @@ const caption = ref()
 const captionOutside = ref(false)
 const visible = ref(false)
 
-const textColor = computed(() => useContrastColor(props.category.color))
+const textColor = computed(() => useContrastColor(props.category?.color))
 
 function initCaption() {
-  /* Determine whether category caption should be inside or outside the bar */
   if (!caption.value) return
 
   visible.value = false
@@ -50,10 +49,14 @@ function initCaption() {
   const captionWidth = captionEl.offsetWidth
   const rootWidth = root?.offsetWidth ?? 0
 
-  const parentWidth = Math.round((rootWidth * props.total) / props.maxTotal)
+  let parentWidth
 
-  captionOutside.value = captionWidth > parentWidth
-  barWidth.value = `${parentWidth}px`
+  if (props.maxTotal && props.total) {
+    parentWidth = Math.round((rootWidth * props.total) / props.maxTotal)
+    captionOutside.value = captionWidth > parentWidth
+  }
+
+  barWidth.value = parentWidth ? `${parentWidth}px` : '100%'
 
   visible.value = true
 }

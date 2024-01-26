@@ -7,11 +7,15 @@
     <ul class="list-unstyled">
       <li
         v-for="(group, index) in visibleCategories"
-        :key="`group-${group.category.id}`"
+        :key="`group-${group.category?.id}`"
         :class="{ 'mt-8': index > 0 }"
         role="presentation"
       >
-        <SidebarMonthlyCategory :category="group.category" :max-total="maxTotal" :total="group.total" />
+        <SidebarMonthlyCategory
+          :category="(group.category as Category)"
+          :max-total="maxTotal"
+          :total="group.subtotal"
+        />
       </li>
     </ul>
 
@@ -23,7 +27,11 @@
           :class="{ 'mt-8': index > 0 }"
           role="presentation"
         >
-          <SidebarMonthlyCategory :category="group.category" :max-total="maxTotal" :total="group.total" />
+          <SidebarMonthlyCategory
+            :category="(group.category as Category)"
+            :max-total="maxTotal"
+            :total="group.subtotal"
+          />
         </li>
       </ul>
     </UiCollapse>
@@ -43,58 +51,37 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import RECORDS_QUERY from '~/graphql/Records.gql'
 
-import type { RecordsCategory, RecordsItem, RecordsResponse } from '~/types'
-
-interface CategoryWithTotal {
-  category: RecordsCategory
-  total: number
-}
+import type { Category } from '~/gen/gql/graphql'
 
 const VISIBLE_LIMIT = 5
 
-const { $urql } = useNuxtApp()
 const refetchTrigger = useRefetchTrigger()
 
 const collapseOpen = ref(false)
 
-const { data, refresh } = await useAsyncData(async () => {
-  const now = DateTime.now()
+const now = DateTime.now()
+const from = now.set({ hour: 0, minute: 0, second: 0, day: 1 })
+const to = from.plus({ month: 1 }).minus({ second: 1 })
 
-  const from = now.set({ hour: 0, minute: 0, second: 0, day: 1 })
-  const to = from.plus({ month: 1 }).minus({ second: 1 })
+const query = {
+  from: from.toFormat('yyyy-LL-dd HH:mm:ss'),
+  to: to.toFormat('yyyy-LL-dd HH:mm:ss'),
+}
 
-  const variables = {
-    first: 1000,
-    where: {
-      AND: [
-        { column: 'CREATED_AT', operator: 'GTE', value: from.toFormat('yyyy-LL-dd HH:mm:ss') },
-        { column: 'CREATED_AT', operator: 'LTE', value: to.toFormat('yyyy-LL-dd HH:mm:ss') },
-      ],
-    },
-  }
-
-  const { data } = await $urql
-    .query<RecordsResponse>(RECORDS_QUERY, variables, { requestPolicy: 'network-only' })
-    .toPromise()
-
-  const records = ref(data?.records.data ?? [])
-
-  return reactive({ records })
-})
+const { data, refresh } = await useFetch('/api/month', { query, pick: ['tableItems'] })
 
 const groups = computed(() =>
-  getCategoriesWithSubtotal(data.value?.records)
-    .filter((group) => !group.category.is_income)
-    .sort((a, b) => b.total - a.total)
+  data.value?.tableItems
+    .filter((group) => !group.category?.is_income)
+    .sort((a, b) => Number(b.subtotal) - Number(a.subtotal))
 )
 
 const visibleCategories = computed(() => groups.value?.slice(0, VISIBLE_LIMIT))
 const hiddenCategories = computed(() => groups.value?.slice(VISIBLE_LIMIT))
 const hasCollapse = computed(() => Boolean(hiddenCategories.value?.length))
 const isEmpty = computed(() => !groups.value?.length)
-const maxTotal = computed(() => groups.value?.[0].total)
+const maxTotal = computed(() => groups.value?.[0].subtotal)
 
 watch(
   /* Refetch records if external trigger was set to true, then reset trigger */
@@ -108,28 +95,6 @@ watch(
     }
   }
 )
-
-/* Get an array of records, then return array of all the categories
- * with total sum of their records */
-
-function getCategoriesWithSubtotal(records?: RecordsItem[]): CategoryWithTotal[] {
-  const categories: CategoryWithTotal[] = []
-
-  records?.forEach((record: RecordsItem) => {
-    const categoryIndex = Number(record.category?.id)
-
-    if (categories[categoryIndex]) {
-      categories[categoryIndex].total += record.sum
-    } else {
-      categories[categoryIndex] = {
-        category: record.category,
-        total: record.sum ?? 0,
-      }
-    }
-  })
-
-  return categories.filter(Boolean)
-}
 
 function toggleCollapse() {
   collapseOpen.value = !collapseOpen.value
