@@ -15,6 +15,12 @@ const config: CodegenConfig = {
         fragmentMasking: false,
       },
       config: {
+        scalars: {
+          JSON: {
+            path: 'string',
+            size: 'number',
+          },
+        },
         useTypeImports: true,
       },
     },

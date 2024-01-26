@@ -5,17 +5,6 @@
 </template>
 
 <script setup lang="ts">
-type ExportResponse = {
-  data: {
-    result: {
-      file: {
-        path: string
-        size: number
-      }
-    }
-  }
-}
-
 const config = useRuntimeConfig()
 
 const loading = ref(false)
@@ -24,7 +13,7 @@ async function handleClick() {
   loading.value = true
 
   try {
-    const { data, error } = await useFetch<ExportResponse>('/api/export')
+    const { data, error } = await useFetch('/api/export')
 
     if (data.value?.data?.result.file) {
       const file = data.value?.data.result.file
