@@ -23,7 +23,7 @@
 import type { Category } from '~/gen/gql/graphql'
 
 interface SidebarMonthlyCategoryProps {
-  category?: Category
+  category?: Partial<Category>
   maxTotal?: number
   total?: number
 }

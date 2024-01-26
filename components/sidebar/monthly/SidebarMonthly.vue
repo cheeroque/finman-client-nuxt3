@@ -11,11 +11,7 @@
         :class="{ 'mt-8': index > 0 }"
         role="presentation"
       >
-        <SidebarMonthlyCategory
-          :category="(group.category as Category)"
-          :max-total="maxTotal"
-          :total="group.subtotal"
-        />
+        <SidebarMonthlyCategory :category="group.category" :max-total="maxTotal" :total="group.subtotal" />
       </li>
     </ul>
 
@@ -27,11 +23,7 @@
           :class="{ 'mt-8': index > 0 }"
           role="presentation"
         >
-          <SidebarMonthlyCategory
-            :category="(group.category as Category)"
-            :max-total="maxTotal"
-            :total="group.subtotal"
-          />
+          <SidebarMonthlyCategory :category="group.category" :max-total="maxTotal" :total="group.subtotal" />
         </li>
       </ul>
     </UiCollapse>
@@ -51,8 +43,6 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-
-import type { Category } from '~/gen/gql/graphql'
 
 const VISIBLE_LIMIT = 5
 

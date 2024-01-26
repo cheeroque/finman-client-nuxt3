@@ -4,7 +4,7 @@
       <TransactionPageHeader />
     </template>
 
-    <TransactionTable :transactions="(data?.transactions as Transaction[])" :view-mode="viewMode" />
+    <TransactionTable :transactions="data?.transactions" :view-mode="viewMode" />
 
     <TransactionFab :show="!paginationVisible" />
 
@@ -17,8 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Transaction } from '~/gen/gql/graphql'
-
 const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
 

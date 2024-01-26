@@ -5,7 +5,7 @@
     class="overflow-hidden"
     spinner-variant="primary"
   >
-    <TransactionTable v-if="data" :transactions="(data?.transactions as Transaction[])" />
+    <TransactionTable v-if="data" :transactions="data?.transactions" />
 
     <template #footer>
       <div v-if="Number(data?.totalPages) > 1">
@@ -16,8 +16,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Transaction } from '~/gen/gql/graphql'
-
 const route = useRoute()
 
 const query = computed(() => {

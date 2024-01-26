@@ -38,8 +38,6 @@
 import { DateTime } from 'luxon'
 import { useTransactionsStore } from '~/store/transactions'
 
-import type { TableMonthItem } from '~/types'
-
 const route = useRoute()
 const transactionsStore = useTransactionsStore()
 
@@ -81,7 +79,7 @@ const query = computed(() => {
 const { data, pending } = await useFetch('/api/month', { query })
 
 const tableItems = computed(() => {
-  const items = (data.value?.tableItems ?? []) as TableMonthItem[]
+  const items = data.value?.tableItems ?? []
 
   return [
     ...items,

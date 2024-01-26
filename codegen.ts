@@ -15,6 +15,7 @@ const config: CodegenConfig = {
         fragmentMasking: false,
       },
       config: {
+        arrayInputCoercion: false,
         scalars: {
           JSON: {
             path: 'string',
