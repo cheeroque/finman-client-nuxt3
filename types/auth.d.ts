@@ -1,6 +1,6 @@
 export interface AuthPlugin {
-  login: (credentials: LoginCredentials) => void
-  logout: () => void
+  login: (credentials: LoginCredentials) => Promise<void>
+  logout: () => Promise<void>
   getToken: (refresh?: boolean) => string
   setToken: (token?: string) => void
   reset: () => void
