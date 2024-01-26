@@ -10,8 +10,6 @@ async function logout() {
 
   await $auth.logout()
 
-  /* Force app reload with external: true to re-create URQL client */
-
   return navigateTo('/login', { external: true })
 }
 </script>
