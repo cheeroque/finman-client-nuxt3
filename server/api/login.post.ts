@@ -1,3 +1,4 @@
+import { parseJwt } from '~/utils/jwt'
 import { loginMutation } from '~/gql'
 
 export default defineEventHandler(async (event) => {
@@ -11,11 +12,13 @@ export default defineEventHandler(async (event) => {
   const token = data?.login.access_token
   const user = data?.login.user
 
+  const expires = new Date(parseJwt(token).exp * 1000).toUTCString()
+
   /* Pass auth token to the client as http-only secure cookie
    * inside `set-cookie` header */
 
   if (token) {
-    setResponseHeader(event, 'set-cookie', [`auth_token=${token}; Path=/; Secure; HttpOnly`])
+    setResponseHeader(event, 'set-cookie', [`auth_token=${token}; Expires=${expires}; Path=/; Secure; HttpOnly`])
   }
 
   return { user }
