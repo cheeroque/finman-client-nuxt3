@@ -56,13 +56,13 @@
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
 
-import type { LoginCredentials } from '~/types'
+import type { LoginMutationVariables } from '~/gen/gql/graphql'
 
 definePageMeta({
   layout: 'auth',
 })
 
-const credentials = reactive<LoginCredentials>({
+const credentials = reactive<LoginMutationVariables>({
   password: '',
   username: '',
 })
@@ -76,7 +76,7 @@ const rules = computed(() => ({
   username: { required: helpers.withMessage(useString('fieldRequired'), required) },
 }))
 
-const v$ = useVuelidate<LoginCredentials>(rules, credentials, { $lazy: true })
+const v$ = useVuelidate<LoginMutationVariables>(rules, credentials, { $lazy: true })
 
 async function handleSubmit() {
   v$.value.$validate()

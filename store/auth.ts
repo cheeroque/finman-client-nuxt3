@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import type { User } from '~/types'
+import type { User } from '~/gen/gql/graphql'
 
 interface AuthState {
   user?: User

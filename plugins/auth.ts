@@ -1,29 +1,18 @@
 import { useAuthStore } from '~/store/auth'
 
-import type { CookieOptions } from 'nuxt/app'
-import type { AuthPlugin, LoginCredentials, User } from '~/types'
+import type { LoginMutationVariables } from '~/gen/gql/graphql'
 
-type LoginResponse = {
-  user?: User
-}
-
-const TOKEN_KEY = 'auth_token'
-const REFRESH_TOKEN_KEY = 'auth_refresh_token'
-
-const COOKIE_OPTIONS: Omit<CookieOptions, 'readonly'> = {
-  path: '/',
-  sameSite: 'lax',
+type AuthPlugin = {
+  login: (credentials: LoginMutationVariables) => Promise<void>
+  logout: () => Promise<void>
 }
 
 export default defineNuxtPlugin(() => {
   const authStore = useAuthStore()
 
-  const tokenCookie = useCookie(TOKEN_KEY, COOKIE_OPTIONS)
-  const refreshTokenCookie = useCookie(REFRESH_TOKEN_KEY, COOKIE_OPTIONS)
-
-  async function login(credentials: LoginCredentials) {
+  async function login(credentials: LoginMutationVariables) {
     try {
-      const { user } = await $fetch<LoginResponse>('/api/login', {
+      const { user } = await $fetch('/api/login', {
         method: 'POST',
         body: credentials,
       })
@@ -46,28 +35,10 @@ export default defineNuxtPlugin(() => {
       /* Ignore error when trying to log out without token */
     }
 
-    reset()
-  }
-
-  function getToken(refresh?: boolean) {
-    return refresh ? refreshTokenCookie.value : tokenCookie.value
-  }
-
-  function setToken(token?: string, refresh?: boolean) {
-    if (refresh) {
-      refreshTokenCookie.value = token
-    } else {
-      tokenCookie.value = token
-    }
-  }
-
-  function reset() {
     authStore.user = undefined
-    setToken(undefined)
-    setToken(undefined, true)
   }
 
-  const auth = { login, logout, getToken, setToken, reset }
+  const auth = { login, logout }
 
   return { provide: { auth } }
 })

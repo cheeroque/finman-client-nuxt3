@@ -1,16 +1,10 @@
 import { useAuthStore } from '~/store/auth'
 
 import type { H3Event } from 'h3'
-import type { User } from '~/types'
-
-interface MeResponse {
-  data?: {
-    me: User
-  }
-}
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const authStore = useAuthStore()
+
   const isLoginPage = to.path.startsWith('/login')
   let isLoggedIn = Boolean(authStore.user)
 
@@ -23,7 +17,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
       const headers = buildHeaders(useRequestEvent())
 
-      const { data } = await $fetch<MeResponse>('/api/me', { headers })
+      const { data } = await $fetch('/api/me', { headers })
 
       if (data?.me) {
         authStore.user = data.me
