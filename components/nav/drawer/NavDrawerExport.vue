@@ -5,18 +5,17 @@
 </template>
 
 <script setup lang="ts">
-import RECORDS_EXPORT_MUTATION from '~/graphql/RecordsExport.gql'
-
-interface RecordsExportResponse {
-  result: {
-    file: {
-      path: string
-      size: number
+type ExportResponse = {
+  data: {
+    result: {
+      file: {
+        path: string
+        size: number
+      }
     }
   }
 }
 
-const { $urql } = useNuxtApp()
 const config = useRuntimeConfig()
 
 const loading = ref(false)
@@ -25,19 +24,19 @@ async function handleClick() {
   loading.value = true
 
   try {
-    const { data, error } = await $urql.mutation<RecordsExportResponse>(RECORDS_EXPORT_MUTATION, {}).toPromise()
+    const { data, error } = await useFetch<ExportResponse>('/api/export')
 
-    if (data?.result) {
-      const filePath = data.result.file.path
+    if (data.value?.data?.result.file) {
+      const file = data.value?.data.result.file
       const link = document.createElement('a')
 
-      link.href = `${config.public.staticUrl}${filePath}`
+      link.href = `${config.public.staticUrl}${file.path}`
       link.target = '_blank'
 
       document.body.appendChild(link)
       link.click()
     } else {
-      throw new Error(error?.message ?? useString('exportFailed'))
+      throw new Error(error.value?.message ?? useString('exportFailed'))
     }
   } catch (error) {
     const toast = useToast()

@@ -55,3 +55,11 @@ export const transactionUpdateMutation = graphql(`
     }
   }
 `)
+
+export const transactionsExportMutation = graphql(`
+  mutation TransactionsExport {
+    result: exportTransactions {
+      file
+    }
+  }
+`)
