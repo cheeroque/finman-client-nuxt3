@@ -9,6 +9,8 @@ export {
   categoryUpdateMutation,
 } from './category'
 
+export { snapshotCreateMutation, snapshotsQuery } from './snapshot'
+
 export {
   transactionsQuery,
   transactionsTotalQuery,

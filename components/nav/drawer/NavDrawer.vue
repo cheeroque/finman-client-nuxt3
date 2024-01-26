@@ -21,7 +21,7 @@
         </li>
 
         <li role="presentation">
-          <NavDrawerSnapshot :loading="pending" :snapshot="recordsStore.snapshot" @click="dialogVisible = true" />
+          <NavDrawerSnapshot :loading="pending" :snapshot="transactionsStore.snapshot" @click="dialogVisible = true" />
         </li>
 
         <li role="presentation">
@@ -47,18 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRecordsStore } from '~/store/records'
-
-import SNAPSHOTS_QUERY from '~/graphql/Snapshots.gql'
-
-import type { RecordsSnapshot } from '~/types'
-
-interface SnapshotsQueryResponse {
-  snapshots: {
-    data: RecordsSnapshot[]
-    paginatorInfo: PaginatorInfo
-  }
-}
+import { useTransactionsStore } from '~/store/transactions'
 
 interface NavDrawerProps {
   open?: boolean
@@ -74,12 +63,11 @@ const props = defineProps<NavDrawerProps>()
 
 const emit = defineEmits(['close', 'toggle'])
 
-const bodyEl = ref<HTMLElement | undefined>()
+const bodyEl = ref<HTMLElement>()
 
-const { $urql } = useNuxtApp()
 const bodyFixed = useScrollLock(bodyEl)
-const recordsStore = useRecordsStore()
 const refetchTrigger = useRefetchTrigger()
+const transactionsStore = useTransactionsStore()
 
 const dialogVisible = ref(false)
 
@@ -91,10 +79,12 @@ const drawerClasses = computed(() => {
 
 /* Fetch latest snapshot and save it to the store */
 
-const { pending, refresh } = useAsyncData(async () => {
-  const { data: snapshotData } = await $urql.query<SnapshotsQueryResponse>(SNAPSHOTS_QUERY, {}).toPromise()
+const { pending, refresh } = await useFetch('/api/snapshots', {
+  onResponse({ response }) {
+    const { snapshots } = response._data
 
-  recordsStore.snapshot = snapshotData?.snapshots.data?.[0]
+    transactionsStore.snapshot = snapshots[0]
+  },
 })
 
 watch(

@@ -12,6 +12,15 @@ export const CategoryFragment = graphql(`
   }
 `)
 
+export const SnapshotFragment = graphql(`
+  fragment SnapshotFragment on Revise {
+    balance
+    created_at
+    id
+    note
+  }
+`)
+
 export const TransactionFragment = graphql(`
   fragment TransactionFragment on Transaction {
     created_at

@@ -1,5 +1,5 @@
 <template>
-  <form ref="form" class="record-form" @submit.prevent="handleSubmit">
+  <form ref="form" class="snapshot-form" @submit.prevent="handleSubmit">
     <UiFormGroup :label="useString('previousBalance')">
       <UiInputCalc :model-value="previousBalance" name="previous_balance" disabled />
     </UiFormGroup>
@@ -35,7 +35,7 @@
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
 import { DateTime } from 'luxon'
-import { useRecordsStore } from '~/store/records'
+import { useTransactionsStore } from '~/store/transactions'
 
 interface SnapshotForm {
   balance: number
@@ -45,9 +45,9 @@ interface SnapshotForm {
 
 const emit = defineEmits(['submit'])
 
-const recordsStore = useRecordsStore()
+const transactionsStore = useTransactionsStore()
 
-const previousBalance = computed(() => recordsStore.snapshot?.balance)
+const previousBalance = computed(() => transactionsStore.snapshot?.balance)
 
 /* Expose form element as ref for parent */
 
@@ -57,9 +57,9 @@ defineExpose({ form })
 /* Initialize form with stored snapshot values */
 
 const formData = reactive<SnapshotForm>({
-  balance: recordsStore.balance,
+  balance: transactionsStore.balance,
   created_at: new Date(),
-  note: recordsStore.snapshot?.note,
+  note: transactionsStore.snapshot?.note ?? '',
 })
 
 /* Declare form validation rules */

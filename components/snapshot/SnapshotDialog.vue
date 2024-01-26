@@ -26,14 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { useRecordsStore } from '~/store/records'
-import SNAPSHOT_CREATE_MUTATION from '~/graphql/SnapshotCreate.gql'
+import { useTransactionsStore } from '~/store/transactions'
 
-import type { RecordsSnapshot } from '~/types'
-
-interface SnapshotCreateResponse {
-  result: RecordsSnapshot
-}
+import type { Revise } from '~/gen/gql/graphql'
 
 interface SnapshotDialogProps {
   modelValue?: boolean
@@ -43,9 +38,8 @@ const props = defineProps<SnapshotDialogProps>()
 
 const emit = defineEmits(['success', 'update:modelValue'])
 
-const { $urql } = useNuxtApp()
-const recordsStore = useRecordsStore()
 const toast = useToast()
+const transactionsStore = useTransactionsStore()
 
 const form = ref()
 const loading = ref(false)
@@ -54,21 +48,21 @@ const formId = computed(() => form.value?.form.id)
 
 /* Create new snapshot. Show toast on success or error */
 
-async function handleSubmit(snapshot: RecordsSnapshot) {
+async function handleSubmit(snapshot: Revise) {
   const { balance, created_at, note } = snapshot
-  const variables = { data: { balance, created_at, note } }
+  const query = { balance, created_at, note }
 
   loading.value = true
 
-  const { data, error } = await $urql.mutation<SnapshotCreateResponse>(SNAPSHOT_CREATE_MUTATION, variables).toPromise()
+  const { data, error } = await useFetch('/api/snapshot', { method: 'POST', query })
 
-  if (data?.result) {
-    recordsStore.snapshot = data.result
-    showToast(useString('snapshotSaved', `#${data.result.id}`), 'success')
+  if (data.value?.data?.result) {
+    transactionsStore.snapshot = data.value.data.result
+    showToast(useString('snapshotSaved', `#${data.value.data.result.id}`), 'success')
 
     emit('update:modelValue', false)
   } else {
-    showToast(error?.message ?? useString('error'), 'danger')
+    showToast(error.value?.message ?? useString('error'), 'danger')
   }
 
   loading.value = false

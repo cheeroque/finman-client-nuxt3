@@ -7,11 +7,11 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-import type { RecordsSnapshot } from '~/types'
+import type { Revise } from '~/gen/gql/graphql'
 
 interface NavDrawerSnapshotProps {
   loading?: boolean
-  snapshot?: RecordsSnapshot
+  snapshot?: Revise
 }
 
 const props = defineProps<NavDrawerSnapshotProps>()

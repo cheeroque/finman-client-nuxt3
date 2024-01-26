@@ -8,7 +8,7 @@ interface TransactionsState {
   categories: Category[]
   firstTransaction?: Transaction
   pending: number
-  revise?: Revise
+  snapshot?: Revise
 }
 
 export const useTransactionsStore = defineStore({
@@ -19,7 +19,7 @@ export const useTransactionsStore = defineStore({
     categories: [],
     firstTransaction: undefined,
     pending: 0,
-    revise: undefined,
+    snapshot: undefined,
   }),
 
   getters: {

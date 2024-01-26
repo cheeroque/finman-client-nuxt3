@@ -16,8 +16,10 @@ interface NavDrawerPageProps {
 
 const props = defineProps<NavDrawerPageProps>()
 
+const route = useRoute()
+
 const componentClasses = computed(() => {
-  const { path } = useRoute()
+  const { path } = route
   const classes = ['drawer-item']
 
   if ((props.page.link === '/' && path === '/') || (props.page.link !== '/' && path.startsWith(props.page.link))) {
