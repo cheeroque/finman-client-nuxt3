@@ -42,7 +42,7 @@ import { useAuthStore } from '~/store/auth'
 import { useTransactionsStore } from '~/store/transactions'
 
 import type { Transaction } from '~/gen/gql/graphql'
-import type { TransactionFormValues } from '~/components/transaction/TransactionForm.vue'
+import type { TransactionFormValues } from '~/types'
 
 type TransactionDialogProps = {
   modelValue?: boolean
