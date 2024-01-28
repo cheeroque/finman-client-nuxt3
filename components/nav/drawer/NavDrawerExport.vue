@@ -6,6 +6,7 @@
 
 <script setup lang="ts">
 const config = useRuntimeConfig()
+const toast = useToast()
 
 const loading = ref(false)
 
@@ -28,7 +29,6 @@ async function handleClick() {
       throw new Error(error.value?.message ?? useString('exportFailed'))
     }
   } catch (error) {
-    const toast = useToast()
     toast.value.modelValue = true
     toast.value.message = useString('exportFailed')
     toast.value.variant = 'danger'
