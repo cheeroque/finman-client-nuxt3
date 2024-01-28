@@ -30,7 +30,7 @@ const menuLinks: NavLink[] = [
   { icon: 'incomes-24', link: '/view/income', text: useString('incomes') },
 ]
 
-function getLinkClasses(link: NavLink): string[] {
+function getLinkClasses(link: NavLink) {
   const classes = ['navbar-link']
 
   if ((link.link === '/' && route.path === '/') || (link.link !== '/' && route.path.startsWith(link.link))) {
