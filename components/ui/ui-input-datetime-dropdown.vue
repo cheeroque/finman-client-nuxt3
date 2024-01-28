@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-interface UiInputDatetimeDropdownProps {
+type UiInputDatetimeDropdownProps = {
   hideTime?: boolean
   modelValue?: Date
 }

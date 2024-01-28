@@ -40,7 +40,7 @@ type CategoryForm = Omit<Category, 'color' | 'id'> & {
   color?: string
 }
 
-interface CategoryFormProps {
+type CategoryFormProps = {
   category?: Category
   edit?: boolean
 }

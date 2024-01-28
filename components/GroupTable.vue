@@ -47,9 +47,9 @@
 import { DateTime } from 'luxon'
 
 import type { Transaction } from '~/gen/gql/graphql'
-import type { TableField, TableItem } from './ui/ui-table.vue'
+import type { TableField, TableItem } from '~/types'
 
-interface GroupTableProps {
+type GroupTableProps = {
   groupLabel: string
   items: TableItem[]
 }

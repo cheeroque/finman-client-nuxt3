@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 import type { Category, Revise, Transaction } from '~/gen/gql/graphql'
 
-interface TransactionsState {
+type TransactionsState = {
   balance: number
   categories: Category[]
   firstTransaction?: Transaction

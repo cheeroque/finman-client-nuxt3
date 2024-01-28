@@ -5,13 +5,13 @@ type ThemeColorName = 'primary' | 'secondary' | 'tertiary' | 'neutral' | 'neutra
 type ThemePrefix = 'on' | undefined
 type ThemeSuffix = 'active' | 'bg' | 'bg-active' | 'outline' | 'surface' | undefined
 
-interface ThemeColor {
+type ThemeColor = {
   c?: string
   h?: string
   name: ThemeColorName
 }
 
-interface ThemeItem {
+type ThemeItem = {
   prefix?: ThemePrefix
   stop: number
   strength?: number

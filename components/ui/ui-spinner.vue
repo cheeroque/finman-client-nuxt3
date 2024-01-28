@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-interface UiSpinnerProps {
+type UiSpinnerProps = {
   size?: number | string
   variant?: string
 }

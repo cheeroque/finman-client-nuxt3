@@ -17,7 +17,14 @@
         :style="{ backgroundColor: bgColor, color: iconColor }"
         class="form-control-icon colorpicker-label"
       >
-        <input v-uid ref="colorInput" :value="modelValue" class="colorpicker-input" type="color" @input="handleInput" />
+        <input
+          v-uid
+          ref="colorInput"
+          :value="modelValue"
+          class="colorpicker-input"
+          type="color"
+          @input="handleInput($event as InputEvent)"
+        />
 
         <UiIcon aria-hidden="true" name="eyedropper-24" size="16" />
       </label>
@@ -26,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-interface UiInputColorProps {
+type UiInputColorProps = {
   disabled?: boolean
   modelValue?: string
   name?: string
@@ -47,8 +54,11 @@ const bgColor = computed(() => props.modelValue ?? 'transparent')
 const iconColor = computed(() => (props.modelValue ? useContrastColor(props.modelValue) : 'inherit'))
 const placeholder = computed(() => props.placeholder ?? '#')
 
-function handleInput(event: Event) {
-  const target = event.target as HTMLInputElement
-  emit('update:modelValue', target.value)
+function handleInput(event: InputEvent) {
+  const target = event.target
+
+  if (target instanceof HTMLInputElement) {
+    emit('update:modelValue', target.value)
+  }
 }
 </script>

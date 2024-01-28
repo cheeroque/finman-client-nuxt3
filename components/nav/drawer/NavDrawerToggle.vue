@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-interface NavDrawerToggleProps {
+type NavDrawerToggleProps = {
   open?: boolean
 }
 

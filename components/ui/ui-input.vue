@@ -18,7 +18,7 @@
       @blur="emit('blur', $event)"
       @click="emit('click', $event)"
       @focus="emit('focus', $event)"
-      @input="handleInput"
+      @input="handleInput($event as InputEvent)"
     />
     <div v-if="hasAppend" class="form-control-append">
       <slot name="append">
@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import type { ComputedRef } from 'vue'
 
-interface UiInputProps {
+type UiInputProps = {
   append?: string
   autocomplete?: string
   autofocus?: boolean
@@ -123,8 +123,9 @@ onUnmounted(() => {
   removeObserver()
 })
 
-function handleInput(event: Event) {
-  const target = event.target as HTMLInputElement
+function handleInput(event: InputEvent) {
+  const target = event.target
+  if (!(target instanceof HTMLInputElement)) return
 
   emit('input', event)
   emit('update:modelValue', target.value)

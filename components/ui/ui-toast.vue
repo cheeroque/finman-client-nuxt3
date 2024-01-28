@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-interface UiToastProps {
+type UiToastProps = {
   autohide?: boolean | number | string
   message?: string
   modelValue?: boolean

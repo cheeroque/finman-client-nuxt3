@@ -61,7 +61,7 @@ import { useTransactionsStore } from '~/store/transactions'
 
 import type { Category } from '~/gen/gql/graphql'
 
-interface CategoryDialogProps {
+type CategoryDialogProps = {
   category?: Category
   modelValue?: boolean
 }
@@ -70,12 +70,12 @@ const props = defineProps<CategoryDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
-const transactionsStore = useTransactionsStore()
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
+const transactionsStore = useTransactionsStore()
 
-const form = ref()
 const deletePending = ref(false)
+const form = ref()
 
 const formId = computed(() => form.value?.form.id)
 const isEdit = computed(() => Boolean(props.category?.id))

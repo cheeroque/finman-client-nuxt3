@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import type { Category } from '~/gen/gql/graphql'
 
-interface SidebarMonthlyCategoryProps {
+type SidebarMonthlyCategoryProps = {
   category?: Partial<Category>
   maxTotal?: number
   total?: number

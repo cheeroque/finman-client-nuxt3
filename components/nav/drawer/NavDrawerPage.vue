@@ -5,12 +5,12 @@
 </template>
 
 <script setup lang="ts">
-interface DrawerPage {
+type DrawerPage = {
   key: string
   link: string
 }
 
-interface NavDrawerPageProps {
+type NavDrawerPageProps = {
   page: DrawerPage
 }
 

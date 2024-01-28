@@ -12,7 +12,7 @@
       autocomplete="off"
       type="checkbox"
       class="form-check-input"
-      @input="handleInput"
+      @input="handleInput($event as InputEvent)"
     />
 
     <label v-if="hasLabel" :for="controlId" class="form-check-label">
@@ -24,11 +24,7 @@
 <script setup lang="ts">
 type CheckboxValue = number | string | boolean | null
 
-interface CheckboxInputEventTarget extends EventTarget {
-  checked: boolean
-}
-
-interface UiCheckboxProps {
+type UiCheckboxProps = {
   disabled?: boolean
   form?: string
   modelValue?: CheckboxValue | CheckboxValue[]
@@ -68,8 +64,10 @@ function addValue(value: CheckboxValue, array: CheckboxValue[]): CheckboxValue[]
   }
 }
 
-function handleInput(event: Event) {
-  const target = event.target as CheckboxInputEventTarget
+function handleInput(event: InputEvent) {
+  const target = event.target
+  if (!(target instanceof HTMLInputElement)) return
+
   const checked = target.checked
 
   let payload

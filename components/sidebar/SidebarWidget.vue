@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-interface SidebarWidgetProps {
+type SidebarWidgetProps = {
   title?: string
 }
 

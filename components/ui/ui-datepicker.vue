@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import { DateTime, Info } from 'luxon'
 
-interface UiDatepickerProps {
+type UiDatepickerProps = {
   locale?: string
   modelValue?: Date
   titleFormat?: string

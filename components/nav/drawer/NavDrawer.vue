@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { useTransactionsStore } from '~/store/transactions'
 
-interface NavDrawerProps {
+type NavDrawerProps = {
   open?: boolean
 }
 

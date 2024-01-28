@@ -9,7 +9,7 @@ import { DateTime } from 'luxon'
 
 import type { Revise } from '~/gen/gql/graphql'
 
-interface NavDrawerSnapshotProps {
+type NavDrawerSnapshotProps = {
   loading?: boolean
   snapshot?: Revise
 }

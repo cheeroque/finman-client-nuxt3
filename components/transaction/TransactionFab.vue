@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-interface RecordFabProps {
+type RecordFabProps = {
   show?: boolean
 }
 

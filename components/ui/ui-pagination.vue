@@ -60,9 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import type { RouteLocationRaw } from 'vue-router'
-
-interface UiPaginationProps {
+type UiPaginationProps = {
   disabled?: boolean
   hideFirstLast?: boolean
   hidePrevNext?: boolean
@@ -113,7 +111,7 @@ const pages = computed(() => {
   return pages
 })
 
-function getLink(page: number | string): RouteLocationRaw | undefined {
+function getLink(page: number | string) {
   if (props.noLinks) return
 
   let newPage = page

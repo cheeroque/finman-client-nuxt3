@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-interface UiIconProps {
+type UiIconProps = {
   fill?: boolean
   name: string
   size?: number | string

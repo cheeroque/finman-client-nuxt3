@@ -37,7 +37,7 @@ import { helpers, minValue, required } from '@vuelidate/validators'
 import { DateTime } from 'luxon'
 import { useTransactionsStore } from '~/store/transactions'
 
-interface SnapshotForm {
+type SnapshotForm = {
   balance: number
   created_at: Date
   note?: string

@@ -42,13 +42,7 @@ import { helpers, minValue, required } from '@vuelidate/validators'
 import { useTransactionsStore } from '~/store/transactions'
 
 import type { Transaction } from '~/gen/gql/graphql'
-
-export type TransactionFormValues = {
-  category_id: number
-  created_at: Date
-  note?: string
-  sum: number
-}
+import type { TransactionFormValues } from '~/types'
 
 type TransactionFormProps = {
   edit?: boolean

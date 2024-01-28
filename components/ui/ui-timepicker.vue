@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-interface UiTimepickerProps {
+type UiTimepickerProps = {
   hideHeader?: boolean
   locale?: string
   modelValue?: Date

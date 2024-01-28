@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-interface UiDialogProps {
+type UiDialogProps = {
   loading?: boolean
   modelValue?: boolean
   size?: DialogSize

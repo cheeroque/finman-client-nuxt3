@@ -31,18 +31,9 @@
 </template>
 
 <script setup lang="ts">
-export interface TableField {
-  key: string
-  label?: string
-  tdClass?: string
-  thClass?: string
-}
+import type { TableField, TableItem } from '~/types'
 
-export interface TableItem {
-  [key: string]: any
-}
-
-interface UiTableProps {
+type UiTableProps = {
   fields: TableField[] | string[]
   fixed?: boolean
   hideThead?: boolean

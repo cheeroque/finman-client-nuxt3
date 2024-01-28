@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-interface UiCollapseProps {
+type UiCollapseProps = {
   collapseClass?: string
   modelValue?: boolean
   transition?: string

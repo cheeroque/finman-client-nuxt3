@@ -30,7 +30,7 @@ import { useTransactionsStore } from '~/store/transactions'
 
 import type { Revise } from '~/gen/gql/graphql'
 
-interface SnapshotDialogProps {
+type SnapshotDialogProps = {
   modelValue?: boolean
 }
 

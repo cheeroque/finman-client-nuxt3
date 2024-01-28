@@ -35,13 +35,13 @@ import type { ComputedRef } from 'vue'
 
 type SelectValue = number | string | null
 
-interface SelectOption {
+type SelectOption = {
   disabled?: boolean
   text: string
   value: SelectValue
 }
 
-interface UiSelectProps {
+type UiSelectProps = {
   disabled?: boolean
   modelValue?: SelectValue
   name?: string
@@ -95,7 +95,8 @@ const componentClasses = computed(() => {
 })
 
 function handleInput(event: Event) {
-  const target = event.target as HTMLSelectElement
+  const target = event.target
+  if (!(target instanceof HTMLSelectElement)) return
 
   emit('input', event)
   emit('update:modelValue', target.value)

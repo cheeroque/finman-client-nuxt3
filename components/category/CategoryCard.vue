@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import type { Category } from '~/gen/gql/graphql'
 
-interface CategoryCardProps {
+type CategoryCardProps = {
   category: Category
 }
 

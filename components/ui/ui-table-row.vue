@@ -27,9 +27,9 @@
 </template>
 
 <script setup lang="ts">
-import type { TableField, TableItem } from '~/components/ui/ui-table.vue'
+import type { TableField, TableItem } from '~/types'
 
-interface UiTableRowProps {
+type UiTableRowProps = {
   fields: TableField[]
   item: TableItem
   rowIndex?: number

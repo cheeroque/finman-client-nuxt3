@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import type { RouteLocationRaw } from 'vue-router'
 
-interface UiButtonProps {
+type UiButtonProps = {
   block?: boolean
   disabled?: boolean
   form?: string

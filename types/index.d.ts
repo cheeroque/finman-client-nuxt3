@@ -1,6 +1,3 @@
-export { NavLink } from './nav'
-export { RecordsCategory, RecordsItem, RecordsResponse, RecordsSnapshot } from './records'
-
 import type { Category, Transaction } from '~/gen/gql/graphql'
 
 declare global {
@@ -11,22 +8,6 @@ declare global {
   type DialogSize = 'sm' | 'md' | 'lg' | null
 
   type ViewMode = 'expense' | 'income' | null
-
-  interface OrderByClause {
-    column: string
-    order: string
-  }
-
-  interface PaginatorInfo {
-    lastPage: number
-    total: number
-  }
-
-  interface WhereConditions {
-    column?: string
-    operator?: string
-    value?: string | number | boolean
-  }
 }
 
 export type GroupTableItem = {
@@ -36,6 +17,30 @@ export type GroupTableItem = {
   trClass?: string
 }
 
+export type NavLink = {
+  icon?: string
+  link: string
+  text: string
+}
+
+export type TableField = {
+  key: string
+  label?: string
+  tdClass?: string
+  thClass?: string
+}
+
+export type TableItem = {
+  [key: string]: any
+}
+
 export type TableMonthItem = GroupTableItem & {
   category?: Partial<Category>
+}
+
+export type TransactionFormValues = {
+  category_id: number
+  created_at: Date
+  note?: string
+  sum: number
 }

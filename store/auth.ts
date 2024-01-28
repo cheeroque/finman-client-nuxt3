@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 import type { User } from '~/gen/gql/graphql'
 
-interface AuthState {
+type AuthState = {
   user?: User
 }
 

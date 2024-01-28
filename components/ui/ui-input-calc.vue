@@ -10,7 +10,7 @@
     :state="state"
     autocomplete="off"
     placeholder="0"
-    @blur="calculate"
+    @blur="handleBlur"
     @focus="handleFocus"
     @input="handleInput"
     @keydown="handleKeydown"
@@ -26,11 +26,7 @@
 </template>
 
 <script setup lang="ts">
-interface FakeFocusEvent {
-  target: HTMLInputElement
-}
-
-interface UiInputCalcProps {
+type UiInputCalcProps = {
   append?: string
   autofocus?: boolean
   disabled?: boolean
@@ -52,36 +48,36 @@ const inputKey = ref('')
 /* Split input value string to groups of digits with +- signs, find total sum
  * of all groups and emit it as new modelValue */
 
-function calculate(event: Event | FakeFocusEvent) {
-  if (event.target instanceof HTMLInputElement) {
-    const target = event.target
+function calculate(target: HTMLInputElement) {
+  const matches: string[] = target.value.match(/([+-]{0,}\d{1,})/gi) || []
 
-    const matches: string[] = target.value.match(/([+-]{0,}\d{1,})/gi) || []
+  const total = matches.reduce((total, match) => {
+    total += Number(match)
+    return total
+  }, 0)
 
-    const total = matches.reduce((total, match) => {
-      total += Number(match)
-      return total
-    }, 0)
+  updateValue(total)
 
-    updateValue(total)
+  hasTotal.value = true
+}
 
-    hasTotal.value = true
-  }
+function handleBlur(event: FocusEvent) {
+  if (!(event.target instanceof HTMLInputElement)) return
+  calculate(event.target)
 }
 
 /* Move caret to the end on input focus */
 
-function handleFocus(event: Event) {
+function handleFocus(event: FocusEvent) {
   hasTotal.value = false
 
-  if (event.target instanceof HTMLInputElement) {
-    const target = event.target
+  const target = event.target
+  if (!(target instanceof HTMLInputElement)) return
 
-    if (target.selectionEnd) {
-      setTimeout(() => {
-        target.setSelectionRange(target.selectionEnd, target.selectionEnd)
-      }, 0)
-    }
+  if (target.selectionEnd) {
+    setTimeout(() => {
+      target.setSelectionRange(target.selectionEnd, target.selectionEnd)
+    }, 0)
   }
 }
 
@@ -89,29 +85,26 @@ function handleInput() {
   hasTotal.value = false
 }
 
-function handleKeydown(event: Event) {
-  if (!(event instanceof KeyboardEvent)) return
+function handleKeydown(event: KeyboardEvent) {
+  const target = event.target
+  if (!(target instanceof HTMLInputElement)) return
 
-  if (event.target instanceof HTMLInputElement) {
-    const target = event.target
-
-    if (!event.key.match(/^[\d+-]$/)) {
-      /* NOT number/plus/minus key pressed */
-      if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
-        /* Single letter key & no modifier pressed */
-        event.preventDefault()
-      }
+  if (!event.key.match(/^[\d+-]$/)) {
+    /* NOT number/plus/minus key pressed */
+    if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+      /* Single letter key & no modifier pressed */
+      event.preventDefault()
     }
+  }
 
-    /* When Enter is pressed for the FIRST TIME inside input, prevent default
-     * and calculate modelValue */
+  /* When Enter is pressed for the FIRST TIME inside input, prevent default
+   * and calculate modelValue */
 
-    if (event.key === 'Enter') {
-      if (!hasTotal.value) {
-        event.preventDefault()
+  if (event.key === 'Enter') {
+    if (!hasTotal.value) {
+      event.preventDefault()
 
-        calculate({ target })
-      }
+      calculate(target)
     }
   }
 }

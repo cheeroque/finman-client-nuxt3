@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-interface UiDropdownProps {
+type UiDropdownProps = {
   block?: boolean
   disabled?: boolean
   icon?: string
