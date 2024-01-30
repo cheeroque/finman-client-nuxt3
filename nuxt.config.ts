@@ -34,7 +34,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@pinia/nuxt', '@vueuse/nuxt', 'nuxt-icons', '~/modules/color-theme'],
+  modules: ['@vueuse/nuxt', 'nuxt-icons', '~/modules/color-theme'],
 
   css: ['~/assets/styles/app.scss'],
 
