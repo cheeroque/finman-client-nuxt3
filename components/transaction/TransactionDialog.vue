@@ -1,6 +1,6 @@
 <template>
   <UiDialog
-    :loading="transactionsStore.loading"
+    :loading="loading"
     :model-value="modelValue"
     :title="dialogTitle"
     @closed="emit('closed')"
@@ -38,7 +38,6 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { useTransactionsStore } from '~/store/transactions'
 
 import type { Transaction } from '~/gen/gql/graphql'
 import type { TransactionFormValues } from '~/types'
@@ -52,10 +51,10 @@ const props = defineProps<TransactionDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
-const user = useSession()
+const loading = useIsBusy()
 const refetchTrigger = useRefetchTrigger()
+const user = useSession()
 const toast = useToast()
-const transactionsStore = useTransactionsStore()
 
 const form = ref()
 
@@ -70,7 +69,7 @@ async function handleTransactionDelete() {
 
   const { id } = props.transaction
 
-  transactionsStore.pending++
+  loading.value = true
 
   const { data, error } = await useFetch('/api/transaction', { method: 'DELETE', query: { id } })
 
@@ -85,7 +84,7 @@ async function handleTransactionDelete() {
     showToast(error.value?.message ?? useString('error'), 'danger')
   }
 
-  transactionsStore.pending--
+  loading.value = false
 }
 
 /* Create new transaction or update existing, if it's set with prop. Show toast
@@ -104,7 +103,7 @@ async function handleTransactionUpsert(formData: TransactionFormValues) {
     user_id: user.value?.id,
   }
 
-  transactionsStore.pending++
+  loading.value = true
 
   const { data, error } = await useFetch('/api/transaction', { method, query })
 
@@ -119,7 +118,7 @@ async function handleTransactionUpsert(formData: TransactionFormValues) {
     showToast(error.value?.message ?? useString('error'), 'danger')
   }
 
-  transactionsStore.pending--
+  loading.value = false
 }
 
 function showToast(message: string, variant: string) {

@@ -5,7 +5,7 @@
     <div class="app-content">
       <Sidebar />
 
-      <div :class="{ loading: transactionsStore.loading }" class="page">
+      <div :class="{ loading: loading }" class="page">
         <slot />
       </div>
     </div>
@@ -17,9 +17,15 @@
 </template>
 
 <script setup lang="ts">
-import { useTransactionsStore } from '~/store/transactions'
+import { DateTime } from 'luxon'
 
-const transactionsStore = useTransactionsStore()
+import type { Transaction } from '~/gen/gql/graphql'
+
+const balance = useBalance()
+const categories = useCategories()
+const loading = useIsBusy()
+const startDate = useStartDate()
+
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
@@ -27,11 +33,9 @@ const drawerOpen = ref(false)
 
 const { error, refresh } = await useFetch('/api/global-data', {
   onResponse({ response }) {
-    const { balance, categories, firstTransaction } = response._data
-
-    transactionsStore.balance = balance
-    transactionsStore.categories = categories
-    transactionsStore.firstTransaction = firstTransaction
+    balance.value = response._data.balance
+    categories.value = response._data.categories
+    startDate.value = getDate(response._data.firstTransaction)
   },
 })
 
@@ -51,6 +55,18 @@ watch(
     }
   }
 )
+
+function getDate(transaction?: Transaction) {
+  let dateTime = DateTime.fromFormat(transaction?.created_at ?? '', 'yyyy-LL-dd HH:mm:ss')
+
+  if (!dateTime.isValid) {
+    dateTime = DateTime.now()
+  }
+
+  const { month, year } = dateTime
+
+  return { month, year }
+}
 
 function handleToggleDrawer() {
   drawerOpen.value = !drawerOpen.value

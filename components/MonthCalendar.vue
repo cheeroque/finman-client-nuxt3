@@ -47,7 +47,6 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { useTransactionsStore } from '~/store/transactions'
 
 type CalendarMonth = {
   disabled?: boolean
@@ -64,12 +63,13 @@ const props = defineProps<MonthCalendarProps>()
 
 const LINK_FORMAT = 'yyyy-LL'
 
-const transactionsStore = useTransactionsStore()
+const startDate = useStartDate()
 
 const currentDate = props.date ?? new Date()
 const currentYear = ref(currentDate.getFullYear())
 
-const startYear = computed(() => transactionsStore.firstTransactionDate?.year)
+const startMonth = computed(() => startDate.value?.month ?? currentDate.getMonth() + 1)
+const startYear = computed(() => startDate.value?.year ?? currentYear.value)
 const endYear = computed(() => DateTime.now().year)
 
 /* Array of calendar pages (years). Each page contains an array of 12 months.
@@ -89,7 +89,7 @@ const calendarYears = computed(() => {
       const month = date.toLocaleString({ month: monthFormat }, { locale: useLocale() })
       const link = date.toFormat(LINK_FORMAT)
 
-      const isTooEarly = y <= startYear.value && m < transactionsStore.firstTransactionDate?.month
+      const isTooEarly = y <= startYear.value && m < startMonth.value
       const isTooLate = y >= endYear.value && m > DateTime.now().month
 
       months.push({

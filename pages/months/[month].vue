@@ -1,11 +1,6 @@
 <template>
   <PageContent :loading="pending" :title="monthName" class="overflow-hidden" spinner-variant="primary">
-    <GroupTable
-      v-if="tableItems"
-      :group-label="useString('category')"
-      :items="tableItems"
-      :loading="transactionsStore.loading"
-    />
+    <GroupTable v-if="tableItems" :group-label="useString('category')" :items="tableItems" />
 
     <template #footer>
       <UiButton
@@ -36,10 +31,9 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { useTransactionsStore } from '~/store/transactions'
 
 const route = useRoute()
-const transactionsStore = useTransactionsStore()
+const startDate = useStartDate()
 
 const month = computed(() => String(route.params.month))
 const monthDate = computed(() => DateTime.fromFormat(month.value, 'yyyy-LL'))
@@ -57,8 +51,8 @@ const nextMonthLink = computed(() => (!isEnd.value ? `/months/${formatMonthLink(
 
 const isBeginning = computed(
   () =>
-    transactionsStore.firstTransactionDate?.year >= monthDate.value.year &&
-    transactionsStore.firstTransactionDate?.month >= monthDate.value.month
+    !startDate.value ||
+    (startDate.value?.year >= monthDate.value.year && startDate.value?.month >= monthDate.value.month)
 )
 const isEnd = computed(
   () => DateTime.local().year <= monthDate.value.year && DateTime.local().month <= monthDate.value.month

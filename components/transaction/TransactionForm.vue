@@ -5,7 +5,7 @@
       :label="useString('category')"
       :state="useValidationState(v$, 'category_id')"
     >
-      <UiSelect v-model="formData.category_id" :options="categories" name="category_id" />
+      <UiSelect v-model="formData.category_id" :options="categoryOptions" name="category_id" />
     </UiFormGroup>
 
     <UiFormGroup
@@ -39,7 +39,6 @@
 import { DateTime } from 'luxon'
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, minValue, required } from '@vuelidate/validators'
-import { useTransactionsStore } from '~/store/transactions'
 
 import type { Transaction } from '~/gen/gql/graphql'
 import type { TransactionFormValues } from '~/types'
@@ -53,9 +52,9 @@ const props = defineProps<TransactionFormProps>()
 
 const emit = defineEmits(['submit'])
 
-const transactionsStore = useTransactionsStore()
+const categories = useCategories()
 
-const categories = computed(() => transactionsStore.categories.map(({ id, name }) => ({ text: name, value: id })))
+const categoryOptions = computed(() => categories.value.map(({ id, name }) => ({ text: name, value: id })))
 
 /* Expose form element as ref for parent */
 
@@ -65,7 +64,7 @@ defineExpose({ form })
 /* Initialize form values */
 
 const formData = reactive<TransactionFormValues>({
-  category_id: Number(props.transaction?.category?.id ?? categories.value[0]?.value),
+  category_id: Number(props.transaction?.category?.id ?? categoryOptions.value[0]?.value),
   created_at: props.transaction?.created_at
     ? DateTime.fromFormat(props.transaction.created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
     : new Date(),

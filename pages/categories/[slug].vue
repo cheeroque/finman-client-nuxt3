@@ -28,13 +28,12 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { useTransactionsStore } from '~/store/transactions'
 
+const categories = useCategories()
 const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
-const transactionsStore = useTransactionsStore()
 
-const category = computed(() => transactionsStore.categories.find(({ slug }) => slug === route.params.slug))
+const category = computed(() => categories.value.find(({ slug }) => slug === route.params.slug))
 
 if (!category.value) {
   const message = useString('errorMessage404')

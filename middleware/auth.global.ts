@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   let isLoggedIn = Boolean(user.value)
 
   if (!isLoggedIn) {
-    /* If no user saved in store, try to fetch it from API. On fail,
+    /* If no user saved in global state, try to fetch it from API. On fail,
      * return redirect to login page */
 
     try {

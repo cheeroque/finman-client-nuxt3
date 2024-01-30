@@ -2,7 +2,7 @@
   <PageContent :title="useString('categories')">
     <div class="categories-grid">
       <CategoryCard
-        v-for="category in transactionsStore.categories"
+        v-for="category in categories"
         :key="`category-${category.id}`"
         :category="category"
         @edit="handleCategoryEdit(category)"
@@ -16,11 +16,9 @@
 </template>
 
 <script setup lang="ts">
-import { useTransactionsStore } from '~/store/transactions'
-
 import type { Category } from '~/gen/gql/graphql'
 
-const transactionsStore = useTransactionsStore()
+const categories = useCategories()
 
 const currentCategory = ref<Category>()
 const dialogVisible = ref(false)

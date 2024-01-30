@@ -21,7 +21,7 @@
         </li>
 
         <li role="presentation">
-          <NavDrawerSnapshot :loading="pending" :snapshot="transactionsStore.snapshot" @click="dialogVisible = true" />
+          <NavDrawerSnapshot :loading="pending" :snapshot="snapshot" @click="dialogVisible = true" />
         </li>
 
         <li role="presentation">
@@ -43,12 +43,10 @@
     <div v-if="open" aria-hidden="true" class="app-drawer-backdrop" @click="emit('close')" />
   </Transition>
 
-  <SnapshotDialog v-model="dialogVisible" @success="refresh" />
+  <SnapshotDialog v-model="dialogVisible" :snapshot="snapshot" @success="refresh" />
 </template>
 
 <script setup lang="ts">
-import { useTransactionsStore } from '~/store/transactions'
-
 type NavDrawerProps = {
   open?: boolean
 }
@@ -67,7 +65,6 @@ const bodyEl = ref<HTMLElement>()
 
 const bodyFixed = useScrollLock(bodyEl)
 const refetchTrigger = useRefetchTrigger()
-const transactionsStore = useTransactionsStore()
 
 const dialogVisible = ref(false)
 
@@ -77,15 +74,9 @@ const drawerClasses = computed(() => {
   return classes
 })
 
-/* Fetch latest snapshot and save it to the store */
+const { data, pending, refresh } = await useFetch('/api/snapshots')
 
-const { pending, refresh } = await useFetch('/api/snapshots', {
-  onResponse({ response }) {
-    const { snapshots } = response._data
-
-    transactionsStore.snapshot = snapshots[0]
-  },
-})
+const snapshot = computed(() => data.value?.snapshots[0])
 
 watch(
   /* Refetch snapshot if external trigger was set to true, then reset trigger */

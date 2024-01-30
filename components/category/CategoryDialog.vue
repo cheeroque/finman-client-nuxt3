@@ -1,6 +1,6 @@
 <template>
   <UiDialog
-    :loading="transactionsStore.loading"
+    :loading="loading"
     :model-value="modelValue"
     :title="dialogTitle"
     @closed="emit('closed')"
@@ -57,8 +57,6 @@
 </template>
 
 <script setup lang="ts">
-import { useTransactionsStore } from '~/store/transactions'
-
 import type { Category } from '~/gen/gql/graphql'
 
 type CategoryDialogProps = {
@@ -70,9 +68,9 @@ const props = defineProps<CategoryDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
+const loading = useIsBusy()
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
-const transactionsStore = useTransactionsStore()
 
 const deletePending = ref(false)
 const form = ref()
@@ -88,7 +86,7 @@ async function handleCategoryDelete() {
 
   const { id } = props.category
 
-  transactionsStore.pending++
+  loading.value = true
 
   const { data, error } = await useFetch('/api/category', { method: 'DELETE', query: { id } })
 
@@ -104,7 +102,7 @@ async function handleCategoryDelete() {
   }
 
   deletePending.value = false
-  transactionsStore.pending--
+  loading.value = false
 }
 
 /* Create new category or update existing, if it's set with prop. Show toast
@@ -117,7 +115,7 @@ async function handleCategoryUpsert(category: Category) {
   const { color, is_income, name, slug } = category
   const query = { color, id, is_income, name, slug }
 
-  transactionsStore.pending++
+  loading.value = true
 
   const { data, error } = await useFetch('/api/category', { method, query })
 
@@ -132,7 +130,7 @@ async function handleCategoryUpsert(category: Category) {
     showToast(error.value?.message ?? useString('error'), 'danger')
   }
 
-  transactionsStore.pending--
+  loading.value = false
 }
 
 function showToast(message: string, variant: string) {
