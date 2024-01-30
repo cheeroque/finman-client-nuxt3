@@ -56,9 +56,9 @@ async function handleSubmit(snapshot: Revise) {
 
   const { data, error } = await useFetch('/api/snapshot', { method: 'POST', query })
 
-  if (data.value?.data?.result) {
-    transactionsStore.snapshot = data.value.data.result
-    showToast(useString('snapshotSaved', `#${data.value.data.result.id}`), 'success')
+  if (data.value?.result) {
+    transactionsStore.snapshot = data.value.result
+    showToast(useString('snapshotSaved', `#${data.value.result.id}`), 'success')
 
     emit('update:modelValue', false)
   } else {

@@ -90,17 +90,17 @@ async function handleCategoryDelete() {
 
   transactionsStore.pending++
 
-  const { data, error } = await $fetch('/api/category', { method: 'DELETE', query: { id } })
+  const { data, error } = await useFetch('/api/category', { method: 'DELETE', query: { id } })
 
-  if (data?.result) {
-    showToast(useString('categoryDeleted', `#${data.result.id}`), 'danger')
+  if (data.value?.result) {
+    showToast(useString('categoryDeleted', `#${data.value.result.id}`), 'danger')
     emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
 
     refetchTrigger.value = true
   } else {
-    showToast(error?.message ?? useString('error'), 'danger')
+    showToast(error.value?.message ?? useString('error'), 'danger')
   }
 
   deletePending.value = false
@@ -119,9 +119,9 @@ async function handleCategoryUpsert(category: Category) {
 
   transactionsStore.pending++
 
-  const { data, error } = await $fetch('/api/category', { method, query })
+  const { data, error } = await useFetch('/api/category', { method, query })
 
-  if (data?.result) {
+  if (data.value?.result) {
     showToast(useString('categorySaved', `#${category?.id}`), 'success')
     emit('update:modelValue', false)
 
@@ -129,7 +129,7 @@ async function handleCategoryUpsert(category: Category) {
 
     refetchTrigger.value = true
   } else {
-    showToast(error?.message ?? useString('error'), 'danger')
+    showToast(error.value?.message ?? useString('error'), 'danger')
   }
 
   transactionsStore.pending--

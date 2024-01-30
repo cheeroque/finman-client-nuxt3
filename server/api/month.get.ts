@@ -46,7 +46,9 @@ export default defineEventHandler(async (event) => {
     .query(categoriesWithTransactionsQuery, { where, whereTotal }, { fetchOptions: { headers } })
     .toPromise()
 
-  if (error) throw error
+  if (error) {
+    throw error
+  }
 
   const categories = data?.categories?.data ?? []
 

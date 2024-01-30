@@ -16,18 +16,25 @@ export default defineEventHandler(async (event) => {
     ],
   }
 
-  const [{ data: balanceData }, { data: categoriesData }, { data: firstTransactionData }] = await Promise.all([
+  const [balanceResponse, categoriesResponse, firstTransactionResponse] = await Promise.all([
     client.query(transactionsTotalQuery, {}, { fetchOptions: { headers } }).toPromise(),
     client.query(categoriesQuery, {}, { fetchOptions: { headers } }).toPromise(),
     client.query(transactionsQuery, variables, { fetchOptions: { headers } }).toPromise(),
   ])
 
-  const expensesTotal = Number(balanceData?.expensesTotal) || 0
-  const incomesTotal = Number(balanceData?.incomesTotal) || 0
+  if (balanceResponse.error || categoriesResponse.error || firstTransactionResponse.error) {
+    throw createError({
+      message: 'Could not fetch global data',
+      statusCode: 500,
+    })
+  }
+
+  const expensesTotal = Number(balanceResponse.data?.expensesTotal) || 0
+  const incomesTotal = Number(balanceResponse.data?.incomesTotal) || 0
 
   const balance = incomesTotal - expensesTotal
-  const categories = categoriesData?.categories?.data ?? []
-  const firstTransaction = firstTransactionData?.transactions?.data?.[0]
+  const categories = categoriesResponse.data?.categories?.data ?? []
+  const firstTransaction = firstTransactionResponse.data?.transactions?.data?.[0]
 
   return { balance, categories, firstTransaction }
 })

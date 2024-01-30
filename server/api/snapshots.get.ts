@@ -5,7 +5,9 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await client.query(snapshotsQuery, {}, { fetchOptions: { headers } }).toPromise()
 
-  if (error) throw error
+  if (error) {
+    throw error
+  }
 
   const snapshots = data?.snapshots?.data ?? []
 

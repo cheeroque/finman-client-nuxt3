@@ -37,8 +37,8 @@ export default defineEventHandler(async (event) => {
   }
 
   if (response.error) {
-    return { data: null, error: response.error }
+    throw response.error
   }
 
-  return { data: response.data, error: null }
+  return { result: response.data?.result }
 })

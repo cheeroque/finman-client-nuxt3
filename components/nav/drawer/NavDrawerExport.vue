@@ -16,8 +16,8 @@ async function handleClick() {
   try {
     const { data, error } = await useFetch('/api/export')
 
-    if (data.value?.data?.result.file) {
-      const file = data.value?.data.result.file
+    if (data.value?.result.file) {
+      const file = data.value.result.file
       const link = document.createElement('a')
 
       link.href = `${config.public.staticUrl}${file.path}`

@@ -33,7 +33,9 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await client.query(transactionsQuery, variables, { fetchOptions: { headers } }).toPromise()
 
-  if (error) throw error
+  if (error) {
+    throw error
+  }
 
   const transactions = data?.transactions?.data ?? []
   const totalPages = data?.transactions?.paginatorInfo?.lastPage ?? 1

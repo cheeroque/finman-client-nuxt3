@@ -25,7 +25,7 @@ const toast = useToast()
 
 const drawerOpen = ref(false)
 
-const { refresh } = await useFetch('/api/global-data', {
+const { error, refresh } = await useFetch('/api/global-data', {
   onResponse({ response }) {
     const { balance, categories, firstTransaction } = response._data
 
@@ -34,6 +34,10 @@ const { refresh } = await useFetch('/api/global-data', {
     transactionsStore.firstTransaction = firstTransaction
   },
 })
+
+if (error.value) {
+  throw createError({ fatal: true, message: error.value.message })
+}
 
 watch(
   /* Refetch global data when external trigger set to true, then reset trigger */

@@ -5,7 +5,9 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await client.query(meQuery, {}, { fetchOptions: { headers } }).toPromise()
 
-  if (error) throw error
+  if (error) {
+    throw error
+  }
 
   return { data }
 })

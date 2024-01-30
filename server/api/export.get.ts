@@ -8,8 +8,8 @@ export default defineEventHandler(async (event) => {
     .toPromise()
 
   if (error) {
-    return { data: null, error }
+    throw error
   }
 
-  return { data, error: null }
+  return { result: data?.result }
 })
