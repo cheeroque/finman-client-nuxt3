@@ -5,10 +5,14 @@
 </template>
 
 <script setup lang="ts">
-async function logout() {
-  const { $auth } = useNuxtApp()
+import { useAuthStore } from '~/store/auth'
 
-  await $auth.logout()
+const authStore = useAuthStore()
+
+async function logout() {
+  await useFetch('/api/logout', { method: 'POST' })
+
+  authStore.user = undefined
 
   return navigateTo('/login', { external: true })
 }

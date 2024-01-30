@@ -55,12 +55,15 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
+import { useAuthStore } from '~/store/auth'
 
 import type { LoginMutationVariables } from '~/gen/gql/graphql'
 
 definePageMeta({
   layout: 'auth',
 })
+
+const authStore = useAuthStore()
 
 const credentials = reactive<LoginMutationVariables>({
   password: '',
@@ -82,22 +85,22 @@ async function handleSubmit() {
   v$.value.$validate()
 
   if (!v$.value.$error) {
-    const { $auth } = useNuxtApp()
-
     loading.value = true
 
-    try {
-      await $auth.login(credentials)
+    const { data, error } = await useFetch('/api/login', {
+      method: 'POST',
+      body: credentials,
+    })
+
+    if (data.value?.user) {
+      authStore.user = data.value.user
 
       return navigateTo('/')
-    } catch (error: any) {
-      const isAuthError = error?.statusCode === 401
+    }
 
-      if (isAuthError) {
-        submitError.value = useString('invalidCredentials')
-      } else {
-        submitError.value = useString('errorMessage')
-      }
+    if (error.value) {
+      const messageKey = error.value.statusCode === 401 ? 'invalidCredentials' : 'errorMessage'
+      submitError.value = useString(messageKey)
     }
 
     loading.value = false

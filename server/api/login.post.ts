@@ -7,7 +7,10 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await client.mutation(loginMutation, body).toPromise()
 
-  if (error) throw error
+  if (error) {
+    const statusCode = error.message.includes('Authentication exception') ? 401 : undefined
+    throw createError({ statusCode })
+  }
 
   const token = data?.login.access_token
   const user = data?.login.user
