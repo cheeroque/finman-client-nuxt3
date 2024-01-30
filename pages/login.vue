@@ -55,7 +55,6 @@
 <script setup lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
-import { useAuthStore } from '~/store/auth'
 
 import type { LoginMutationVariables } from '~/gen/gql/graphql'
 
@@ -63,7 +62,7 @@ definePageMeta({
   layout: 'auth',
 })
 
-const authStore = useAuthStore()
+const user = useSession()
 
 const credentials = reactive<LoginMutationVariables>({
   password: '',
@@ -93,7 +92,7 @@ async function handleSubmit() {
     })
 
     if (data.value?.user) {
-      authStore.user = data.value.user
+      user.value = data.value.user
 
       return navigateTo('/')
     }

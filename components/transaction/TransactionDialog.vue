@@ -38,7 +38,6 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { useAuthStore } from '~/store/auth'
 import { useTransactionsStore } from '~/store/transactions'
 
 import type { Transaction } from '~/gen/gql/graphql'
@@ -53,7 +52,7 @@ const props = defineProps<TransactionDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
-const authStore = useAuthStore()
+const user = useSession()
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 const transactionsStore = useTransactionsStore()
@@ -102,7 +101,7 @@ async function handleTransactionUpsert(formData: TransactionFormValues) {
     id: props.transaction?.id,
     note,
     sum,
-    user_id: authStore.user?.id,
+    user_id: user.value?.id,
   }
 
   transactionsStore.pending++

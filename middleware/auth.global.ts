@@ -1,12 +1,10 @@
-import { useAuthStore } from '~/store/auth'
-
 import type { H3Event } from 'h3'
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  const authStore = useAuthStore()
+  const user = useSession()
 
   const isLoginPage = to.path.startsWith('/login')
-  let isLoggedIn = Boolean(authStore.user)
+  let isLoggedIn = Boolean(user.value)
 
   if (!isLoggedIn) {
     /* If no user saved in store, try to fetch it from API. On fail,
@@ -20,7 +18,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       const { data } = await $fetch('/api/me', { headers })
 
       if (data?.me) {
-        authStore.user = data.me
+        user.value = data.me
         isLoggedIn = true
       } else {
         throw createError({ statusCode: 401 })

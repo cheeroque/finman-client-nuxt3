@@ -5,14 +5,12 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '~/store/auth'
-
-const authStore = useAuthStore()
+const user = useSession()
 
 async function logout() {
   await useFetch('/api/logout', { method: 'POST' })
 
-  authStore.user = undefined
+  user.value = undefined
 
   return navigateTo('/login', { external: true })
 }
