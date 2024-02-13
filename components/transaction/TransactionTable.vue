@@ -36,6 +36,7 @@
 
 <script setup lang="ts">
 import type { Transaction } from '~/gen/gql/graphql'
+import type { ViewMode } from '~/types'
 
 type TransactionTableProps = {
   transactions?: Transaction[]

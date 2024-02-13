@@ -33,6 +33,8 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
+import type { ControlSize } from '~/types'
+
 type UiInputDatetimeProps = {
   disabled?: boolean
   format?: string
@@ -42,7 +44,7 @@ type UiInputDatetimeProps = {
   readonly?: boolean
   required?: boolean
   size?: ControlSize
-  state?: ControlState
+  state?: boolean | null
 }
 
 const props = defineProps<UiInputDatetimeProps>()

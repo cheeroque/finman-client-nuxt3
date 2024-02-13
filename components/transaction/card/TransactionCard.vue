@@ -23,6 +23,7 @@
 import { DateTime } from 'luxon'
 
 import type { Transaction } from '~/gen/gql/graphql'
+import type { ViewMode } from '~/types'
 
 type TransactionCardProps = {
   transaction: Transaction

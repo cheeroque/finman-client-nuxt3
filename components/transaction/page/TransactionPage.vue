@@ -17,6 +17,8 @@
 </template>
 
 <script setup lang="ts">
+import type { ViewMode } from '~/types'
+
 const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
 

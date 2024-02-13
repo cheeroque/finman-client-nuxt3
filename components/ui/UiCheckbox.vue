@@ -22,6 +22,8 @@
 </template>
 
 <script setup lang="ts">
+import type { ControlSize } from '~/types'
+
 type CheckboxValue = number | string | boolean | null
 
 type UiCheckboxProps = {

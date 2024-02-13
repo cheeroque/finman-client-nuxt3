@@ -20,7 +20,7 @@ type UiFormGroupProps = {
   invalidFeedback?: string
   label?: string
   labelClass?: string
-  state?: ControlState
+  state?: boolean | null
   validFeedback?: string
 }
 

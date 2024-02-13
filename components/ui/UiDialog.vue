@@ -43,7 +43,7 @@
 type UiDialogProps = {
   loading?: boolean
   modelValue?: boolean
-  size?: DialogSize
+  size?: 'sm' | 'md' | 'lg' | null
   title?: string
 }
 

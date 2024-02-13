@@ -32,6 +32,7 @@
 
 <script setup lang="ts">
 import type { ComputedRef } from 'vue'
+import type { ControlSize } from '~/types'
 
 type UiInputProps = {
   append?: string
@@ -46,7 +47,7 @@ type UiInputProps = {
   readonly?: boolean
   required?: boolean
   size?: ControlSize
-  state?: ControlState
+  state?: boolean | null
   step?: number | string
   type?: string
 }

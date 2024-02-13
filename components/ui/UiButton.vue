@@ -28,6 +28,7 @@
 
 <script setup lang="ts">
 import type { RouteLocationRaw } from 'vue-router'
+import type { ControlSize } from '~/types'
 
 type UiButtonProps = {
   block?: boolean

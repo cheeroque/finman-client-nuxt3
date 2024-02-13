@@ -33,6 +33,8 @@
 </template>
 
 <script setup lang="ts">
+import type { ControlSize } from '~/types'
+
 type UiInputColorProps = {
   disabled?: boolean
   modelValue?: string
@@ -41,7 +43,7 @@ type UiInputColorProps = {
   readonly?: boolean
   required?: boolean
   size?: ControlSize
-  state?: ControlState
+  state?: boolean | null
 }
 
 const props = defineProps<UiInputColorProps>()

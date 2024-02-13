@@ -32,6 +32,7 @@
 
 <script setup lang="ts">
 import type { ComputedRef } from 'vue'
+import type { ControlSize } from '~/types'
 
 type SelectValue = number | string | null
 
@@ -48,7 +49,7 @@ type UiSelectProps = {
   options?: SelectOption[]
   required?: boolean
   size?: ControlSize
-  state?: ControlState
+  state?: boolean | null
 }
 
 const props = defineProps<UiSelectProps>()

@@ -26,6 +26,8 @@
 </template>
 
 <script setup lang="ts">
+import type { ControlSize } from '~/types'
+
 type UiInputCalcProps = {
   append?: string
   autofocus?: boolean
@@ -34,7 +36,7 @@ type UiInputCalcProps = {
   name?: string
   required?: boolean
   size?: ControlSize
-  state?: ControlState
+  state?: boolean | null
 }
 
 const props = defineProps<UiInputCalcProps>()

@@ -1,14 +1,6 @@
 import type { Category, Transaction } from '~/gen/gql/graphql'
 
-declare global {
-  type ControlSize = 'md' | 'lg' | null
-
-  type ControlState = boolean | null
-
-  type DialogSize = 'sm' | 'md' | 'lg' | null
-
-  type ViewMode = 'expense' | 'income' | null
-}
+export type ControlSize = 'md' | 'lg' | null
 
 export type GroupTableItem = {
   group: number | string
@@ -44,3 +36,5 @@ export type TransactionFormValues = {
   note?: string
   sum: number
 }
+
+export type ViewMode = 'expense' | 'income' | null

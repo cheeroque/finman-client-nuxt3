@@ -31,6 +31,8 @@
 </template>
 
 <script setup lang="ts">
+import type { ControlSize } from '~/types'
+
 type UiDropdownProps = {
   block?: boolean
   disabled?: boolean
