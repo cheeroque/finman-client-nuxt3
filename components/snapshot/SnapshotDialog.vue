@@ -5,7 +5,7 @@
     :title="useString('newSnapshot')"
     @update:modelValue="emit('update:modelValue', $event)"
   >
-    <SnapshotForm v-uid ref="form" :snapshot="snapshot" @submit="handleSubmit" />
+    <SnapshotForm :id="formId" :snapshot="snapshot" @submit="handleSubmit" />
 
     <template #footer="{ close }">
       <div class="row flex-fill g-8">
@@ -37,12 +37,10 @@ const props = defineProps<SnapshotDialogProps>()
 
 const emit = defineEmits(['success', 'update:modelValue'])
 
+const formId = useId()
 const toast = useToast()
 
-const form = ref()
 const loading = ref(false)
-
-const formId = computed(() => form.value?.form.id)
 
 /* Create new snapshot. Show toast on success or error */
 

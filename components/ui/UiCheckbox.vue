@@ -1,5 +1,5 @@
 <template>
-  <div v-uid ref="checkbox" class="form-check">
+  <div class="form-check">
     <input
       :id="controlId"
       :checked="checked"
@@ -43,13 +43,13 @@ const props = defineProps<UiCheckboxProps>()
 
 const emit = defineEmits(['update:modelValue'])
 
+const baseId = useId()
 const slots = useSlots()
 
-const checkbox = ref()
 const defaultValue = ref(props.value || true)
 
+const controlId = computed(() => `${baseId}-control`)
 const hasLabel = computed(() => useSlotHasContent(slots.default))
-const controlId = computed(() => `${checkbox.value?.id}-control`)
 const state = computed(() => (props.validated ? props.valid : null))
 
 const checked = computed(() =>

@@ -13,13 +13,12 @@
   >
     <template #append>
       <label
-        :for="colorInput?.id"
+        :for="controlId"
         :style="{ backgroundColor: bgColor, color: iconColor }"
         class="form-control-icon colorpicker-label"
       >
         <input
-          v-uid
-          ref="colorInput"
+          :id="controlId"
           :value="modelValue"
           class="colorpicker-input"
           type="color"
@@ -50,7 +49,9 @@ const props = defineProps<UiInputColorProps>()
 
 const emit = defineEmits(['update:modelValue'])
 
-const colorInput = ref()
+const baseId = useId()
+
+const controlId = computed(() => `${baseId}-control`)
 
 const bgColor = computed(() => props.modelValue ?? 'transparent')
 const iconColor = computed(() => (props.modelValue ? useContrastColor(props.modelValue) : 'inherit'))

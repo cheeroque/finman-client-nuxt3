@@ -6,7 +6,7 @@
     @closed="emit('closed')"
     @update:modelValue="emit('update:modelValue', $event)"
   >
-    <TransactionForm v-uid ref="form" :edit="isEdit" :transaction="transaction" @submit="handleTransactionUpsert" />
+    <TransactionForm :edit="isEdit" :id="formId" :transaction="transaction" @submit="handleTransactionUpsert" />
 
     <template #footer="{ close }">
       <div class="row flex-fill g-8">
@@ -51,14 +51,12 @@ const props = defineProps<TransactionDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
+const formId = useId()
 const loading = useIsBusy()
 const refetchTrigger = useRefetchTrigger()
 const user = useSession()
 const toast = useToast()
 
-const form = ref()
-
-const formId = computed(() => form.value?.form.id)
 const isEdit = computed(() => Boolean(props.transaction?.id))
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeTransaction' : 'createTransaction'))
 

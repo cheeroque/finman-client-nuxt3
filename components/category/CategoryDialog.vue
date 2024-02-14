@@ -6,7 +6,7 @@
     @closed="emit('closed')"
     @update:modelValue="emit('update:modelValue', $event)"
   >
-    <CategoryForm v-uid ref="form" :category="category" :edit="isEdit" @submit="handleCategoryUpsert" />
+    <CategoryForm :category="category" :edit="isEdit" :id="formId" @submit="handleCategoryUpsert" />
 
     <template #footer="{ close }">
       <Transition mode="out-in" name="fade">
@@ -68,14 +68,13 @@ const props = defineProps<CategoryDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
+const formId = useId()
 const loading = useIsBusy()
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
 const deletePending = ref(false)
-const form = ref()
 
-const formId = computed(() => form.value?.form.id)
 const isEdit = computed(() => Boolean(props.category?.id))
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeCategory' : 'createCategory'))
 

@@ -1,7 +1,7 @@
 <template>
-  <div v-uid ref="formGroup" :class="componentClasses">
+  <div :class="componentClasses">
     <label v-if="hasLabel" :class="labelClass" :for="controlId" class="form-label">
-      <slot name="label">
+      <slot :control-id="controlId" name="label">
         {{ label }}
       </slot>
     </label>
@@ -26,12 +26,11 @@ type UiFormGroupProps = {
 
 const props = defineProps<UiFormGroupProps>()
 
+const baseId = useId()
 const slots = useSlots()
 
-const formGroup = ref()
-
 /* Provided to children */
-const controlId = computed(() => `${formGroup?.value?.id}-control`)
+const controlId = computed(() => `${baseId}-control`)
 provide('controlId', controlId)
 
 const disabled = computed(() => props.disabled)
