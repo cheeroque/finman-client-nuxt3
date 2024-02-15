@@ -35,7 +35,7 @@ const caption = ref()
 const captionOutside = ref(false)
 const visible = ref(false)
 
-const textColor = computed(() => useContrastColor(props.category?.color))
+const textColor = computed(() => getContrastColor(props.category?.color))
 
 function initCaption() {
   if (!caption.value) return

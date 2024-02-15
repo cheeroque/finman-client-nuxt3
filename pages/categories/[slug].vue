@@ -53,10 +53,10 @@ const { data, pending, refresh } = await useFetch('/api/category', {
 
   onResponse() {
     setTimeout(() => {
-      const windowTop = useWindowTop()
-      const target = !windowTop ? '.page' : undefined
+      const windowTop = getWindowTop()
+      const target = !windowTop ? '.page' : null
 
-      useScrollTo(target)
+      scrollToEl(target)
     }, 100)
   },
 })

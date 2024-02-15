@@ -1,4 +1,4 @@
-import { parseJwt } from '~/utils/jwt'
+import { parseJwt } from '~/utils'
 import { loginMutation } from '~/gql'
 
 export default defineEventHandler(async (event) => {

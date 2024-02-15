@@ -35,7 +35,7 @@ const props = defineProps<CategoryCardProps>()
 
 const emit = defineEmits(['edit'])
 
-const iconColor = computed(() => useContrastColor(props.category.color))
+const iconColor = computed(() => getContrastColor(props.category.color))
 </script>
 
 <style lang="scss" scoped>

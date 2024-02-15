@@ -56,7 +56,7 @@ const baseId = useId()
 const controlId = computed(() => `${baseId}-control`)
 
 const bgColor = computed(() => props.modelValue ?? 'transparent')
-const iconColor = computed(() => (props.modelValue ? useContrastColor(props.modelValue) : 'inherit'))
+const iconColor = computed(() => (props.modelValue ? getContrastColor(props.modelValue) : 'inherit'))
 const placeholder = computed(() => props.placeholder ?? '#')
 
 function handleInput(event: InputEvent) {
