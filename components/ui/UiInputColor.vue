@@ -45,7 +45,9 @@ type UiInputColorProps = {
   state?: boolean | null
 }
 
-const props = defineProps<UiInputColorProps>()
+const props = withDefaults(defineProps<UiInputColorProps>(), {
+  state: null,
+})
 
 const emit = defineEmits(['update:modelValue'])
 

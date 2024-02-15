@@ -24,7 +24,9 @@ type UiFormGroupProps = {
   validFeedback?: string
 }
 
-const props = defineProps<UiFormGroupProps>()
+const props = withDefaults(defineProps<UiFormGroupProps>(), {
+  state: null,
+})
 
 const baseId = useId()
 const slots = useSlots()

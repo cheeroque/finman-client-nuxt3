@@ -52,7 +52,9 @@ type UiSelectProps = {
   state?: boolean | null
 }
 
-const props = defineProps<UiSelectProps>()
+const props = withDefaults(defineProps<UiSelectProps>(), {
+  state: null,
+})
 
 const emit = defineEmits(['input', 'update:modelValue'])
 

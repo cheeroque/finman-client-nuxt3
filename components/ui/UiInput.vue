@@ -52,7 +52,9 @@ type UiInputProps = {
   type?: string
 }
 
-const props = defineProps<UiInputProps>()
+const props = withDefaults(defineProps<UiInputProps>(), {
+  state: null,
+})
 
 const emit = defineEmits(['blur', 'click', 'focus', 'input', 'update:modelValue'])
 

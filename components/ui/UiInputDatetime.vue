@@ -47,7 +47,9 @@ type UiInputDatetimeProps = {
   state?: boolean | null
 }
 
-const props = defineProps<UiInputDatetimeProps>()
+const props = withDefaults(defineProps<UiInputDatetimeProps>(), {
+  state: null,
+})
 
 const emit = defineEmits(['update:modelValue'])
 

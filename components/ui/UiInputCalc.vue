@@ -39,7 +39,9 @@ type UiInputCalcProps = {
   state?: boolean | null
 }
 
-const props = defineProps<UiInputCalcProps>()
+const props = withDefaults(defineProps<UiInputCalcProps>(), {
+  state: null,
+})
 
 const emit = defineEmits(['update:modelValue'])
 
