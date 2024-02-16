@@ -21,12 +21,12 @@ type CollapseProps = {
   transition?: string
 }
 
-const props = defineProps<CollapseProps>()
+const props = withDefaults(defineProps<CollapseProps>(), {
+  collapseClass: 'collapse',
+  transition: 'collapse',
+})
 
 const emit = defineEmits(['update:modelValue', 'hidden'])
-
-const collapseClass = computed(() => props.collapseClass ?? 'collapse')
-const transition = computed(() => props.transition ?? 'collapse')
 
 function close() {
   emit('update:modelValue', false)
