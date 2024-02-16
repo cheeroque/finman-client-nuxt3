@@ -31,10 +31,9 @@
 </template>
 
 <script setup lang="ts">
-import type { ComputedRef } from 'vue'
 import type { ControlSize } from '~/types'
 
-type UiInputProps = {
+type InputProps = {
   append?: string
   autocomplete?: string
   autofocus?: boolean
@@ -52,8 +51,9 @@ type UiInputProps = {
   type?: string
 }
 
-const props = withDefaults(defineProps<UiInputProps>(), {
+const props = withDefaults(defineProps<InputProps>(), {
   state: null,
+  type: 'text',
 })
 
 const emit = defineEmits(['blur', 'click', 'focus', 'input', 'update:modelValue'])
@@ -61,44 +61,47 @@ const emit = defineEmits(['blur', 'click', 'focus', 'input', 'update:modelValue'
 const slots = useSlots()
 
 /* Injects from parent */
-const id = inject<ComputedRef<string> | undefined>('controlId', undefined)
-
+const id = inject(
+  'controlId',
+  computed(() => undefined)
+)
 const parentDisabled = inject(
   'disabled',
   computed(() => false)
 )
-
 const parentState = inject(
   'state',
   computed(() => null)
 )
 
-const input = ref()
-const observer = ref()
+const input = ref<HTMLInputElement>()
+const observer = ref<IntersectionObserver>()
 const wasFocused = ref(false)
 
 const disabled = computed(() => props.disabled || parentDisabled.value)
-const size = computed(() => props.size)
 const state = computed(() => props.state ?? parentState.value)
-const type = computed(() => props.type ?? 'text')
 
 const hasAppend = computed(() => useSlotHasContent(slots.append) || Boolean(props.append))
 
 const componentClasses = computed(() => {
   const classes = ['form-control']
 
+  if (props.size) {
+    classes.push(`form-control-${props.size}`)
+  }
+
   if (disabled.value) {
     classes.push('disabled')
   }
+
   if (hasAppend.value) {
     classes.push('has-append')
   }
-  if (size.value) {
-    classes.push(`form-control-${size.value}`)
-  }
+
   if (state.value === true) {
     classes.push('is-valid')
   }
+
   if (state.value === false) {
     classes.push('is-invalid')
   }
@@ -135,16 +138,17 @@ function handleInput(event: InputEvent) {
 }
 
 function setObserver() {
-  if (!process.client) return
+  if (!process.client || !input.value) return
 
   if ('IntersectionObserver' in window) {
     observer.value = new IntersectionObserver(([{ isIntersecting }]) => {
-      if (!wasFocused.value && isIntersecting) {
+      if (!wasFocused.value && input.value && isIntersecting) {
         /** Focus input ONCE when it's in viewport if autofocus prop set */
         input.value.focus()
         wasFocused.value = true
       }
     })
+
     observer.value.observe(input.value)
   }
 }
