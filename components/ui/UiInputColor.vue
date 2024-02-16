@@ -12,11 +12,7 @@
     @input="handleInput"
   >
     <template #append>
-      <label
-        :for="controlId"
-        :style="{ backgroundColor: bgColor, color: iconColor }"
-        class="form-control-icon colorpicker-label"
-      >
+      <label :for="controlId" :style="labelStyles" class="form-control-icon colorpicker-label">
         <input
           :id="controlId"
           :value="modelValue"
@@ -34,7 +30,7 @@
 <script setup lang="ts">
 import type { ControlSize } from '~/types'
 
-type UiInputColorProps = {
+type InputColorProps = {
   disabled?: boolean
   modelValue?: string
   name?: string
@@ -45,19 +41,19 @@ type UiInputColorProps = {
   state?: boolean | null
 }
 
-const props = withDefaults(defineProps<UiInputColorProps>(), {
+const props = withDefaults(defineProps<InputColorProps>(), {
+  placeholder: '#',
   state: null,
 })
 
 const emit = defineEmits(['update:modelValue'])
 
-const baseId = useId()
+const controlId = useId()
 
-const controlId = computed(() => `${baseId}-control`)
-
-const bgColor = computed(() => props.modelValue ?? 'transparent')
-const iconColor = computed(() => (props.modelValue ? getContrastColor(props.modelValue) : 'inherit'))
-const placeholder = computed(() => props.placeholder ?? '#')
+const labelStyles = computed(() => ({
+  backgroundColor: props.modelValue ?? 'transparent',
+  color: props.modelValue ? getContrastColor(props.modelValue) : 'inherit',
+}))
 
 function handleInput(event: InputEvent) {
   const target = event.target
