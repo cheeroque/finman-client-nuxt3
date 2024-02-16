@@ -2,25 +2,28 @@
   <span
     :aria-label="useString('loading')"
     :class="variant ? `spinner-${variant}` : null"
-    :style="{ '--spinner-size': parsedSize }"
+    :style="{ '--spinner-size': spinnerSize }"
     class="spinner"
     role="status"
   />
 </template>
 
 <script setup lang="ts">
-type UiSpinnerProps = {
+type SpinnerProps = {
   size?: number | string
   variant?: string
 }
 
-const props = defineProps<UiSpinnerProps>()
+const props = defineProps<SpinnerProps>()
 
-const parsedSize = computed(() => {
+const spinnerSize = computed(() => {
   if (!props.size) return
 
-  const isNumber = typeof props.size === 'number' || `${props.size}` === `${parseInt(props.size || '')}`
+  if (!isNaN(Number(props.size))) {
+    /* If size prop is number, add `px` */
+    return `${props.size}px`
+  }
 
-  return isNumber ? `${props.size}px` : props.size
+  return props.size
 })
 </script>
