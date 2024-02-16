@@ -1,5 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import chromaJs from 'chroma-js'
+import fs from 'fs'
 
 type ThemeColorName = 'primary' | 'secondary' | 'tertiary' | 'neutral' | 'neutral-variant' | 'danger' | 'success'
 type ThemePrefix = 'on' | undefined
@@ -19,8 +20,6 @@ type ThemeItem = {
 }
 
 type ModuleOptions = Partial<Record<ThemeColorName, string | undefined>>
-
-const fs = require('fs')
 
 const THEME_DARK: ThemeItem[] = [
   { suffix: undefined, stop: 80 },
