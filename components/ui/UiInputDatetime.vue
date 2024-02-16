@@ -35,7 +35,7 @@ import { DateTime } from 'luxon'
 
 import type { ControlSize } from '~/types'
 
-type UiInputDatetimeProps = {
+type InputDatetimeProps = {
   disabled?: boolean
   format?: string
   modelValue?: Date
@@ -47,7 +47,8 @@ type UiInputDatetimeProps = {
   state?: boolean | null
 }
 
-const props = withDefaults(defineProps<UiInputDatetimeProps>(), {
+const props = withDefaults(defineProps<InputDatetimeProps>(), {
+  format: 'dd.LL.yyyy HH:mm',
   state: null,
 })
 
@@ -55,11 +56,10 @@ const emit = defineEmits(['update:modelValue'])
 
 const dropdownVisible = ref(false)
 
-const format = computed(() => props.format ?? 'dd.LL.yyyy HH:mm')
-const placeholder = computed(() => props.placeholder ?? DateTime.now().toFormat(format.value))
+const placeholder = computed(() => props.placeholder ?? DateTime.now().toFormat(props.format))
 
 const formattedValue = computed(() =>
-  props.modelValue ? DateTime.fromJSDate(props.modelValue).toFormat(format.value) : undefined
+  props.modelValue ? DateTime.fromJSDate(props.modelValue).toFormat(props.format) : undefined
 )
 
 function handleInput(event: InputEvent) {
@@ -68,7 +68,7 @@ function handleInput(event: InputEvent) {
 
   let emitValue: Date | null = null
 
-  const datetime = DateTime.fromFormat(target.value, format.value)
+  const datetime = DateTime.fromFormat(target.value, props.format)
   if (datetime.isValid) {
     emitValue = datetime.toJSDate()
   }
