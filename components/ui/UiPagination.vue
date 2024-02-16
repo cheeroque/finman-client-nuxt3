@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-type UiPaginationProps = {
+type PaginationProps = {
   disabled?: boolean
   hideFirstLast?: boolean
   hidePrevNext?: boolean
@@ -75,19 +75,19 @@ type UiPaginationProps = {
   totalPages?: number | string
 }
 
-const props = defineProps<UiPaginationProps>()
+const props = defineProps<PaginationProps>()
 
 const emit = defineEmits(['update:modelValue'])
 
-const currentPage = computed(() => {
-  const route = useRoute()
-  const routePage = Number(route.query.page || 1)
+const route = useRoute()
 
-  return Number(props.modelValue ?? routePage ?? 1)
+const currentPage = computed(() => {
+  const routePage = Number(route.query.page) || 1
+  return Number(props.modelValue ?? routePage)
 })
 
-const limit = computed(() => Number(props.limit ?? 5))
-const totalPages = computed(() => Number(props.totalPages ?? 1))
+const limit = computed(() => Number(props.limit) || 5)
+const totalPages = computed(() => Number(props.totalPages) || 1)
 const isBeginning = computed(() => currentPage.value <= 1)
 const isEnd = computed(() => currentPage.value >= totalPages.value)
 
