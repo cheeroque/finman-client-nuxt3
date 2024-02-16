@@ -1,6 +1,14 @@
 <template>
   <Transition name="fade">
-    <UiButton v-if="show" icon="edit-24" icon-size="24" variant="tertiary" class="btn-fab" @click="handleFabClick" />
+    <UiButton
+      v-if="show"
+      icon="edit-24"
+      icon-size="24"
+      variant="tertiary"
+      class="btn-fab"
+      no-text
+      @click="handleFabClick"
+    />
   </Transition>
 
   <TransactionDialog v-model="dialogVisible" />

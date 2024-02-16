@@ -17,6 +17,7 @@
                 icon="close-16"
                 icon-size="16"
                 variant="primary-muted"
+                no-text
                 @click="handleClose"
               />
             </slot>

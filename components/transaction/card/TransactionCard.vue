@@ -14,7 +14,7 @@
 
     <p class="transaction-note">
       <span class="caption">{{ transaction.note }}</span>
-      <UiButton class="transaction-edit" icon="edit-24" icon-size="24" variant="link" @click="emit('edit')" />
+      <UiButton class="transaction-edit" icon="edit-24" icon-size="24" variant="link" no-text @click="emit('edit')" />
     </p>
   </div>
 </template>

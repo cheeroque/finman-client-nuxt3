@@ -7,6 +7,7 @@
         :title="useString('previousYear')"
         icon="chevron-double-left-24"
         icon-size="24"
+        no-text
         @click="setYearPrevious"
       />
 
@@ -18,6 +19,7 @@
         :title="useString('nextYear')"
         icon="chevron-double-right-24"
         icon-size="24"
+        no-text
         @click="setYearNext"
       />
     </header>

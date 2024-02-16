@@ -10,13 +10,13 @@
         :set-prev-year="setPrevYear"
         :year="selectedYear"
       >
-        <UiButton class="datepicker-nav btn-prev-year" @click="setPrevYear">
+        <UiButton class="datepicker-nav btn-prev-year" no-text @click="setPrevYear">
           <slot name="btn-prev-year">
             <UiIcon name="chevron-double-left-24" size="24" />
           </slot>
         </UiButton>
 
-        <UiButton class="datepicker-nav btn-prev-month" @click="setPrevMonth">
+        <UiButton class="datepicker-nav btn-prev-month" no-text @click="setPrevMonth">
           <slot name="btn-prev-month">
             <UiIcon name="chevron-left-24" size="24" />
           </slot>
@@ -24,13 +24,13 @@
 
         <span class="datepicker-title">{{ title }}</span>
 
-        <UiButton class="datepicker-nav btn-next-month" @click="setNextMonth">
+        <UiButton class="datepicker-nav btn-next-month" no-text @click="setNextMonth">
           <slot name="btn-next-month">
             <UiIcon name="chevron-right-24" size="24" />
           </slot>
         </UiButton>
 
-        <UiButton class="datepicker-nav btn-next-year" @click="setNextYear">
+        <UiButton class="datepicker-nav btn-next-year" no-text @click="setNextYear">
           <slot name="btn-next-year">
             <UiIcon name="chevron-double-right-24" size="24" />
           </slot>

@@ -5,6 +5,7 @@
     :title="buttonTitle"
     class="drawer-toggle"
     variant="link"
+    no-text
     @click="emit('click')"
   >
     <span class="drawer-toggle-icon">

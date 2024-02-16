@@ -8,6 +8,7 @@
           class="pagination-link"
           icon="chevron-double-left-24"
           icon-size="24"
+          no-text
           @click="handleClickFirst"
         />
       </li>
@@ -19,6 +20,7 @@
           class="pagination-link"
           icon="chevron-left-24"
           icon-size="24"
+          no-text
           @click="handleClickPrevious"
         />
       </li>
@@ -41,6 +43,7 @@
           class="pagination-link"
           icon="chevron-right-24"
           icon-size="24"
+          no-text
           @click="handleClickNext"
         />
       </li>
@@ -52,6 +55,7 @@
           class="pagination-link"
           icon="chevron-double-right-24"
           icon-size="24"
+          no-text
           @click="handleClickLast"
         />
       </li>

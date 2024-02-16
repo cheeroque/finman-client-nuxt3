@@ -2,7 +2,7 @@
   <form action="/search" class="search-form" method="get" @submit.prevent="handleSubmit">
     <UiInput v-model="q" :placeholder="useString('searchPlaceholder')" name="q" size="lg" type="search">
       <template #append>
-        <UiButton class="form-control-icon" icon="search-24" icon-size="24" type="submit" variant="link" />
+        <UiButton class="form-control-icon" icon="search-24" icon-size="24" type="submit" variant="link" no-text />
       </template>
     </UiInput>
   </form>

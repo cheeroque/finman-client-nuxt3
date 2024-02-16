@@ -14,7 +14,7 @@
         @input="handleInput"
       >
         <template #append>
-          <UiButton class="form-control-icon" icon="stopwatch-24" variant="link" @click="show" />
+          <UiButton class="form-control-icon" icon="stopwatch-24" variant="link" no-text @click="show" />
         </template>
       </UiInput>
     </template>

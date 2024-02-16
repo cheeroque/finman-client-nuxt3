@@ -18,6 +18,7 @@
         icon="edit-24"
         icon-size="16"
         variant="link"
+        no-text
         @click="emit('edit')"
       />
     </div>

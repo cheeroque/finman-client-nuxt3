@@ -6,7 +6,7 @@
           <slot :close="close" name="header">
             <h6 class="toast-title">{{ title }}</h6>
 
-            <UiButton class="btn-close" @click="close">
+            <UiButton class="btn-close" no-text @click="close">
               <UiIcon name="close-24" size="16" />
             </UiButton>
           </slot>
@@ -17,7 +17,7 @@
             {{ message }}
           </slot>
 
-          <UiButton v-if="!hasHeader" class="btn-close" @click="close">
+          <UiButton v-if="!hasHeader" class="btn-close" no-text @click="close">
             <UiIcon name="close-24" size="16" />
           </UiButton>
         </div>

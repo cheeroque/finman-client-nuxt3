@@ -36,6 +36,7 @@
       icon="caret"
       icon-size="10"
       variant="primary-muted"
+      no-text
       @click="toggleCollapse"
     />
   </SidebarWidget>

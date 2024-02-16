@@ -10,6 +10,7 @@
           icon-size="24"
           to="/"
           variant="link"
+          no-text
         />
 
         <h1 class="h4 card-title">{{ title }}</h1>
