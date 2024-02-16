@@ -40,6 +40,12 @@ export default defineNuxtConfig({
 
   colorTheme: {
     primary: process.env.THEME_PRIMARY_COLOR,
+    secondary: process.env.THEME_SECONDARY_COLOR,
+    tertiary: process.env.THEME_TERTIARY_COLOR,
+    neutral: process.env.THEME_NEUTRAL_COLOR,
+    'neutral-variant': process.env.THEME_NEUTRAL_VARIANT_COLOR,
+    danger: process.env.THEME_DANGER_COLOR,
+    success: process.env.THEME_SUCCESS_COLOR,
   },
 
   runtimeConfig: {
