@@ -5,7 +5,6 @@
       :checked="checked"
       :class="{ 'is-invalid': state === false, 'is-valid': state === true }"
       :disabled="disabled"
-      :form="form"
       :name="name"
       :required="required"
       :value="modelValue"
@@ -26,31 +25,29 @@ import type { ControlSize } from '~/types'
 
 type CheckboxValue = number | string | boolean | null
 
-type UiCheckboxProps = {
+type CheckboxProps = {
   disabled?: boolean
-  form?: string
   modelValue?: CheckboxValue | CheckboxValue[]
   name?: string
   required?: boolean
   size?: ControlSize
+  state?: boolean | null
   uncheckedValue?: CheckboxValue
-  valid?: boolean
-  validated?: boolean
   value?: CheckboxValue
 }
 
-const props = defineProps<UiCheckboxProps>()
+const props = withDefaults(defineProps<CheckboxProps>(), {
+  state: null,
+})
 
 const emit = defineEmits(['update:modelValue'])
 
-const baseId = useId()
+const controlId = useId()
 const slots = useSlots()
 
 const defaultValue = ref(props.value || true)
 
-const controlId = computed(() => `${baseId}-control`)
 const hasLabel = computed(() => useSlotHasContent(slots.default))
-const state = computed(() => (props.validated ? props.valid : null))
 
 const checked = computed(() =>
   Array.isArray(props.modelValue)
@@ -58,7 +55,7 @@ const checked = computed(() =>
     : Boolean(defaultValue.value) === Boolean(props.modelValue)
 )
 
-function addValue(value: CheckboxValue, array: CheckboxValue[]): CheckboxValue[] {
+function addValue(value: CheckboxValue, array: CheckboxValue[]) {
   if (array?.indexOf(value) < 0) {
     return array.concat([value])
   } else {
@@ -87,7 +84,7 @@ function handleInput(event: InputEvent) {
   emit('update:modelValue', payload)
 }
 
-function removeValue(value: CheckboxValue, array: CheckboxValue[]): CheckboxValue[] {
+function removeValue(value: CheckboxValue, array: CheckboxValue[]) {
   return array?.filter((el) => el !== value)
 }
 </script>
