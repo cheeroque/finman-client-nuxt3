@@ -21,12 +21,12 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-type UiInputDatetimeDropdownProps = {
+type InputDatetimeDropdownProps = {
   hideTime?: boolean
   modelValue?: Date
 }
 
-const props = defineProps<UiInputDatetimeDropdownProps>()
+const props = defineProps<InputDatetimeDropdownProps>()
 
 const emit = defineEmits(['update:modelValue', 'close', 'set-now'])
 

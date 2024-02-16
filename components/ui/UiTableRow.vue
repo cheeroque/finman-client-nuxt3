@@ -29,13 +29,13 @@
 <script setup lang="ts">
 import type { TableField, TableItem } from '~/types'
 
-type UiTableRowProps = {
+type TableRowProps = {
   fields: TableField[]
   item: TableItem
   rowIndex?: number
 }
 
-const props = defineProps<UiTableRowProps>()
+const props = defineProps<TableRowProps>()
 
 const detailsVisible = ref(false)
 const collapseVisible = ref(false)

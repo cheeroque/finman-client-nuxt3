@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import type { ControlSize } from '~/types'
 
-type UiInputCalcProps = {
+type InputCalcProps = {
   append?: string
   autofocus?: boolean
   disabled?: boolean
@@ -39,7 +39,7 @@ type UiInputCalcProps = {
   state?: boolean | null
 }
 
-const props = withDefaults(defineProps<UiInputCalcProps>(), {
+const props = withDefaults(defineProps<InputCalcProps>(), {
   state: null,
 })
 

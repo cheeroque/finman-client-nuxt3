@@ -41,14 +41,14 @@
 </template>
 
 <script setup lang="ts">
-type UiDialogProps = {
+type DialogProps = {
   loading?: boolean
   modelValue?: boolean
   size?: 'sm' | 'md' | 'lg' | null
   title?: string
 }
 
-const props = defineProps<UiDialogProps>()
+const props = defineProps<DialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 

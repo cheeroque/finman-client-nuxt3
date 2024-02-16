@@ -15,13 +15,13 @@
 </template>
 
 <script setup lang="ts">
-type UiCollapseProps = {
+type CollapseProps = {
   collapseClass?: string
   modelValue?: boolean
   transition?: string
 }
 
-const props = defineProps<UiCollapseProps>()
+const props = defineProps<CollapseProps>()
 
 const emit = defineEmits(['update:modelValue', 'hidden'])
 

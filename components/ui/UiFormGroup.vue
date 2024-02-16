@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-type UiFormGroupProps = {
+type FormGroupProps = {
   disabled?: boolean
   invalidFeedback?: string
   label?: string
@@ -24,7 +24,7 @@ type UiFormGroupProps = {
   validFeedback?: string
 }
 
-const props = withDefaults(defineProps<UiFormGroupProps>(), {
+const props = withDefaults(defineProps<FormGroupProps>(), {
   state: null,
 })
 
