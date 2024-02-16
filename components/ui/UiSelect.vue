@@ -31,7 +31,6 @@
 </template>
 
 <script setup lang="ts">
-import type { ComputedRef } from 'vue'
 import type { ControlSize } from '~/types'
 
 type SelectValue = number | string | null
@@ -42,7 +41,7 @@ type SelectOption = {
   value: SelectValue
 }
 
-type UiSelectProps = {
+type SelectProps = {
   disabled?: boolean
   modelValue?: SelectValue
   name?: string
@@ -52,38 +51,38 @@ type UiSelectProps = {
   state?: boolean | null
 }
 
-const props = withDefaults(defineProps<UiSelectProps>(), {
+const props = withDefaults(defineProps<SelectProps>(), {
   state: null,
 })
 
 const emit = defineEmits(['input', 'update:modelValue'])
 
 /* Injects from parent */
-const id = inject<ComputedRef<string> | undefined>('controlId', undefined)
-
+const id = inject(
+  'controlId',
+  computed(() => undefined)
+)
 const parentDisabled = inject(
   'disabled',
   computed(() => false)
 )
-
 const parentState = inject(
   'state',
   computed(() => null)
 )
 
 const disabled = computed(() => props.disabled || parentDisabled.value)
-const size = computed(() => props.size)
 const state = computed(() => props.state ?? parentState.value)
 
 const componentClasses = computed(() => {
   const classes = ['form-control form-control-select']
 
-  if (disabled.value) {
-    classes.push('disabled')
+  if (props.size) {
+    classes.push(`form-control-${props.size}`)
   }
 
-  if (size.value) {
-    classes.push(`form-control-${size.value}`)
+  if (disabled.value) {
+    classes.push('disabled')
   }
 
   if (state.value === true) {
