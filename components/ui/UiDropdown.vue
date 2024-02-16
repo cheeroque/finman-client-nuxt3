@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import type { ControlSize } from '~/types'
 
-type UiDropdownProps = {
+type DropdownProps = {
   block?: boolean
   disabled?: boolean
   icon?: string
@@ -44,7 +44,7 @@ type UiDropdownProps = {
   variant?: string
 }
 
-const props = defineProps<UiDropdownProps>()
+const props = defineProps<DropdownProps>()
 
 const emit = defineEmits(['update:modelValue', 'hidden'])
 
@@ -68,7 +68,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 
-function handleClickOutside(event: Event) {
+function handleClickOutside(event: MouseEvent) {
   if (!dropdown.value.contains(event.target)) {
     hide()
   }
