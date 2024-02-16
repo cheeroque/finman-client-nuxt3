@@ -38,10 +38,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 })
 
-function buildHeaders(event: H3Event) {
+function buildHeaders(event?: H3Event) {
   const headers: HeadersInit = {}
 
-  if (process.server) {
+  if (event && process.server) {
     headers.cookie = event.node.req.headers.cookie ?? ''
   }
 
