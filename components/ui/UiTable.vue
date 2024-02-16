@@ -33,14 +33,14 @@
 <script setup lang="ts">
 import type { TableField, TableItem } from '~/types'
 
-type UiTableProps = {
+type TableProps = {
   fields: TableField[] | string[]
   fixed?: boolean
   hideThead?: boolean
   items: TableItem[]
 }
 
-const props = defineProps<UiTableProps>()
+const props = defineProps<TableProps>()
 
 const componentClasses = computed(() => {
   const classes = ['table']
@@ -63,12 +63,12 @@ const normalizedFields = computed(() =>
 
 const isEmpty = computed(() => !props.items.length)
 
-function getFieldKey(field: string | TableField): string {
+function getFieldKey(field: string | TableField) {
   if (typeof field === 'string') return field
   else return field.key
 }
 
-function getFieldLabel(field: string | TableField): string {
+function getFieldLabel(field: string | TableField) {
   if (typeof field === 'string') return field
   else return field.label ?? field.key
 }
