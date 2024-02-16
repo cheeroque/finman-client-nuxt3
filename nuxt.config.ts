@@ -34,10 +34,6 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@vueuse/nuxt', 'nuxt-icons', '~/modules/color-theme'],
-
-  css: ['~/assets/styles/app.scss'],
-
   colorTheme: {
     primary: process.env.THEME_PRIMARY_COLOR,
     secondary: process.env.THEME_SECONDARY_COLOR,
@@ -48,12 +44,20 @@ export default defineNuxtConfig({
     success: process.env.THEME_SUCCESS_COLOR,
   },
 
+  css: ['~/assets/styles/app.scss'],
+
+  modules: ['@vee-validate/nuxt', '@vueuse/nuxt', 'nuxt-icons'],
+
   runtimeConfig: {
     gqlEndpoint: '',
 
     public: {
       staticUrl: '',
     },
+  },
+
+  veeValidate: {
+    autoImports: true,
   },
 
   vite: {

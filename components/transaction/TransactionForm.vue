@@ -1,44 +1,35 @@
 <template>
-  <form ref="form" class="transaction-form" @submit.prevent="handleSubmit">
+  <form ref="form" class="transaction-form" @submit.prevent="submitForm">
     <UiFormGroup
-      :invalid-feedback="useValidationErrors(v$, 'category_id')"
+      :invalid-feedback="useFieldErrorMessage(category_id)"
       :label="useString('category')"
-      :state="useValidationState(v$, 'category_id')"
+      :state="useFieldState(category_id)"
     >
-      <UiSelect v-model="formData.category_id" :options="categoryOptions" name="category_id" />
+      <UiSelect v-model="category_id.value.value" :options="categoryOptions" name="category_id" />
+    </UiFormGroup>
+
+    <UiFormGroup :invalid-feedback="useFieldErrorMessage(sum)" :label="useString('sum')" :state="useFieldState(sum)">
+      <UiInputCalc v-model="sum.value.value" name="sum" autofocus />
+    </UiFormGroup>
+
+    <UiFormGroup :invalid-feedback="useFieldErrorMessage(note)" :label="useString('note')" :state="useFieldState(note)">
+      <UiInput v-model="note.value.value" :placeholder="useString('notePlaceholder')" name="note" />
     </UiFormGroup>
 
     <UiFormGroup
-      :invalid-feedback="useValidationErrors(v$, 'sum')"
-      :label="useString('sum')"
-      :state="useValidationState(v$, 'sum')"
-    >
-      <UiInputCalc v-model="formData.sum" name="sum" autofocus />
-    </UiFormGroup>
-
-    <UiFormGroup
-      :invalid-feedback="useValidationErrors(v$, 'note')"
-      :label="useString('note')"
-      :state="useValidationState(v$, 'note')"
-    >
-      <UiInput v-model="formData.note" :placeholder="useString('notePlaceholder')" name="note" />
-    </UiFormGroup>
-
-    <UiFormGroup
-      :invalid-feedback="useValidationErrors(v$, 'created_at')"
+      :invalid-feedback="useFieldErrorMessage(created_at)"
       :label="useString('dateTime')"
-      :state="useValidationState(v$, 'created_at')"
+      :state="useFieldState(created_at)"
       class="mb-0"
     >
-      <UiInputDatetime v-model="formData.created_at" name="created_at" />
+      <UiInputDatetime v-model="created_at.value.value" name="created_at" />
     </UiFormGroup>
   </form>
 </template>
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { useVuelidate } from '@vuelidate/core'
-import { helpers, minValue, required } from '@vuelidate/validators'
+import { date as yupDate, number as yupNumber, string as yupString } from 'yup'
 
 import type { Transaction } from '~/gen/gql/graphql'
 import type { TransactionFormValues } from '~/types'
@@ -61,45 +52,30 @@ const categoryOptions = computed(() => categories.value.map(({ id, name }) => ({
 const form = ref()
 defineExpose({ form })
 
-/* Initialize form values */
+const { handleSubmit, values } = useForm<TransactionFormValues>({
+  initialValues: {
+    category_id: Number(props.transaction?.category?.id ?? categoryOptions.value[0]?.value),
+    created_at: props.transaction?.created_at
+      ? DateTime.fromFormat(props.transaction.created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
+      : new Date(),
+    note: props.transaction?.note ?? '',
+    sum: props.transaction?.sum ?? 0,
+  },
 
-const formData = reactive<TransactionFormValues>({
-  category_id: Number(props.transaction?.category?.id ?? categoryOptions.value[0]?.value),
-  created_at: props.transaction?.created_at
-    ? DateTime.fromFormat(props.transaction.created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
-    : new Date(),
-  note: props.transaction?.note ?? '',
-  sum: props.transaction?.sum ?? 0,
+  validationSchema: {
+    category_id: yupNumber().required(useString('fieldRequired')),
+    created_at: yupDate().required(useString('fieldRequired')).isValid(useString('invalidDate')),
+    note: yupString().required(useString('fieldRequired')),
+    sum: yupNumber().required(useString('fieldRequired')).min(0, useString('fieldMinimumValue', '0')),
+  },
 })
 
-/* Declare form validation rules */
+const category_id = useField<number>('category_id')
+const created_at = useField<Date>('created_at')
+const note = useField<string>('note')
+const sum = useField<number>('sum')
 
-const rules = computed(() => ({
-  category_id: { required: helpers.withMessage(useString('fieldRequired'), required) },
-  created_at: {
-    required: helpers.withMessage(useString('fieldRequired'), required),
-    isValidDate: helpers.withMessage(useString('invalidDate'), isValidDate),
-  },
-  note: { required: helpers.withMessage(useString('fieldRequired'), required) },
-  sum: {
-    minValue: helpers.withMessage(({ $params }) => `${useString('fieldMinimumValue')} ${$params.min}`, minValue(0)),
-    required: helpers.withMessage(useString('fieldRequired'), required),
-  },
-}))
-
-const v$ = useVuelidate<TransactionFormValues>(rules, formData, { $lazy: true })
-
-/* Validate form and emit "submit" with formData on success */
-
-function handleSubmit() {
-  v$.value.$validate()
-
-  if (!v$.value.$error) {
-    emit('submit', formData)
-  }
-}
-
-function isValidDate(value: Date): boolean {
-  return DateTime.fromJSDate(value).isValid
-}
+const submitForm = handleSubmit(() => {
+  emit('submit', values)
+})
 </script>

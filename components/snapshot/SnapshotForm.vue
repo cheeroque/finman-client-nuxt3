@@ -1,40 +1,39 @@
 <template>
-  <form ref="form" class="snapshot-form" @submit.prevent="handleSubmit">
+  <form ref="form" class="snapshot-form" @submit.prevent="submitForm">
     <UiFormGroup :label="useString('previousBalance')">
       <UiInputCalc :model-value="snapshot?.balance" name="previous_balance" disabled />
     </UiFormGroup>
 
     <UiFormGroup
-      :invalid-feedback="useValidationErrors(v$, 'balance')"
+      :invalid-feedback="useFieldErrorMessage(balance)"
       :label="useString('currentBalance')"
-      :state="useValidationState(v$, 'balance')"
+      :state="useFieldState(balance)"
     >
-      <UiInputCalc v-model="formData.balance" name="balance" />
+      <UiInputCalc v-model="balance.value.value" name="balance" />
     </UiFormGroup>
 
     <UiFormGroup
-      :invalid-feedback="useValidationErrors(v$, 'created_at')"
+      :invalid-feedback="useFieldErrorMessage(created_at)"
       :label="useString('dateTime')"
-      :state="useValidationState(v$, 'created_at')"
+      :state="useFieldState(created_at)"
     >
-      <UiInputDatetime v-model="formData.created_at" name="created_at" />
+      <UiInputDatetime v-model="created_at.value.value" name="created_at" />
     </UiFormGroup>
 
     <UiFormGroup
-      :invalid-feedback="useValidationErrors(v$, 'note')"
+      :invalid-feedback="useFieldErrorMessage(note)"
       :label="useString('note')"
-      :state="useValidationState(v$, 'note')"
+      :state="useFieldState(note)"
       class="mb-0"
     >
-      <UiInput v-model="formData.note" :placeholder="useString('notePlaceholder')" name="note" />
+      <UiInput v-model="note.value.value" :placeholder="useString('notePlaceholder')" name="note" />
     </UiFormGroup>
   </form>
 </template>
 
 <script setup lang="ts">
-import { useVuelidate } from '@vuelidate/core'
-import { helpers, minValue, required } from '@vuelidate/validators'
 import { DateTime } from 'luxon'
+import { date as yupDate, number as yupNumber, string as yupString } from 'yup'
 
 import type { Revise } from '~/gen/gql/graphql'
 
@@ -52,51 +51,35 @@ const props = defineProps<SnapshotFormProps>()
 
 const emit = defineEmits(['submit'])
 
-const balance = useBalance()
+const oldBalance = useBalance()
 
 /* Expose form element as ref for parent */
 
 const form = ref()
 defineExpose({ form })
 
-/* Initialize form */
+const { handleSubmit, values } = useForm<SnapshotFormValues>({
+  initialValues: {
+    balance: oldBalance.value,
+    created_at: new Date(),
+    note: props.snapshot?.note ?? '',
+  },
 
-const formData = reactive<SnapshotFormValues>({
-  balance: balance.value,
-  created_at: new Date(),
-  note: props.snapshot?.note ?? '',
+  validationSchema: {
+    balance: yupNumber().required(useString('fieldRequired')).min(0, useString('fieldMinimumValue', '0')),
+    created_at: yupDate().required(useString('fieldRequired')).isValid(useString('invalidDate')),
+    note: yupString().required(useString('fieldRequired')),
+  },
 })
 
-/* Declare form validation rules */
+const balance = useField<number>('balance')
+const created_at = useField<Date>('created_at')
+const note = useField<string>('note')
 
-const rules = computed(() => ({
-  balance: {
-    minValue: helpers.withMessage(({ $params }) => `${useString('fieldMinimumValue')} ${$params.min}`, minValue(0)),
-    required: helpers.withMessage(useString('fieldRequired'), required),
-  },
-  created_at: {
-    required: helpers.withMessage(useString('fieldRequired'), required),
-    isValidDate: helpers.withMessage(useString('invalidDate'), isValidDate),
-  },
-  note: { required: helpers.withMessage(useString('fieldRequired'), required) },
-}))
+const submitForm = handleSubmit(() => {
+  const { balance, note } = values
+  const created_at = DateTime.fromJSDate(values.created_at).toFormat('yyyy-LL-dd HH:mm:ss')
 
-const v$ = useVuelidate<SnapshotFormValues>(rules, formData, { $lazy: true })
-
-/* Validate form & emit "submit" with form values on success */
-
-async function handleSubmit() {
-  v$.value.$validate()
-
-  if (!v$.value.$error) {
-    const { balance, note } = formData
-    const created_at = DateTime.fromJSDate(formData.created_at).toFormat('yyyy-LL-dd HH:mm:ss')
-
-    emit('submit', { balance, created_at, note })
-  }
-}
-
-function isValidDate(value: Date): boolean {
-  return DateTime.fromJSDate(value).isValid
-}
+  emit('submit', { balance, created_at, note })
+})
 </script>

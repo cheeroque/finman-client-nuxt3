@@ -47,7 +47,7 @@
   "menu": "Меню",
   "monthBalance": "Остаток за месяц",
   "monthExpenses": "Всего расходов",
-  "fieldMinimumValue": "Значение поля не должно быть меньше",
+  "fieldMinimumValue": "Значение поля не должно быть меньше %s",
   "name": "Имя",
   "nextYear": "Следующий год",
   "newSnapshot": "Новый снапшот",

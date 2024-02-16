@@ -2,37 +2,31 @@
   <div class="container py-32">
     <div class="row">
       <div class="col-md-8 col-lg-6 col-xl-4 col-offset-md-2 col-offset-lg-3 col-offset-xl-4 col-form">
-        <form class="card h-auto" @submit.prevent="handleSubmit">
+        <form class="card h-auto" @submit.prevent="submitForm">
           <div class="card-header">
             <h3 class="card-title text-center">{{ useString('login') }}</h3>
           </div>
 
           <div class="card-body">
             <UiFormGroup
-              :invalid-feedback="useValidationErrors(v$, 'username')"
+              :invalid-feedback="useFieldErrorMessage(username)"
               :label="useString('userName')"
-              :state="useValidationState(v$, 'username')"
+              :state="useFieldState(username)"
             >
               <UiInput
-                v-model="credentials.username"
+                v-model="username.value.value"
                 :disabled="loading"
                 :placeholder="useString('userNamePlaceholder')"
-                @input="submitError = undefined"
               />
             </UiFormGroup>
 
             <UiFormGroup
-              :invalid-feedback="useValidationErrors(v$, 'password')"
+              :invalid-feedback="useFieldErrorMessage(password)"
               :label="useString('password')"
-              :state="useValidationState(v$, 'password')"
+              :state="useFieldState(password)"
               class="mb-0"
             >
-              <UiInput
-                v-model="credentials.password"
-                :disabled="loading"
-                type="password"
-                @input="submitError = undefined"
-              />
+              <UiInput v-model="password.value.value" :disabled="loading" type="password" />
             </UiFormGroup>
           </div>
 
@@ -45,7 +39,13 @@
         </form>
 
         <Transition mode="out-in" name="fade">
-          <p v-if="submitError" :key="submitError" class="form-feedback form-feedback-invalid">{{ submitError }}</p>
+          <p
+            v-if="useFieldState(submitError) === false"
+            :key="useFieldErrorMessage(submitError)"
+            class="form-feedback form-feedback-invalid"
+          >
+            {{ useFieldErrorMessage(submitError) }}
+          </p>
         </Transition>
       </div>
     </div>
@@ -53,10 +53,13 @@
 </template>
 
 <script setup lang="ts">
-import { useVuelidate } from '@vuelidate/core'
-import { helpers, required } from '@vuelidate/validators'
+import { string as yupString } from 'yup'
 
 import type { LoginMutationVariables } from '~/gen/gql/graphql'
+
+type LoginFormValues = LoginMutationVariables & {
+  submitError: null
+}
 
 definePageMeta({
   layout: 'auth',
@@ -64,47 +67,46 @@ definePageMeta({
 
 const user = useSession()
 
-const credentials = reactive<LoginMutationVariables>({
-  password: '',
-  username: '',
+const loading = ref(false)
+
+const { handleSubmit, setFieldError, values } = useForm<LoginFormValues>({
+  initialValues: {
+    password: '',
+    submitError: null,
+    username: '',
+  },
+
+  validationSchema: {
+    password: yupString().required(useString('fieldRequired')),
+    username: yupString().required(useString('fieldRequired')),
+  },
 })
 
-const loading = ref(false)
-const submitError = ref<string | undefined>()
+const password = useField<string>('password')
+const username = useField<string>('username')
+const submitError = useField<null>('submitError')
 
-/* Form validation */
-const rules = computed(() => ({
-  password: { required: helpers.withMessage(useString('fieldRequired'), required) },
-  username: { required: helpers.withMessage(useString('fieldRequired'), required) },
-}))
+const submitForm = handleSubmit(async () => {
+  loading.value = true
 
-const v$ = useVuelidate<LoginMutationVariables>(rules, credentials, { $lazy: true })
+  const { data, error } = await useFetch('/api/login', {
+    method: 'POST',
+    body: values,
+  })
 
-async function handleSubmit() {
-  v$.value.$validate()
+  if (data.value?.user) {
+    user.value = data.value.user
 
-  if (!v$.value.$error) {
-    loading.value = true
-
-    const { data, error } = await useFetch('/api/login', {
-      method: 'POST',
-      body: credentials,
-    })
-
-    if (data.value?.user) {
-      user.value = data.value.user
-
-      return navigateTo('/')
-    }
-
-    if (error.value) {
-      const messageKey = error.value.statusCode === 401 ? 'invalidCredentials' : 'errorMessage'
-      submitError.value = useString(messageKey)
-    }
-
-    loading.value = false
+    return navigateTo('/')
   }
-}
+
+  if (error.value) {
+    const messageKey = error.value.statusCode === 401 ? 'invalidCredentials' : 'errorMessage'
+    setFieldError('submitError', useString(messageKey))
+  }
+
+  loading.value = false
+})
 </script>
 
 <style lang="scss" scoped>
