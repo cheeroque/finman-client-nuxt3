@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-type UiToastProps = {
+type ToastProps = {
   autohide?: boolean | number | string
   message?: string
   modelValue?: boolean
@@ -35,7 +35,9 @@ type UiToastProps = {
   variant?: string
 }
 
-const props = defineProps<UiToastProps>()
+const props = withDefaults(defineProps<ToastProps>(), {
+  autohide: 5000,
+})
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -44,7 +46,6 @@ const slots = useSlots()
 const timeout = ref()
 
 const hasHeader = computed(() => useSlotHasContent(slots.header) || Boolean(props.title))
-const autohide = computed(() => props.autohide ?? 5000)
 
 const componentClasses = computed(() => {
   let classes = ['toast']
@@ -60,8 +61,8 @@ watch(
   () => props.modelValue,
 
   (event) => {
-    if (event && autohide.value) {
-      timeout.value = setTimeout(() => close(), Number(autohide.value))
+    if (event && isNaN(Number(props.autohide))) {
+      timeout.value = setTimeout(() => close(), Number(props.autohide))
     }
   }
 )
