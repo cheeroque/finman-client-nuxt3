@@ -67,13 +67,13 @@
 <script setup lang="ts">
 import { DateTime, Info } from 'luxon'
 
-type UiDatepickerProps = {
+type DatepickerProps = {
   locale?: string
   modelValue?: Date
   titleFormat?: string
 }
 
-const props = defineProps<UiDatepickerProps>()
+const props = defineProps<DatepickerProps>()
 
 const emit = defineEmits(['click:day', 'update:modelValue'])
 
@@ -104,7 +104,7 @@ const monthdays = computed(() => {
   return days
 })
 
-function getDayClasses(day: DateTime): string[] {
+function getDayClasses(day: DateTime) {
   const classes = ['datepicker-day']
 
   if (day.day === selectedDay.value && day.month === selectedMonth.value) {
