@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
-type UiTimepickerProps = {
+type TimepickerProps = {
   hideHeader?: boolean
   locale?: string
   modelValue?: Date
@@ -61,7 +61,7 @@ type UiTimepickerProps = {
   stepSeconds?: number | string
 }
 
-const props = defineProps<UiTimepickerProps>()
+const props = defineProps<TimepickerProps>()
 
 const emit = defineEmits(['click:hours', 'click:minutes', 'click:seconds', 'update:modelValue'])
 
@@ -71,17 +71,17 @@ const currentSecond = ref()
 
 const locale = computed(() => props.locale ?? useLocale())
 
-const stepMinutes = computed(() => Math.min(Number(props.stepMinutes ?? 5), 1))
-const stepSeconds = computed(() => Math.min(Number(props.stepSeconds ?? 5), 1))
+const stepMinutes = computed(() => Number(props.stepMinutes) || 5)
+const stepSeconds = computed(() => Number(props.stepSeconds) || 5)
 
-const luxonDate = computed(() => DateTime.fromJSDate(props.modelValue || new Date()))
+const luxonDate = computed(() => DateTime.fromJSDate(props.modelValue ?? new Date()))
 const minuteCount = computed(() => Math.round(60 / stepMinutes.value))
 const secondCount = computed(() => Math.round(60 / stepSeconds.value))
 
 const titleFormat = computed(() => `HH:mm${props.showSeconds ? ':ss' : ''}`)
 const title = computed(() => luxonDate.value.toFormat(titleFormat.value, { locale: locale.value }))
 
-function formatUnit(unit: number): string {
+function formatUnit(unit: number) {
   return unit.toString().padStart(2, '0')
 }
 
