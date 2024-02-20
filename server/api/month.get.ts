@@ -81,5 +81,11 @@ export default defineEventHandler(async (event) => {
     }
   })
 
+  /* Sort table items by `is_income` descending, then by `subtotal` descending */
+
+  tableItems.sort(
+    (a, b) => Number(a.category?.is_income) - Number(b.category?.is_income) || Number(b.subtotal) - Number(a.subtotal)
+  )
+
   return { balance, tableItems, totalExpenses }
 })
