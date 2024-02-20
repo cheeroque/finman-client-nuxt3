@@ -29,8 +29,6 @@ const startDate = useStartDate()
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
-const toastDefaults = { ...toast.value }
-
 const drawerOpen = ref(false)
 
 const { error, refresh } = await useFetch('/api/global-data', {
@@ -79,7 +77,7 @@ function handleCloseDrawer() {
 }
 
 function handleToastHide() {
-  toast.value = { ...toastDefaults, modelValue: false }
+  useHideToast()
 }
 </script>
 
