@@ -89,10 +89,13 @@ async function handleCategoryDelete() {
   const { data, error } = await useFetch('/api/category', { method: 'DELETE', query: { id } })
 
   if (data.value?.result) {
+    const messageName = data.value.result.name ? `«${data.value.result.name}»` : `#${data.value.result.id}`
+
     useShowToast({
-      message: useString('categoryDeleted', `#${data.value.result.id}`),
+      message: useString('categoryDeleted', messageName),
       variant: 'danger',
     })
+
     emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
@@ -124,7 +127,9 @@ async function handleCategoryUpsert(category: Category) {
   const { data, error } = await useFetch('/api/category', { method, query })
 
   if (data.value?.result) {
-    useShowToast({ message: useString('categorySaved', `#${category?.id}`) })
+    const messageName = data.value.result.name ? `«${data.value.result.name}»` : `#${data.value.result.id}`
+
+    useShowToast({ message: useString('categorySaved', messageName) })
 
     emit('update:modelValue', false)
 
