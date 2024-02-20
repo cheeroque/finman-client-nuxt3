@@ -38,7 +38,6 @@ const props = defineProps<SnapshotDialogProps>()
 const emit = defineEmits(['success', 'update:modelValue'])
 
 const formId = useId()
-const toast = useToast()
 
 const loading = ref(false)
 
@@ -53,20 +52,17 @@ async function handleSubmit(snapshot: Revise) {
   const { data, error } = await useFetch('/api/snapshot', { method: 'POST', query })
 
   if (data.value?.result) {
-    showToast(useString('snapshotSaved', `#${data.value.result.id}`), 'success')
+    useShowToast({ message: useString('snapshotSaved', `#${data.value.result.id}`) })
 
     emit('success')
     emit('update:modelValue', false)
   } else {
-    showToast(error.value?.message ?? useString('error'), 'danger')
+    useShowToast({
+      message: error.value?.message ?? useString('error'),
+      variant: 'danger',
+    })
   }
 
   loading.value = false
-}
-
-function showToast(message: string, variant: string) {
-  toast.value.modelValue = true
-  toast.value.message = message
-  toast.value.variant = variant
 }
 </script>

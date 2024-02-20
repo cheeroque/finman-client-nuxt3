@@ -55,7 +55,6 @@ const formId = useId()
 const loading = useIsBusy()
 const refetchTrigger = useRefetchTrigger()
 const user = useSession()
-const toast = useToast()
 
 const isEdit = computed(() => Boolean(props.transaction?.id))
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeTransaction' : 'createTransaction'))
@@ -72,14 +71,21 @@ async function handleTransactionDelete() {
   const { data, error } = await useFetch('/api/transaction', { method: 'DELETE', query: { id } })
 
   if (data?.value?.result) {
-    showToast(useString('transactionDeleted', `#${props.transaction?.id}`), 'danger')
+    useShowToast({
+      message: useString('transactionDeleted', `#${props.transaction?.id}`),
+      variant: 'danger',
+    })
+
     emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
 
     refetchTrigger.value = true
   } else {
-    showToast(error.value?.message ?? useString('error'), 'danger')
+    useShowToast({
+      message: error.value?.message ?? useString('error'),
+      variant: 'danger',
+    })
   }
 
   loading.value = false
@@ -106,22 +112,20 @@ async function handleTransactionUpsert(formData: TransactionFormValues) {
   const { data, error } = await useFetch('/api/transaction', { method, query })
 
   if (data.value?.result) {
-    showToast(useString('transactionSaved', `#${data.value.result.id}`), 'success')
+    useShowToast({ message: useString('transactionSaved', `#${data.value.result.id}`) })
+
     emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
 
     refetchTrigger.value = true
   } else {
-    showToast(error.value?.message ?? useString('error'), 'danger')
+    useShowToast({
+      message: error.value?.message ?? useString('error'),
+      variant: 'danger',
+    })
   }
 
   loading.value = false
-}
-
-function showToast(message: string, variant: string) {
-  toast.value.modelValue = true
-  toast.value.message = message
-  toast.value.variant = variant
 }
 </script>

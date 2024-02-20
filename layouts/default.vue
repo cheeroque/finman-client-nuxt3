@@ -10,7 +10,7 @@
       </div>
     </div>
 
-    <UiToast v-bind="toast" @update:model-value="handleToastUpdate" />
+    <UiToast v-bind="toast" @hide="handleToastHide" />
 
     <NavBottom @toggle:drawer="handleToggleDrawer" />
   </div>
@@ -28,6 +28,8 @@ const startDate = useStartDate()
 
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
+
+const toastDefaults = { ...toast.value }
 
 const drawerOpen = ref(false)
 
@@ -76,8 +78,8 @@ function handleCloseDrawer() {
   drawerOpen.value = false
 }
 
-function handleToastUpdate(event: boolean) {
-  toast.value.modelValue = event
+function handleToastHide() {
+  toast.value = { ...toastDefaults, modelValue: false }
 }
 </script>
 

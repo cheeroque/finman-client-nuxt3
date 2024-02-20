@@ -71,7 +71,6 @@ const emit = defineEmits(['closed', 'update:modelValue'])
 const formId = useId()
 const loading = useIsBusy()
 const refetchTrigger = useRefetchTrigger()
-const toast = useToast()
 
 const deletePending = ref(false)
 
@@ -90,14 +89,20 @@ async function handleCategoryDelete() {
   const { data, error } = await useFetch('/api/category', { method: 'DELETE', query: { id } })
 
   if (data.value?.result) {
-    showToast(useString('categoryDeleted', `#${data.value.result.id}`), 'danger')
+    useShowToast({
+      message: useString('categoryDeleted', `#${data.value.result.id}`),
+      variant: 'danger',
+    })
     emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
 
     refetchTrigger.value = true
   } else {
-    showToast(error.value?.message ?? useString('error'), 'danger')
+    useShowToast({
+      message: error.value?.message ?? useString('error'),
+      variant: 'danger',
+    })
   }
 
   deletePending.value = false
@@ -119,22 +124,20 @@ async function handleCategoryUpsert(category: Category) {
   const { data, error } = await useFetch('/api/category', { method, query })
 
   if (data.value?.result) {
-    showToast(useString('categorySaved', `#${category?.id}`), 'success')
+    useShowToast({ message: useString('categorySaved', `#${category?.id}`) })
+
     emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
 
     refetchTrigger.value = true
   } else {
-    showToast(error.value?.message ?? useString('error'), 'danger')
+    useShowToast({
+      message: error.value?.message ?? useString('error'),
+      variant: 'danger',
+    })
   }
 
   loading.value = false
-}
-
-function showToast(message: string, variant: string) {
-  toast.value.modelValue = true
-  toast.value.message = message
-  toast.value.variant = variant
 }
 </script>

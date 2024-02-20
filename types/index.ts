@@ -30,6 +30,14 @@ export type TableMonthItem = GroupTableItem & {
   category?: Partial<Category>
 }
 
+export type ToastState = {
+  autohide?: boolean | number | string
+  message?: string
+  modelValue?: boolean
+  title?: string
+  variant?: string
+}
+
 export type TransactionFormValues = {
   category_id: number
   created_at: Date

@@ -27,19 +27,15 @@
 </template>
 
 <script setup lang="ts">
-type ToastProps = {
-  autohide?: boolean | number | string
-  message?: string
-  modelValue?: boolean
-  title?: string
-  variant?: string
-}
+import type { ToastState } from '~/types'
+
+type ToastProps = ToastState
 
 const props = withDefaults(defineProps<ToastProps>(), {
   autohide: 5000,
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['hide', 'update:modelValue'])
 
 const slots = useSlots()
 
@@ -61,7 +57,7 @@ watch(
   () => props.modelValue,
 
   (event) => {
-    if (event && isNaN(Number(props.autohide))) {
+    if (event && !isNaN(Number(props.autohide))) {
       timeout.value = setTimeout(() => close(), Number(props.autohide))
     }
   }
@@ -71,6 +67,7 @@ function close() {
   if (timeout.value) {
     clearTimeout(timeout.value)
   }
-  emit('update:modelValue', false)
+
+  emit('hide')
 }
 </script>
