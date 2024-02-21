@@ -49,14 +49,18 @@ async function handleSubmit(snapshot: Revise) {
 
   loading.value = true
 
-  const { data, error } = await useFetch('/api/snapshot', { method: 'POST', query })
+  try {
+    const { result } = await $fetch('/api/snapshot', { method: 'POST', query })
 
-  if (data.value?.result) {
-    useShowToast({ message: useString('snapshotSaved', `#${data.value.result.id}`) })
+    if (result) {
+      useShowToast({ message: useString('snapshotSaved', `#${result.id}`) })
 
-    emit('success')
-    emit('update:modelValue', false)
-  } else {
+      emit('success')
+      emit('update:modelValue', false)
+    } else {
+      throw new Error()
+    }
+  } catch (error: any) {
     useShowToast({
       message: error.value?.message ?? useString('error'),
       variant: 'danger',
