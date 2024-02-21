@@ -89,18 +89,19 @@ const submitError = useField<null>('submitError')
 const submitForm = handleSubmit(async () => {
   loading.value = true
 
-  const { data, error } = await useFetch('/api/login', {
-    method: 'POST',
-    body: values,
-  })
+  try {
+    const { user: loginUser } = await $fetch('/api/login', {
+      method: 'POST',
+      body: values,
+    })
 
-  if (data.value?.user) {
-    user.value = data.value.user
-
-    return navigateTo('/')
-  }
-
-  if (error.value) {
+    if (loginUser) {
+      user.value = loginUser
+      return navigateTo('/')
+    } else {
+      throw new Error()
+    }
+  } catch (error: any) {
     const messageKey = error.value.statusCode === 401 ? 'invalidCredentials' : 'errorMessage'
     setFieldError('submitError', useString(messageKey))
   }
