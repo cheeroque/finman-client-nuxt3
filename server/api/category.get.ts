@@ -8,9 +8,9 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event)
 
   const variables = {
-    category_id: Number(query.category_id),
     first: Number(query.perPage) || 18,
     page: Number(query.page) || 1,
+    slug: String(query.slug),
   }
 
   const { data, error } = await client

@@ -43,9 +43,9 @@ if (!category.value) {
 /* Fetch transactions for current category, grouped by period */
 
 const query = computed(() => ({
-  category_id: category.value?.id,
   first: route.query.perPage,
   page: route.query.page,
+  slug: route.params.slug,
 }))
 
 const { data, pending, refresh } = await useFetch('/api/category', {
@@ -58,6 +58,16 @@ const { data, pending, refresh } = await useFetch('/api/category', {
 
       scrollToEl(target)
     }, 100)
+  },
+
+  onResponseError() {
+    const message = useString('errorMessage404')
+
+    if (process.client) {
+      showError({ message, statusCode: 404 })
+    } else {
+      throw createError({ fatal: true, message, statusCode: 404 })
+    }
   },
 })
 

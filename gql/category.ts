@@ -38,8 +38,8 @@ export const categoriesWithTransactionsQuery = graphql(`
 `)
 
 export const categoryTransactionsQuery = graphql(`
-  query CategoryTransactions($category_id: Int!, $first: Int = 18, $page: Int = 1) {
-    transactions: transactionsByPeriod(category_id: $category_id, first: $first, page: $page) {
+  query CategoryTransactions($slug: String!, $first: Int = 18, $page: Int = 1) {
+    transactions: transactionsByPeriod(slug: $slug, first: $first, page: $page) {
       data {
         period
         transactions {
