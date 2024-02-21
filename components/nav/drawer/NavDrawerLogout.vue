@@ -8,7 +8,7 @@
 const user = useSession()
 
 async function logout() {
-  await useFetch('/api/logout', { method: 'POST' })
+  await $fetch('/api/logout', { method: 'POST' })
 
   user.value = undefined
 
