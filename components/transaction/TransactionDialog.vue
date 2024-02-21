@@ -68,20 +68,24 @@ async function handleTransactionDelete() {
 
   loading.value = true
 
-  const { data, error } = await useFetch('/api/transaction', { method: 'DELETE', query: { id } })
+  try {
+    const { result } = await $fetch('/api/transaction', { method: 'DELETE', query: { id } })
 
-  if (data?.value?.result) {
-    useShowToast({
-      message: useString('transactionDeleted', `#${props.transaction?.id}`),
-      variant: 'danger',
-    })
+    if (result) {
+      useShowToast({
+        message: useString('transactionDeleted', `#${result.id}`),
+        variant: 'danger',
+      })
 
-    emit('update:modelValue', false)
+      emit('update:modelValue', false)
 
-    /* Trigger refetch of all globally available data */
+      /* Trigger refetch of all globally available data */
 
-    refetchTrigger.value = true
-  } else {
+      refetchTrigger.value = true
+    } else {
+      throw new Error()
+    }
+  } catch (error: any) {
     useShowToast({
       message: error.value?.message ?? useString('error'),
       variant: 'danger',
@@ -109,17 +113,21 @@ async function handleTransactionUpsert(formData: TransactionFormValues) {
 
   loading.value = true
 
-  const { data, error } = await useFetch('/api/transaction', { method, query })
+  try {
+    const { result } = await $fetch('/api/transaction', { method, query })
 
-  if (data.value?.result) {
-    useShowToast({ message: useString('transactionSaved', `#${data.value.result.id}`) })
+    if (result) {
+      useShowToast({ message: useString('transactionSaved', `#${result.id}`) })
 
-    emit('update:modelValue', false)
+      emit('update:modelValue', false)
 
-    /* Trigger refetch of all globally available data */
+      /* Trigger refetch of all globally available data */
 
-    refetchTrigger.value = true
-  } else {
+      refetchTrigger.value = true
+    } else {
+      throw new Error()
+    }
+  } catch (error: any) {
     useShowToast({
       message: error.value?.message ?? useString('error'),
       variant: 'danger',
