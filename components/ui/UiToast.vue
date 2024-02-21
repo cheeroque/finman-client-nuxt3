@@ -14,7 +14,7 @@
 
         <div :class="{ 'no-header': !hasHeader }" class="toast-body">
           <slot :close="close">
-            {{ message }}
+            {{ message ?? '\xA0' }}
           </slot>
 
           <UiButton v-if="!hasHeader" class="btn-close" no-text @click="close">
