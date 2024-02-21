@@ -86,24 +86,28 @@ async function handleCategoryDelete() {
 
   loading.value = true
 
-  const { data, error } = await useFetch('/api/category', { method: 'DELETE', query: { id } })
+  try {
+    const { result } = await $fetch('/api/category', { method: 'DELETE', query: { id } })
 
-  if (data.value?.result) {
-    const messageName = data.value.result.name ? `«${data.value.result.name}»` : `#${data.value.result.id}`
+    if (result) {
+      const messageName = result.name ? `«${result.name}»` : `#${result.id}`
 
+      useShowToast({
+        message: useString('categoryDeleted', messageName),
+        variant: 'danger',
+      })
+
+      emit('update:modelValue', false)
+
+      /* Trigger refetch of all globally available data */
+
+      refetchTrigger.value = true
+    } else {
+      throw new Error()
+    }
+  } catch (error: any) {
     useShowToast({
-      message: useString('categoryDeleted', messageName),
-      variant: 'danger',
-    })
-
-    emit('update:modelValue', false)
-
-    /* Trigger refetch of all globally available data */
-
-    refetchTrigger.value = true
-  } else {
-    useShowToast({
-      message: error.value?.message ?? useString('error'),
+      message: error?.message ?? useString('error'),
       variant: 'danger',
     })
   }
@@ -124,21 +128,25 @@ async function handleCategoryUpsert(category: Category) {
 
   loading.value = true
 
-  const { data, error } = await useFetch('/api/category', { method, query })
+  try {
+    const { result } = await $fetch('/api/category', { method, query })
 
-  if (data.value?.result) {
-    const messageName = data.value.result.name ? `«${data.value.result.name}»` : `#${data.value.result.id}`
+    if (result) {
+      const messageName = result.name ? `«${result.name}»` : `#${result.id}`
 
-    useShowToast({ message: useString('categorySaved', messageName) })
+      useShowToast({ message: useString('categorySaved', messageName) })
 
-    emit('update:modelValue', false)
+      emit('update:modelValue', false)
 
-    /* Trigger refetch of all globally available data */
+      /* Trigger refetch of all globally available data */
 
-    refetchTrigger.value = true
-  } else {
+      refetchTrigger.value = true
+    } else {
+      throw new Error()
+    }
+  } catch (error: any) {
     useShowToast({
-      message: error.value?.message ?? useString('error'),
+      message: error?.message ?? useString('error'),
       variant: 'danger',
     })
   }
