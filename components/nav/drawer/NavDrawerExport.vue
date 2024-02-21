@@ -13,10 +13,10 @@ async function handleClick() {
   loading.value = true
 
   try {
-    const { data, error } = await useFetch('/api/export')
+    const { result } = await $fetch('/api/export')
 
-    if (data.value?.result.file) {
-      const file = data.value.result.file
+    if (result.file) {
+      const file = result.file
       const link = document.createElement('a')
 
       link.href = `${config.public.staticUrl}${file.path}`
@@ -25,7 +25,7 @@ async function handleClick() {
       document.body.appendChild(link)
       link.click()
     } else {
-      throw new Error(error.value?.message ?? useString('exportFailed'))
+      throw new Error()
     }
   } catch (error) {
     useShowToast({
