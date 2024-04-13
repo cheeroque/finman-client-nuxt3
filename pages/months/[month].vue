@@ -1,11 +1,6 @@
 <template>
-  <PageContent :loading="recordsStore.loading" :title="monthName" class="overflow-hidden" spinner-variant="primary">
-    <GroupTable
-      v-if="data"
-      :group-label="useString('category')"
-      :items="data.tableItems"
-      :loading="recordsStore.loading"
-    />
+  <PageContent :loading="pending" :title="monthName" class="overflow-hidden" spinner-variant="primary">
+    <GroupTable v-if="tableItems" :group-label="useString('category')" :items="tableItems" />
 
     <template #footer>
       <UiButton
@@ -36,26 +31,9 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { useRecordsStore } from '~/store/records'
 
-import CATEGORIES_WITH_RECORDS_QUERY from '~/graphql/CategoriesWithRecords.gql'
-
-import type { RecordsCategory, RecordsItem } from '~/types'
-
-interface CategoriesWithRecordsQueryResponse {
-  categories: {
-    data: CategoryWithRecords[]
-  }
-}
-
-interface CategoryWithRecords extends RecordsCategory {
-  records: RecordsItem[]
-  recordsTotal: number
-}
-
-const { $urql } = useNuxtApp()
 const route = useRoute()
-const recordsStore = useRecordsStore()
+const startDate = useStartDate()
 
 const month = computed(() => String(route.params.month))
 const monthDate = computed(() => DateTime.fromFormat(month.value, 'yyyy-LL'))
@@ -73,82 +51,44 @@ const nextMonthLink = computed(() => (!isEnd.value ? `/months/${formatMonthLink(
 
 const isBeginning = computed(
   () =>
-    recordsStore.firstRecordDate?.year >= monthDate.value.year &&
-    recordsStore.firstRecordDate?.month >= monthDate.value.month
+    !startDate.value ||
+    (startDate.value?.year >= monthDate.value.year && startDate.value?.month >= monthDate.value.month)
 )
 const isEnd = computed(
   () => DateTime.local().year <= monthDate.value.year && DateTime.local().month <= monthDate.value.month
 )
 
-/* Fetch current month records */
+/* Fetch current month transactions */
 
-const { data } = await useAsyncData(async () => {
+const query = computed(() => {
   const from = monthDate.value
   const to = from.plus({ month: 1 }).minus({ second: 1 })
-  const where = {
-    AND: [
-      { column: 'CREATED_AT', operator: 'GTE', value: from.toFormat('yyyy-LL-dd HH:mm:ss') },
-      { column: 'CREATED_AT', operator: 'LTE', value: to.toFormat('yyyy-LL-dd HH:mm:ss') },
-    ],
+
+  return {
+    from: from.toFormat('yyyy-LL-dd HH:mm:ss'),
+    to: to.toFormat('yyyy-LL-dd HH:mm:ss'),
   }
-
-  /* Filter by month is the same for records & recordsTotal, but variable types
-   * are different in GQL, so query variables have to be separate */
-
-  const variables = { where, whereTotal: where }
-
-  const { data: categoriesData } = await $urql
-    .query<CategoriesWithRecordsQueryResponse>(CATEGORIES_WITH_RECORDS_QUERY, variables)
-    .toPromise()
-
-  const tableItems = buildTableItems(categoriesData?.categories)
-
-  return { tableItems }
 })
 
-/* Transform categories with records into the table rows */
+const { data, pending } = await useFetch('/api/month', { query })
 
-function buildTableItems(categories?: CategoriesWithRecordsQueryResponse['categories']) {
-  const tableItems = []
-  let balance = 0
-  let totalExpenses = 0
+const tableItems = computed(() => {
+  const items = data.value?.tableItems ?? []
 
-  categories?.data?.forEach(({ color, id, is_income, name, records, recordsTotal, slug }) => {
-    if (is_income) {
-      balance += recordsTotal
-    } else {
-      balance -= recordsTotal
-      totalExpenses += recordsTotal
-    }
-
-    if (recordsTotal) {
-      tableItems.push({
-        category: { color, id, is_income, name, slug },
-        group: name,
-        records: records.map((record) => ({ ...record, category: { color, id, is_income, name, slug } })),
-        subtotal: recordsTotal,
-        trClass: is_income ? 'row-income' : undefined,
-      })
-    }
-  })
-
-  /* Append table rows with total expenses & balance */
-
-  tableItems.push(
+  return [
+    ...items,
     {
       group: useString('monthExpenses'),
-      subtotal: totalExpenses,
+      subtotal: data.value?.totalExpenses ?? 0,
       trClass: 'row-expense',
     },
     {
       group: useString('monthBalance'),
-      subtotal: balance,
-      trClass: `row-balance ${balance > 0 ? 'row-balance-positive' : 'row-balance-negative'}`,
-    }
-  )
-
-  return tableItems
-}
+      subtotal: data.value?.balance ?? 0,
+      trClass: `row-balance ${Number(data.value?.balance) > 0 ? 'row-balance-positive' : 'row-balance-negative'}`,
+    },
+  ]
+})
 
 function formatMonthLink(dateTime: DateTime): string {
   return dateTime.toFormat('yyyy-LL')

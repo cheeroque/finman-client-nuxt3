@@ -1,7 +1,0 @@
-#import "@/graphql/fragments/RecordFragment.gql"
-
-mutation RecordCreate($data: CreateRecordInput!) {
-  result: createRecord(data: $data) {
-    ...RecordFragment
-  }
-}

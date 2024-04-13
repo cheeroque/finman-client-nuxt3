@@ -1,5 +1,3 @@
-import graphql from '@rollup/plugin-graphql'
-
 /* https://nuxt.com/docs/api/configuration/nuxt-config */
 
 export default defineNuxtConfig({
@@ -36,19 +34,30 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@pinia/nuxt', '@vueuse/nuxt', 'nuxt-icons', '~/modules/color-theme'],
+  colorTheme: {
+    primary: process.env.THEME_PRIMARY_COLOR,
+    secondary: process.env.THEME_SECONDARY_COLOR,
+    tertiary: process.env.THEME_TERTIARY_COLOR,
+    neutral: process.env.THEME_NEUTRAL_COLOR,
+    'neutral-variant': process.env.THEME_NEUTRAL_VARIANT_COLOR,
+    danger: process.env.THEME_DANGER_COLOR,
+    success: process.env.THEME_SUCCESS_COLOR,
+  },
 
   css: ['~/assets/styles/app.scss'],
 
-  colorTheme: {
-    primary: process.env.THEME_PRIMARY_COLOR,
-  },
+  modules: ['@vee-validate/nuxt', '@vueuse/nuxt', 'nuxt-icons'],
 
   runtimeConfig: {
+    gqlEndpoint: '',
+
     public: {
-      gqlEndpoint: '',
       staticUrl: '',
     },
+  },
+
+  veeValidate: {
+    autoImports: true,
   },
 
   vite: {
@@ -65,7 +74,5 @@ export default defineNuxtConfig({
         },
       },
     },
-
-    plugins: [graphql()],
   },
 })

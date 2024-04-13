@@ -1,3 +1,3 @@
 <template>
-  <PageRecords />
+  <TransactionPage />
 </template>

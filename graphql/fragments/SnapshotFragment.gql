@@ -1,6 +1,0 @@
-fragment SnapshotFragment on Revise {
-  balance
-  created_at
-  id
-  note
-}

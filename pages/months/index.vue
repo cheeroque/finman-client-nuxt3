@@ -1,5 +1,5 @@
 <template>
-  <PageContent :title="useString('recordsCalendar')">
+  <PageContent :title="useString('transactionsCalendar')">
     <MonthCalendar />
   </PageContent>
 </template>

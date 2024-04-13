@@ -5,50 +5,46 @@
     <div class="app-content">
       <Sidebar />
 
-      <div :class="{ loading: recordsStore.loading }" class="page">
+      <div :class="{ loading: loading }" class="page">
         <slot />
       </div>
     </div>
 
-    <UiToast v-bind="toast" @update:model-value="handleToastUpdate" />
+    <UiToast v-bind="toast" @hide="handleToastHide" />
 
     <NavBottom @toggle:drawer="handleToggleDrawer" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useRecordsStore } from '~/store/records'
+import { DateTime } from 'luxon'
 
-import CATEGORIES_QUERY from '~/graphql/Categories.gql'
-import RECORDS_QUERY from '~/graphql/Records.gql'
-import RECORDS_TOTAL_QUERY from '~/graphql/RecordsTotal.gql'
+import type { Transaction } from '~/gen/gql/graphql'
 
-import type { RecordsCategory, RecordsResponse } from '~/types'
+const balance = useBalance()
+const categories = useCategories()
+const loading = useIsBusy()
+const startDate = useStartDate()
 
-interface CategoriesResponse {
-  categories: {
-    data: RecordsCategory[]
-    paginatorInfo: PaginatorInfo
-  }
-}
-
-interface RecordsTotalResponse {
-  expensesTotal: number
-  incomesTotal: number
-}
-
-const { $urql } = useNuxtApp()
-const recordsStore = useRecordsStore()
 const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
 const drawerOpen = ref(false)
 
-const { refresh } = await useAsyncData(() => fetchGlobalData())
+const { error, refresh } = await useFetch('/api/global-data', {
+  onResponse({ response }) {
+    balance.value = response._data.balance
+    categories.value = response._data.categories
+    startDate.value = getDate(response._data.firstTransaction)
+  },
+})
+
+if (error.value) {
+  throw createError({ fatal: true, message: error.value.message })
+}
 
 watch(
-  /* Refetch categories & total balance if external trigger was set to true,
-   * then reset trigger */
+  /* Refetch global data when external trigger set to true, then reset trigger */
 
   () => refetchTrigger.value,
 
@@ -60,27 +56,16 @@ watch(
   }
 )
 
-/* Fetch total balance, record categories and first record (for calendar)
- * and save everything to the store */
+function getDate(transaction?: Transaction) {
+  let dateTime = DateTime.fromFormat(transaction?.created_at ?? '', 'yyyy-LL-dd HH:mm:ss')
 
-async function fetchGlobalData() {
-  const variables = {
-    first: 1,
-    orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
+  if (!dateTime.isValid) {
+    dateTime = DateTime.now()
   }
 
-  const [{ data: balanceData }, { data: categoriesData }, { data: firstRecordData }] = await Promise.all([
-    $urql.query<RecordsTotalResponse>(RECORDS_TOTAL_QUERY, {}).toPromise(),
-    $urql.query<CategoriesResponse>(CATEGORIES_QUERY, {}).toPromise(),
-    $urql.query<RecordsResponse>(RECORDS_QUERY, variables).toPromise(),
-  ])
+  const { month, year } = dateTime
 
-  const expensesTotal = Number(balanceData?.expensesTotal) || 0
-  const incomesTotal = Number(balanceData?.incomesTotal) || 0
-
-  recordsStore.balance = incomesTotal - expensesTotal
-  recordsStore.categories = categoriesData?.categories.data ?? []
-  recordsStore.firstRecord = firstRecordData?.records.data?.[0]
+  return { month, year }
 }
 
 function handleToggleDrawer() {
@@ -91,8 +76,8 @@ function handleCloseDrawer() {
   drawerOpen.value = false
 }
 
-function handleToastUpdate(event: boolean) {
-  toast.value.modelValue = event
+function handleToastHide() {
+  useHideToast()
 }
 </script>
 

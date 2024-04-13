@@ -1,7 +1,0 @@
-#import "@/graphql/fragments/UserFragment.gql"
-
-query Me {
-  me {
-    ...UserFragment
-  }
-}

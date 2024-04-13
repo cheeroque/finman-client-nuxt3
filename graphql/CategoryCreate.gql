@@ -1,7 +1,0 @@
-#import "@/graphql/fragments/CategoryFragment.gql"
-
-mutation CategoryCreate($data: CreateCategoryInput!) {
-  result: createCategory(data: $data) {
-    ...CategoryFragment
-  }
-}

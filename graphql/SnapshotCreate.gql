@@ -1,7 +1,0 @@
-#import "@/graphql/fragments/SnapshotFragment.gql"
-
-mutation SnapshotCreate($data: CreateReviseInput!) {
-  result: createRevise(data: $data) {
-    ...SnapshotFragment
-  }
-}

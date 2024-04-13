@@ -1,58 +1,49 @@
-import { useAuthStore } from '~/store/auth'
-
-import ME_QUERY from '~/graphql/Me.gql'
-
-import type { User } from '~/types'
-
-interface MeResponse {
-  me: User
-}
+import type { H3Event } from 'h3'
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  const { $auth, $urql } = useNuxtApp()
+  const user = useSession()
 
-  const authStore = useAuthStore()
   const isLoginPage = to.path.startsWith('/login')
-
-  let isLoggedIn = Boolean(authStore.user)
-
-  /* Try to fetch user from backend. Return user on success, false on error */
-
-  async function fetchUser() {
-    try {
-      const { data } = await $urql.query<MeResponse>(ME_QUERY, {}).toPromise()
-
-      if (!data?.me) {
-        throw createError({ statusCode: 401 })
-      }
-
-      return data.me
-    } catch (error: any) {
-      return false
-    }
-  }
-
-  /* Fetch user if not in store. On fail redirect to the login page (if not
-   * already there). On success, save user to store and set isLoggedIn to true */
+  let isLoggedIn = Boolean(user.value)
 
   if (!isLoggedIn) {
-    const user = await fetchUser()
+    /* If no user saved in global state, try to fetch it from API. On fail,
+     * return redirect to login page */
 
-    if (user) {
-      authStore.user = user
-      isLoggedIn = true
-    } else {
-      $auth.reset()
+    try {
+      /* Get cookie header from initial client request */
 
+      const headers = buildHeaders(useRequestEvent())
+
+      const { data } = await $fetch('/api/me', { headers })
+
+      if (data?.me) {
+        user.value = data.me
+        isLoggedIn = true
+      } else {
+        throw createError({ statusCode: 401 })
+      }
+    } catch (error: any) {
       if (!isLoginPage) {
         return navigateTo('/login', { external: true })
       }
     }
   }
 
-  /* If current route is login and isLoggedIn is true, redirect to root */
+  /* Check isLoggedIn again, it will be true if user was successfully fetched.
+   * If true, redirect from login page */
 
   if (isLoggedIn && isLoginPage) {
     return navigateTo('/')
   }
 })
+
+function buildHeaders(event?: H3Event) {
+  const headers: HeadersInit = {}
+
+  if (event && process.server) {
+    headers.cookie = event.node.req.headers.cookie ?? ''
+  }
+
+  return headers
+}

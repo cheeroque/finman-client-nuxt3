@@ -1,6 +1,0 @@
-fragment RecordFragment on Record {
-  created_at
-  id
-  note
-  sum
-}
