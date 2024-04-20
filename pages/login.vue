@@ -102,7 +102,7 @@ const submitForm = handleSubmit(async () => {
       throw new Error()
     }
   } catch (error: any) {
-    const messageKey = error.value.statusCode === 401 ? 'invalidCredentials' : 'errorMessage'
+    const messageKey = error.statusCode === 401 ? 'invalidCredentials' : 'errorMessage'
     setFieldError('submitError', useString(messageKey))
   }
 
