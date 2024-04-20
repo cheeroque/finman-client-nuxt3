@@ -1,49 +1,43 @@
-import { categoriesWithTransactionsQuery } from '~/gql'
-import { CategoryTransactionsWhereColumn, CategoryTransactionsTotalWhereColumn, SqlOperator } from '~/gen/gql/graphql'
-
-import type {
-  CategoryTransactionsWhereWhereConditions,
-  CategoryTransactionsTotalWhereWhereConditions,
-} from '~/gen/gql/graphql'
-
+import { readFragment, CategoriesWithTransactionsQuery, CategoryFragment } from '~/graphql'
+import type { VariablesOf } from '~/graphql'
 import type { TableMonthItem } from '~/types'
 
 export default defineEventHandler(async (event) => {
   const { client, headers } = event.context
   const query = getQuery(event)
 
-  const where: CategoryTransactionsWhereWhereConditions = {
+  const where: VariablesOf<typeof CategoriesWithTransactionsQuery>['where'] = {
     AND: [
       {
-        column: CategoryTransactionsWhereColumn.CreatedAt,
-        operator: SqlOperator.Gte,
+        column: 'CREATED_AT',
+        operator: 'GTE',
         value: query.from,
       },
       {
-        column: CategoryTransactionsWhereColumn.CreatedAt,
-        operator: SqlOperator.Lte,
+        column: 'CREATED_AT',
+        operator: 'LTE',
         value: query.to,
       },
     ],
   }
 
-  const whereTotal: CategoryTransactionsTotalWhereWhereConditions = {
+  const whereTotal: VariablesOf<typeof CategoriesWithTransactionsQuery>['whereTotal'] = {
     AND: [
       {
-        column: CategoryTransactionsTotalWhereColumn.CreatedAt,
-        operator: SqlOperator.Gte,
+        column: 'CREATED_AT',
+        operator: 'GTE',
         value: query.from,
       },
       {
-        column: CategoryTransactionsTotalWhereColumn.CreatedAt,
-        operator: SqlOperator.Lte,
+        column: 'CREATED_AT',
+        operator: 'LTE',
         value: query.to,
       },
     ],
   }
 
   const { data, error } = await client
-    .query(categoriesWithTransactionsQuery, { where, whereTotal }, { fetchOptions: { headers } })
+    .query(CategoriesWithTransactionsQuery, { where, whereTotal }, { fetchOptions: { headers } })
     .toPromise()
 
   if (error) {
@@ -58,7 +52,10 @@ export default defineEventHandler(async (event) => {
   let balance = 0
   let totalExpenses = 0
 
-  categories?.forEach(({ color, id, is_income, name, transactions, transactionsTotal, slug }) => {
+  categories?.forEach((category) => {
+    const { is_income, name } = readFragment(CategoryFragment, category)
+    const { transactions, transactionsTotal } = category
+
     const subtotal = Number(transactionsTotal) || 0
 
     if (is_income) {
@@ -72,7 +69,7 @@ export default defineEventHandler(async (event) => {
 
     if (transactions?.length) {
       tableItems.push({
-        category: { color, id, is_income, name, slug },
+        category,
         group: name,
         transactions,
         subtotal,
@@ -84,7 +81,9 @@ export default defineEventHandler(async (event) => {
   /* Sort table items by `is_income` descending, then by `subtotal` descending */
 
   tableItems.sort(
-    (a, b) => Number(a.category?.is_income) - Number(b.category?.is_income) || Number(b.subtotal) - Number(a.subtotal)
+    (a, b) =>
+      Number(readFragment(CategoryFragment, a.category)?.is_income) -
+        Number(readFragment(CategoryFragment, b.category)?.is_income) || Number(b.subtotal) - Number(a.subtotal)
   )
 
   return { balance, tableItems, totalExpenses }

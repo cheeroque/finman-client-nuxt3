@@ -30,13 +30,15 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 import { date as yupDate, number as yupNumber, string as yupString } from 'yup'
-
-import type { Transaction } from '~/gen/gql/graphql'
+import { readFragment, CategoryFragment, TransactionFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
 import type { TransactionFormValues } from '~/types'
 
 type TransactionFormProps = {
   edit?: boolean
-  transaction?: Transaction
+  transaction?: FragmentOf<typeof TransactionFragment> & {
+    category?: FragmentOf<typeof CategoryFragment>
+  }
 }
 
 const props = defineProps<TransactionFormProps>()
@@ -45,21 +47,29 @@ const emit = defineEmits(['submit'])
 
 const categories = useCategories()
 
-const categoryOptions = computed(() => categories.value.map(({ id, name }) => ({ text: name, value: id })))
+const categoryOptions = computed(() =>
+  categories.value.map((category) => {
+    const { id, name } = readFragment(CategoryFragment, category)
+    return { text: name, value: id }
+  })
+)
 
 /* Expose form element as ref for parent */
 
 const form = ref()
 defineExpose({ form })
 
+const transactionFragment = computed(() => readFragment(TransactionFragment, props.transaction))
+const categoryFragment = computed(() => readFragment(CategoryFragment, props.transaction?.category))
+
 const { handleSubmit, values } = useForm<TransactionFormValues>({
   initialValues: {
-    category_id: Number(props.transaction?.category?.id ?? categoryOptions.value[0]?.value),
-    created_at: props.transaction?.created_at
-      ? DateTime.fromFormat(props.transaction.created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
+    category_id: Number(categoryFragment.value?.id ?? categoryOptions.value[0]?.value),
+    created_at: transactionFragment.value?.created_at
+      ? DateTime.fromFormat(transactionFragment.value.created_at, 'yyyy-LL-dd HH:mm:ss').toJSDate()
       : new Date(),
-    note: props.transaction?.note ?? '',
-    sum: props.transaction?.sum ?? 0,
+    note: transactionFragment.value?.note ?? '',
+    sum: transactionFragment.value?.sum ?? 0,
   },
 
   validationSchema: {

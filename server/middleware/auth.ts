@@ -1,7 +1,7 @@
 /* Get httpOnly auth_token cookie from initial request and append it to
  * request context as authorization header */
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler((event) => {
   const token = parseCookies(event).auth_token
 
   if (token) {

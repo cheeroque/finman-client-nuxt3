@@ -1,4 +1,4 @@
-import { snapshotCreateMutation } from '~/gql'
+import { SnapshotCreateMutation } from '~/graphql'
 
 export default defineEventHandler(async (event) => {
   const { client, headers } = event.context
@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   const note = String(query.note)
 
   const { data, error } = await client
-    .mutation(snapshotCreateMutation, { data: { balance, created_at, note } }, { fetchOptions: { headers } })
+    .mutation(SnapshotCreateMutation, { data: { balance, created_at, note } }, { fetchOptions: { headers } })
     .toPromise()
 
   if (error) {

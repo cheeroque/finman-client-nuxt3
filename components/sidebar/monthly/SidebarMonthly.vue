@@ -7,7 +7,7 @@
     <ul class="list-unstyled">
       <li
         v-for="(group, index) in visibleCategories"
-        :key="`group-${group.category?.id}`"
+        :key="`group-${readFragment(CategoryFragment, group.category)?.id}`"
         :class="{ 'mt-8': index > 0 }"
         role="presentation"
       >
@@ -44,6 +44,7 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
+import { readFragment, CategoryFragment } from '~/graphql'
 
 const VISIBLE_LIMIT = 5
 
@@ -64,7 +65,7 @@ const { data, refresh } = await useFetch('/api/month', { query, pick: ['tableIte
 
 const groups = computed(() =>
   data.value?.tableItems
-    .filter((group) => !group.category?.is_income)
+    .filter((group) => !readFragment(CategoryFragment, group.category)?.is_income)
     .sort((a, b) => Number(b.subtotal) - Number(a.subtotal))
 )
 

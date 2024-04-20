@@ -18,8 +18,8 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-
-import type { Transaction } from '~/gen/gql/graphql'
+import { readFragment, TransactionFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
 
 const balance = useBalance()
 const categories = useCategories()
@@ -56,8 +56,10 @@ watch(
   }
 )
 
-function getDate(transaction?: Transaction) {
-  let dateTime = DateTime.fromFormat(transaction?.created_at ?? '', 'yyyy-LL-dd HH:mm:ss')
+function getDate(transaction?: FragmentOf<typeof TransactionFragment>) {
+  const transactionFragment = readFragment(TransactionFragment, transaction)
+
+  let dateTime = DateTime.fromFormat(transactionFragment?.created_at ?? '', 'yyyy-LL-dd HH:mm:ss')
 
   if (!dateTime.isValid) {
     dateTime = DateTime.now()

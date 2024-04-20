@@ -1,4 +1,7 @@
-import type { Category, Transaction } from '~/gen/gql/graphql'
+import { CategoryFragment, TransactionFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
+
+export type Category = FragmentOf<typeof CategoryFragment>
 
 export type ControlSize = 'md' | 'lg' | null
 
@@ -27,7 +30,7 @@ export type TableItem = {
 }
 
 export type TableMonthItem = GroupTableItem & {
-  category?: Partial<Category>
+  category?: Category
 }
 
 export type ToastState = {
@@ -37,6 +40,8 @@ export type ToastState = {
   title?: string
   variant?: string
 }
+
+export type Transaction = FragmentOf<typeof TransactionFragment>
 
 export type TransactionFormValues = {
   category_id: number

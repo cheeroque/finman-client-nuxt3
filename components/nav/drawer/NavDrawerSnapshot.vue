@@ -6,12 +6,12 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-
-import type { Revise } from '~/gen/gql/graphql'
+import { readFragment, SnapshotFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
 
 type NavDrawerSnapshotProps = {
   loading?: boolean
-  snapshot?: Revise
+  snapshot?: FragmentOf<typeof SnapshotFragment>
 }
 
 const props = defineProps<NavDrawerSnapshotProps>()
@@ -19,15 +19,17 @@ const props = defineProps<NavDrawerSnapshotProps>()
 const emit = defineEmits(['click'])
 
 const caption = computed(() => {
-  if (!props.snapshot?.balance) {
+  const snapshot = readFragment(SnapshotFragment, props.snapshot)
+
+  if (!snapshot?.balance) {
     return useString('createSnapshot')
   }
 
-  const strings = [`${useNumberFormat(props.snapshot.balance)} ₽`]
+  const strings = [`${useNumberFormat(snapshot.balance)} ₽`]
 
-  if (props.snapshot.created_at) {
+  if (snapshot.created_at) {
     strings.push(
-      DateTime.fromFormat(props.snapshot.created_at, 'yyyy-LL-dd HH:mm:ss').toLocaleString(
+      DateTime.fromFormat(snapshot.created_at, 'yyyy-LL-dd HH:mm:ss').toLocaleString(
         { day: '2-digit', month: '2-digit', year: 'numeric' },
         { locale: useLocale() }
       )

@@ -54,10 +54,10 @@
 
 <script setup lang="ts">
 import { string as yupString } from 'yup'
+import { maskFragments, LoginMutation, UserFragment } from '~/graphql'
+import type { VariablesOf } from '~/graphql'
 
-import type { LoginMutationVariables } from '~/gen/gql/graphql'
-
-type LoginFormValues = LoginMutationVariables & {
+type LoginFormValues = VariablesOf<typeof LoginMutation> & {
   submitError: null
 }
 
@@ -96,7 +96,7 @@ const submitForm = handleSubmit(async () => {
     })
 
     if (loginUser) {
-      user.value = loginUser
+      user.value = maskFragments([UserFragment], loginUser)
       return navigateTo('/')
     } else {
       throw new Error()

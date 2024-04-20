@@ -24,15 +24,20 @@
 
 <script setup lang="ts">
 import { string as yupString } from 'yup'
-
-import type { Category } from '~/gen/gql/graphql'
+import { readFragment, CategoryFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
 
 type CategoryFormProps = {
-  category?: Category
+  category?: FragmentOf<typeof CategoryFragment>
   edit?: boolean
 }
 
-type CategoryFormValues = Omit<Category, 'id'>
+type CategoryFormValues = {
+  color: string
+  is_income: boolean
+  name: string
+  slug: string
+}
 
 const props = defineProps<CategoryFormProps>()
 
@@ -43,12 +48,14 @@ const emit = defineEmits(['submit'])
 const form = ref()
 defineExpose({ form })
 
+const categoryFragment = computed(() => readFragment(CategoryFragment, props.category))
+
 const { handleSubmit, values } = useForm<CategoryFormValues>({
   initialValues: {
-    color: props.category?.color ?? '#fff',
-    is_income: Boolean(props.category?.is_income),
-    name: props.category?.name ?? '',
-    slug: props.category?.slug ?? '',
+    color: categoryFragment.value?.color ?? '#fff',
+    is_income: Boolean(categoryFragment.value?.is_income),
+    name: categoryFragment.value?.name ?? '',
+    slug: categoryFragment.value?.slug ?? '',
   },
 
   validationSchema: {

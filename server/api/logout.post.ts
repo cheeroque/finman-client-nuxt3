@@ -1,9 +1,9 @@
-import { logoutMutation } from '~/gql'
+import { LogoutMutation } from '~/graphql'
 
 export default defineEventHandler(async (event) => {
   const { client, headers } = event.context
 
-  const { data, error } = await client.mutation(logoutMutation, {}, { fetchOptions: { headers } }).toPromise()
+  const { data, error } = await client.mutation(LogoutMutation, {}, { fetchOptions: { headers } }).toPromise()
 
   /* Remove auth token client-side cookie by passing `set-cookie` header
    * with expiration date in the past */

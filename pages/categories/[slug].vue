@@ -2,7 +2,7 @@
   <PageContent
     :key="pageKey"
     :loading="pending"
-    :title="category?.name"
+    :title="categoryFragment?.name"
     class="overflow-hidden"
     spinner-variant="primary"
   >
@@ -28,17 +28,25 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
+import { readFragment, CategoryFragment } from '~/graphql'
 
 const categories = useCategories()
 const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
 
-const category = computed(() => categories.value.find(({ slug }) => slug === route.params.slug))
+const category = computed(() =>
+  categories.value.find((_category) => {
+    const { slug } = readFragment(CategoryFragment, _category)
+    return slug === route.params.slug
+  })
+)
 
 if (!category.value) {
   const message = useString('errorMessage404')
   throw createError({ fatal: true, message, statusCode: 404 })
 }
+
+const categoryFragment = computed(() => readFragment(CategoryFragment, category.value))
 
 /* Fetch transactions for current category, grouped by period */
 

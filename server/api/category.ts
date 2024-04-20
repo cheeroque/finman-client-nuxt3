@@ -1,4 +1,4 @@
-import { categoryCreateMutation, categoryDeleteMutation, categoryUpdateMutation } from '~/gql'
+import { CategoryCreateMutation, CategoryDeleteMutation, CategoryUpdateMutation } from '~/graphql'
 
 export default defineEventHandler(async (event) => {
   const { client, headers } = event.context
@@ -18,17 +18,17 @@ export default defineEventHandler(async (event) => {
   switch (method) {
     case 'POST':
       variables = { data: { color, is_income, name, slug } }
-      response = await client.mutation(categoryCreateMutation, variables, options).toPromise()
+      response = await client.mutation(CategoryCreateMutation, variables, options).toPromise()
       break
 
     case 'PUT':
       variables = { data: { color, id, is_income, name, slug } }
-      response = await client.mutation(categoryUpdateMutation, variables, options).toPromise()
+      response = await client.mutation(CategoryUpdateMutation, variables, options).toPromise()
       break
 
     case 'DELETE':
       variables = { id }
-      response = await client.mutation(categoryDeleteMutation, variables, options).toPromise()
+      response = await client.mutation(CategoryDeleteMutation, variables, options).toPromise()
       break
 
     default:

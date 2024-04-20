@@ -1,7 +1,7 @@
 <template>
   <form ref="form" class="snapshot-form" @submit.prevent="submitForm">
     <UiFormGroup :label="useString('previousBalance')">
-      <UiInputCalc :model-value="snapshot?.balance" name="previous_balance" disabled />
+      <UiInputCalc :model-value="snapshotFragment?.balance" name="previous_balance" disabled />
     </UiFormGroup>
 
     <UiFormGroup
@@ -34,11 +34,11 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 import { date as yupDate, number as yupNumber, string as yupString } from 'yup'
-
-import type { Revise } from '~/gen/gql/graphql'
+import { readFragment, SnapshotFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
 
 type SnapshotFormProps = {
-  snapshot?: Revise
+  snapshot?: FragmentOf<typeof SnapshotFragment>
 }
 
 type SnapshotFormValues = {
@@ -58,11 +58,13 @@ const oldBalance = useBalance()
 const form = ref()
 defineExpose({ form })
 
+const snapshotFragment = computed(() => readFragment(SnapshotFragment, props.snapshot))
+
 const { handleSubmit, values } = useForm<SnapshotFormValues>({
   initialValues: {
     balance: oldBalance.value,
     created_at: new Date(),
-    note: props.snapshot?.note ?? '',
+    note: snapshotFragment.value?.note ?? '',
   },
 
   validationSchema: {
