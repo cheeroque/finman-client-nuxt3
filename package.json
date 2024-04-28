@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "yarn nuxi prepare && yarn generate-schema && nuxt build",
+    "build": "yarn generate-schema && yarn nuxi prepare && nuxt build",
     "dev": "yarn generate-schema && nuxt dev",
     "generate": "nuxt generate",
     "generate-schema": "dotenv cross-var gql-tada generate-schema %NUXT_GQL_ENDPOINT%",
