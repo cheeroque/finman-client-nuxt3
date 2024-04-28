@@ -1,11 +1,11 @@
 <template>
   <div :class="cardClasses">
     <NuxtLink :to="monthLink" class="transaction-date">
-      {{ formatDate(transaction.created_at) }}
+      {{ formatDate(transactionFragment.created_at ?? '') }}
     </NuxtLink>
 
     <UiButton class="transaction-sum" variant="link" @click="emit('edit')">
-      {{ useNumberFormat(transaction.sum) }}&nbsp;₽
+      {{ useNumberFormat(transactionFragment.sum) }}&nbsp;₽
     </UiButton>
 
     <NuxtLink :to="categoryLink" class="transaction-category">
@@ -13,7 +13,7 @@
     </NuxtLink>
 
     <p class="transaction-note">
-      <span class="caption">{{ transaction.note }}</span>
+      <span class="caption">{{ transactionFragment.note }}</span>
       <UiButton class="transaction-edit" icon="edit-24" icon-size="24" variant="link" no-text @click="emit('edit')" />
     </p>
   </div>
@@ -21,9 +21,13 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-
-import type { Transaction } from '~/gen/gql/graphql'
+import { readFragment, CategoryFragment, TransactionFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
 import type { ViewMode } from '~/types'
+
+type Transaction = FragmentOf<typeof TransactionFragment> & {
+  category?: FragmentOf<typeof CategoryFragment>
+}
 
 type TransactionCardProps = {
   transaction: Transaction
@@ -34,13 +38,16 @@ const props = defineProps<TransactionCardProps>()
 
 const emit = defineEmits(['edit'])
 
-const categoryLink = computed(() => `/categories/${props.transaction.category?.slug}`)
-const categoryName = computed(() => props.transaction.category?.name)
+const transactionFragment = computed(() => readFragment(TransactionFragment, props.transaction))
+const categoryFragment = computed(() => readFragment(CategoryFragment, props.transaction?.category))
+
+const categoryLink = computed(() => `/categories/${categoryFragment.value?.slug}`)
+const categoryName = computed(() => categoryFragment.value?.name)
 
 const cardClasses = computed(() => {
   const classes = ['transaction-card']
 
-  if (!props.viewMode && props.transaction.category.is_income) {
+  if (!props.viewMode && categoryFragment.value?.is_income) {
     classes.push('transaction-card-income')
   }
 
@@ -48,7 +55,9 @@ const cardClasses = computed(() => {
 })
 
 const monthLink = computed(() => {
-  const date = DateTime.fromFormat(props.transaction.created_at, 'yyyy-LL-dd HH:mm:ss').toFormat('yyyy-LL')
+  if (!transactionFragment.value.created_at) return
+
+  const date = DateTime.fromFormat(transactionFragment.value.created_at, 'yyyy-LL-dd HH:mm:ss').toFormat('yyyy-LL')
   return `/months/${date}`
 })
 

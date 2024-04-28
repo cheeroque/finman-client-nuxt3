@@ -3,7 +3,7 @@
     <div class="categories-grid">
       <CategoryCard
         v-for="category in categories"
-        :key="`category-${category.id}`"
+        :key="`category-${readFragment(CategoryFragment, category).id}`"
         :category="category"
         @edit="handleCategoryEdit(category)"
       />
@@ -16,7 +16,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Category } from '~/gen/gql/graphql'
+import { readFragment, CategoryFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
+
+type Category = FragmentOf<typeof CategoryFragment>
 
 const categories = useCategories()
 

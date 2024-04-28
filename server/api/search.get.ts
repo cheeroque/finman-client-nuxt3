@@ -1,7 +1,5 @@
-import { transactionsQuery } from '~/gql'
-import { QueryTransactionsOrderByColumn, QueryTransactionsWhereColumn, SortOrder, SqlOperator } from '~/gen/gql/graphql'
-
-import type { QueryTransactionsWhereWhereConditions, TransactionsQueryVariables } from '~/gen/gql/graphql'
+import { TransactionsQuery } from '~/graphql'
+import type { VariablesOf } from '~/graphql'
 
 export default defineEventHandler(async (event) => {
   const { client, headers } = event.context
@@ -9,39 +7,24 @@ export default defineEventHandler(async (event) => {
 
   /* Find transactions by note content */
 
-  const where: QueryTransactionsWhereWhereConditions = {
-    OR: [
-      {
-        column: QueryTransactionsWhereColumn.Note,
-        operator: SqlOperator.Like,
-        value: `%${query.q}%`,
-      },
-    ],
+  const where: VariablesOf<typeof TransactionsQuery>['where'] = {
+    OR: [{ column: 'NOTE', operator: 'LIKE', value: `%${query.q}%` }],
   }
 
   /* If search query can be cast to number, find transactions by exact sum */
 
   if (!isNaN(Number(query.q)) && Array.isArray(where.OR)) {
-    where.OR.push({
-      column: QueryTransactionsWhereColumn.Sum,
-      operator: SqlOperator.Eq,
-      value: query.q,
-    })
+    where.OR.push({ column: 'SUM', operator: 'EQ', value: query.q })
   }
 
-  const variables: TransactionsQueryVariables = {
+  const variables: VariablesOf<typeof TransactionsQuery> = {
     first: Number(query.perPage) || 50,
-    orderBy: [
-      {
-        column: QueryTransactionsOrderByColumn.CreatedAt,
-        order: SortOrder.Desc,
-      },
-    ],
+    orderBy: [{ column: 'CREATED_AT', order: 'DESC' }],
     page: Number(query.page) || 1,
     where,
   }
 
-  const { data, error } = await client.query(transactionsQuery, variables, { fetchOptions: { headers } }).toPromise()
+  const { data, error } = await client.query(TransactionsQuery, variables, { fetchOptions: { headers } }).toPromise()
 
   if (error) {
     throw error

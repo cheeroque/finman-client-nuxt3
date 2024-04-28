@@ -11,4 +11,5 @@ public/manifest.json
 public/icon-maskable.svg
 public/icon.svg
 public/icon-maskable-384.png
-gen
+gen/*
+!gen/README.md

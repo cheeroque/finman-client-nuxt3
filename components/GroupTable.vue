@@ -45,8 +45,8 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-
-import type { Transaction } from '~/gen/gql/graphql'
+import { TransactionFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
 import type { TableField, TableItem } from '~/types'
 
 type GroupTableProps = {
@@ -56,7 +56,7 @@ type GroupTableProps = {
 
 const props = defineProps<GroupTableProps>()
 
-const currentTransaction = ref<Transaction>()
+const currentTransaction = ref<FragmentOf<typeof TransactionFragment>>()
 const dialogVisible = ref(false)
 
 const fields = computed<TableField[]>(() => [
@@ -113,7 +113,7 @@ function handleToggleDetails(event: Event, detailsVisible: boolean, callback: Fu
   callback()
 }
 
-function handleEdit(transaction: Transaction) {
+function handleEdit(transaction: FragmentOf<typeof TransactionFragment>) {
   currentTransaction.value = transaction
   dialogVisible.value = true
 }

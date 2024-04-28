@@ -2,28 +2,29 @@
   <NuxtLink
     :class="{ 'caption-outside': captionOutside, 'caption-visible': visible }"
     :style="{
-      '--category-bar-color': category?.color,
+      '--category-bar-color': categoryFragment?.color,
       '--category-bar-width': barWidth,
       '--category-text-color': textColor,
     }"
-    :to="`/categories/${category?.slug}`"
+    :to="`/categories/${categoryFragment?.slug}`"
     class="category-link"
   >
     <div ref="caption" class="category-link-caption">
       <span class="category-total"> {{ useNumberFormat(total) }}&nbsp;₽ </span>
 
       <span class="category-name">
-        {{ category?.name }}
+        {{ categoryFragment?.name }}
       </span>
     </div>
   </NuxtLink>
 </template>
 
 <script setup lang="ts">
-import type { Category } from '~/gen/gql/graphql'
+import { readFragment, CategoryFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
 
 type SidebarMonthlyCategoryProps = {
-  category?: Partial<Category>
+  category?: FragmentOf<typeof CategoryFragment>
   maxTotal?: number
   total?: number
 }
@@ -35,7 +36,8 @@ const caption = ref()
 const captionOutside = ref(false)
 const visible = ref(false)
 
-const textColor = computed(() => getContrastColor(props.category?.color))
+const categoryFragment = computed(() => readFragment(CategoryFragment, props.category))
+const textColor = computed(() => getContrastColor(categoryFragment.value?.color))
 
 function initCaption() {
   if (!caption.value) return

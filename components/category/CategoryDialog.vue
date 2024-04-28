@@ -12,7 +12,9 @@
       <Transition mode="out-in" name="fade">
         <div v-if="deletePending" class="row flex-fill g-8">
           <div class="col-12">
-            <p class="fs-14 lh-120 text-danger mb-8">{{ useString('confirmRemoveCategory', category?.name) }}</p>
+            <p class="fs-14 lh-120 text-danger mb-8">
+              {{ useString('confirmRemoveCategory', categoryFragment?.name) }}
+            </p>
           </div>
 
           <div class="col-6 col-md-auto">
@@ -57,10 +59,11 @@
 </template>
 
 <script setup lang="ts">
-import type { Category } from '~/gen/gql/graphql'
+import { readFragment, CategoryFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
 
 type CategoryDialogProps = {
-  category?: Category
+  category?: FragmentOf<typeof CategoryFragment>
   modelValue?: boolean
 }
 
@@ -74,15 +77,16 @@ const refetchTrigger = useRefetchTrigger()
 
 const deletePending = ref(false)
 
-const isEdit = computed(() => Boolean(props.category?.id))
+const categoryFragment = computed(() => readFragment(CategoryFragment, props.category))
+const isEdit = computed(() => Boolean(categoryFragment.value?.id))
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeCategory' : 'createCategory'))
 
 /* Delete current category by ID. Show toast on success or error */
 
 async function handleCategoryDelete() {
-  if (!props.category) return
+  if (!categoryFragment.value) return
 
-  const { id } = props.category
+  const { id } = categoryFragment.value
 
   loading.value = true
 
@@ -90,7 +94,8 @@ async function handleCategoryDelete() {
     const { result } = await $fetch('/api/category', { method: 'DELETE', query: { id } })
 
     if (result) {
-      const messageName = result.name ? `«${result.name}»` : `#${result.id}`
+      const { id, name } = readFragment(CategoryFragment, result)
+      const messageName = name ? `«${name}»` : `#${id}`
 
       useShowToast({
         message: useString('categoryDeleted', messageName),
@@ -119,11 +124,11 @@ async function handleCategoryDelete() {
 /* Create new category or update existing, if it's set with prop. Show toast
  * on success or error */
 
-async function handleCategoryUpsert(category: Category) {
+async function handleCategoryUpsert(category: FragmentOf<typeof CategoryFragment>) {
   const method = isEdit.value ? 'PUT' : 'POST'
 
-  const id = props.category?.id
-  const { color, is_income, name, slug } = category
+  const id = categoryFragment.value?.id
+  const { color, is_income, name, slug } = readFragment(CategoryFragment, category)
   const query = { color, id, is_income, name, slug }
 
   loading.value = true
@@ -132,7 +137,8 @@ async function handleCategoryUpsert(category: Category) {
     const { result } = await $fetch('/api/category', { method, query })
 
     if (result) {
-      const messageName = result.name ? `«${result.name}»` : `#${result.id}`
+      const { id, name } = readFragment(CategoryFragment, result)
+      const messageName = name ? `«${name}»` : `#${id}`
 
       useShowToast({ message: useString('categorySaved', messageName) })
 

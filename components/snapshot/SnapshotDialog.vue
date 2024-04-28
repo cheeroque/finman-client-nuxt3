@@ -26,11 +26,12 @@
 </template>
 
 <script setup lang="ts">
-import type { Revise } from '~/gen/gql/graphql'
+import { readFragment, SnapshotFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
 
 type SnapshotDialogProps = {
   modelValue?: boolean
-  snapshot?: Revise
+  snapshot?: FragmentOf<typeof SnapshotFragment>
 }
 
 const props = defineProps<SnapshotDialogProps>()
@@ -43,8 +44,8 @@ const loading = ref(false)
 
 /* Create new snapshot. Show toast on success or error */
 
-async function handleSubmit(snapshot: Revise) {
-  const { balance, created_at, note } = snapshot
+async function handleSubmit(snapshot: FragmentOf<typeof SnapshotFragment>) {
+  const { balance, created_at, note } = readFragment(SnapshotFragment, snapshot)
   const query = { balance, created_at, note }
 
   loading.value = true
@@ -53,7 +54,7 @@ async function handleSubmit(snapshot: Revise) {
     const { result } = await $fetch('/api/snapshot', { method: 'POST', query })
 
     if (result) {
-      useShowToast({ message: useString('snapshotSaved', `#${result.id}`) })
+      useShowToast({ message: useString('snapshotSaved', `#${readFragment(SnapshotFragment, result).id}`) })
 
       emit('success')
       emit('update:modelValue', false)

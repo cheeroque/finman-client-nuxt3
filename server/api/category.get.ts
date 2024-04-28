@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon'
-import { categoryTransactionsQuery } from '~/gql'
-
+import { readFragment, CategoryTransactionsQuery, TransactionFragment } from '~/graphql'
 import type { GroupTableItem } from '~/types'
 
 export default defineEventHandler(async (event) => {
@@ -14,7 +13,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const { data, error } = await client
-    .query(categoryTransactionsQuery, variables, { fetchOptions: { headers } })
+    .query(CategoryTransactionsQuery, variables, { fetchOptions: { headers } })
     .toPromise()
 
   if (error) throw error
@@ -29,7 +28,10 @@ export default defineEventHandler(async (event) => {
   transactions?.forEach(({ period, transactions }) => {
     const date = DateTime.fromFormat(period, 'yyyy-LL')
     const group = date.valueOf()
-    const subtotal = transactions?.reduce((acc, cur) => (acc += cur.sum), 0)
+    const subtotal = transactions?.reduce((acc, cur) => {
+      const { sum } = readFragment(TransactionFragment, cur)
+      return (acc += sum)
+    }, 0)
 
     if (transactions?.length) {
       tableItems.push({ group, subtotal, transactions })

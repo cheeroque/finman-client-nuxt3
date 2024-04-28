@@ -1,19 +1,19 @@
+import { readFragment, LoginMutation, UserFragment } from '~/graphql'
 import { parseJwt } from '~/utils'
-import { loginMutation } from '~/gql'
 
 export default defineEventHandler(async (event) => {
   const { client } = event.context
   const body = await readBody(event)
 
-  const { data, error } = await client.mutation(loginMutation, body).toPromise()
+  const { data, error } = await client.mutation(LoginMutation, body).toPromise()
 
   if (error) {
-    const statusCode = error.message.includes('Authentication exception') ? 401 : undefined
+    const statusCode = error?.message.includes('Authentication exception') ? 401 : undefined
     throw createError({ statusCode })
   }
 
   const token = data?.login.access_token
-  const user = data?.login.user
+  const user = readFragment(UserFragment, data?.login.user)
 
   const expires = new Date(parseJwt(token).exp * 1000).toUTCString()
 

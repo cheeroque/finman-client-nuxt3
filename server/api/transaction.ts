@@ -1,4 +1,4 @@
-import { transactionCreateMutation, transactionDeleteMutation, transactionUpdateMutation } from '~/gql'
+import { TransactionCreateMutation, TransactionDeleteMutation, TransactionUpdateMutation } from '~/graphql'
 
 export default defineEventHandler(async (event) => {
   const { client, headers } = event.context
@@ -19,17 +19,17 @@ export default defineEventHandler(async (event) => {
   switch (method) {
     case 'POST':
       variables = { data: { category, created_at, note, sum, user } }
-      response = await client.mutation(transactionCreateMutation, variables, options).toPromise()
+      response = await client.mutation(TransactionCreateMutation, variables, options).toPromise()
       break
 
     case 'PUT':
       variables = { data: { category, created_at, id, note, sum, user } }
-      response = await client.mutation(transactionUpdateMutation, variables, options).toPromise()
+      response = await client.mutation(TransactionUpdateMutation, variables, options).toPromise()
       break
 
     case 'DELETE':
       variables = { id }
-      response = await client.mutation(transactionDeleteMutation, variables, options).toPromise()
+      response = await client.mutation(TransactionDeleteMutation, variables, options).toPromise()
       break
 
     default:

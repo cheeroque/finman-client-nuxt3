@@ -38,13 +38,13 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-
-import type { Transaction } from '~/gen/gql/graphql'
+import { readFragment, TransactionFragment, UserFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
 import type { TransactionFormValues } from '~/types'
 
 type TransactionDialogProps = {
   modelValue?: boolean
-  transaction?: Transaction
+  transaction?: FragmentOf<typeof TransactionFragment>
 }
 
 const props = defineProps<TransactionDialogProps>()
@@ -56,7 +56,7 @@ const loading = useIsBusy()
 const refetchTrigger = useRefetchTrigger()
 const user = useSession()
 
-const isEdit = computed(() => Boolean(props.transaction?.id))
+const isEdit = computed(() => Boolean(readFragment(TransactionFragment, props.transaction)?.id))
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeTransaction' : 'createTransaction'))
 
 /* Delete current transaction by ID. Show toast on success or error */
@@ -64,7 +64,7 @@ const dialogTitle = computed(() => useString(isEdit.value ? 'changeTransaction' 
 async function handleTransactionDelete() {
   if (!props.transaction) return
 
-  const { id } = props.transaction
+  const { id } = readFragment(TransactionFragment, props.transaction)
 
   loading.value = true
 
@@ -73,7 +73,7 @@ async function handleTransactionDelete() {
 
     if (result) {
       useShowToast({
-        message: useString('transactionDeleted', `#${result.id}`),
+        message: useString('transactionDeleted', `#${readFragment(TransactionFragment, result).id}`),
         variant: 'danger',
       })
 
@@ -105,10 +105,10 @@ async function handleTransactionUpsert(formData: TransactionFormValues) {
   const query = {
     category_id,
     created_at: DateTime.fromJSDate(created_at).toFormat('yyyy-LL-dd HH:mm:ss'),
-    id: props.transaction?.id,
+    id: readFragment(TransactionFragment, props.transaction)?.id,
     note,
     sum,
-    user_id: user.value?.id,
+    user_id: readFragment(UserFragment, user.value)?.id,
   }
 
   loading.value = true
@@ -117,7 +117,7 @@ async function handleTransactionUpsert(formData: TransactionFormValues) {
     const { result } = await $fetch('/api/transaction', { method, query })
 
     if (result) {
-      useShowToast({ message: useString('transactionSaved', `#${result.id}`) })
+      useShowToast({ message: useString('transactionSaved', `#${readFragment(TransactionFragment, result).id}`) })
 
       emit('update:modelValue', false)
 

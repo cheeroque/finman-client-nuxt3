@@ -1,10 +1,10 @@
-import { transactionsExportMutation } from '~/gql'
+import { TransactionsExportMutation } from '~/graphql'
 
 export default defineEventHandler(async (event) => {
   const { client, headers } = event.context
 
   const { data, error } = await client
-    .mutation(transactionsExportMutation, {}, { fetchOptions: { headers } })
+    .mutation(TransactionsExportMutation, {}, { fetchOptions: { headers } })
     .toPromise()
 
   if (error) {

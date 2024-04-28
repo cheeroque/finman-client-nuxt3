@@ -1,9 +1,9 @@
-import type { Category, User } from '~/gen/gql/graphql'
+import { CategoryFragment, UserFragment } from '~/graphql'
+import type { FragmentOf } from '~/graphql'
 
-type StartDate = {
-  month: number
-  year: number
-}
+type Category = FragmentOf<typeof CategoryFragment>
+type StartDate = { month: number; year: number }
+type User = FragmentOf<typeof UserFragment>
 
 export const useBalance = () => useState('balance', () => 0)
 
