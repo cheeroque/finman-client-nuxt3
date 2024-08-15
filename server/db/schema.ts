@@ -10,7 +10,7 @@ export const UsersTable = pgTable('users', {
 
 export const SessionsTable = pgTable('sessions', {
   id: varchar('id', { length: 255 }).primaryKey(),
-  userId: integer('id')
+  userId: integer('user_id')
     .notNull()
     .references(() => UsersTable.id),
   expiresAt: timestamp('expires_at', {

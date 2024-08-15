@@ -8,6 +8,20 @@
       "when": 1723643594813,
       "tag": "0000_soft_jocasta",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1723713432428,
+      "tag": "0001_groovy_lyja",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1723714277762,
+      "tag": "0002_naive_rage",
+      "breakpoints": true
     }
   ]
 }
