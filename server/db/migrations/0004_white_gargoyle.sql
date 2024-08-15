@@ -1,0 +1,1 @@
+ALTER TABLE "categories" ADD COLUMN "sort_order" integer DEFAULT 0;
