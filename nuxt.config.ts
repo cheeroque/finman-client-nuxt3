@@ -46,7 +46,7 @@ export default defineNuxtConfig({
 
   css: ['~/assets/styles/app.scss'],
 
-  modules: ['@vee-validate/nuxt', '@vueuse/nuxt', 'nuxt-icons'],
+  modules: ['@pinia/nuxt', '@vee-validate/nuxt', '@vueuse/nuxt', 'nuxt-icons'],
 
   runtimeConfig: {
     gqlEndpoint: '',
