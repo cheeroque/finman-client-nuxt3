@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import { pgTable, boolean, integer, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
 export const CategoriesTable = pgTable('categories', {
@@ -7,14 +8,14 @@ export const CategoriesTable = pgTable('categories', {
   name: text('name').notNull(),
   slug: text('slug').notNull().unique(),
   sortOrder: integer('sort_order').default(0),
-  createdAt: timestamp('created_at', { mode: 'date', withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp('created_at', { mode: 'string', withTimezone: true }).defaultNow().notNull(),
 })
 
 export const RevisesTable = pgTable('revises', {
   id: serial('id').primaryKey(),
   note: text('note').default(''),
   sum: integer('sum').default(0).notNull(),
-  createdAt: timestamp('created_at', { mode: 'date', withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp('created_at', { mode: 'string', withTimezone: true }).defaultNow().notNull(),
 })
 
 export const SessionsTable = pgTable('sessions', {
@@ -32,12 +33,19 @@ export const TransactionsTable = pgTable('transactions', {
   id: serial('id').primaryKey(),
   note: text('note').default(''),
   sum: integer('sum').default(0).notNull(),
-  createdAt: timestamp('created_at', { mode: 'date', withTimezone: true }).defaultNow().notNull(),
+  createdAt: timestamp('created_at', { mode: 'string', withTimezone: true }).defaultNow().notNull(),
   categoryId: integer('category_id')
     .notNull()
     .references(() => CategoriesTable.id, { onDelete: 'cascade' }),
   userId: integer('user_id').references(() => UsersTable.id, { onDelete: 'set null' }),
 })
+
+export const TransactionsRelations = relations(TransactionsTable, ({ one }) => ({
+  category: one(CategoriesTable, {
+    fields: [TransactionsTable.categoryId],
+    references: [CategoriesTable.id],
+  }),
+}))
 
 export const UsersTable = pgTable('users', {
   id: serial('id').primaryKey(),
