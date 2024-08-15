@@ -45,7 +45,8 @@ const props = defineProps<TransactionFormProps>()
 
 const emit = defineEmits(['submit'])
 
-const categories = useCategories()
+const globalStore = useGlobalStore()
+const { categories } = storeToRefs(globalStore)
 
 const categoryOptions = computed(() =>
   categories.value.map((category) => {

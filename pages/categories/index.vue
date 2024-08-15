@@ -21,7 +21,8 @@ import type { FragmentOf } from '~/graphql'
 
 type Category = FragmentOf<typeof CategoryFragment>
 
-const categories = useCategories()
+const globalStore = useGlobalStore()
+const { categories } = storeToRefs(globalStore)
 
 const currentCategory = ref<Category>()
 const dialogVisible = ref(false)

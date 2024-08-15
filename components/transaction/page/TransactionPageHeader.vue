@@ -9,7 +9,8 @@
 </template>
 
 <script setup lang="ts">
-const balance = useBalance()
+const globalStore = useGlobalStore()
+const { balance } = storeToRefs(globalStore)
 </script>
 
 <style lang="scss" scoped>

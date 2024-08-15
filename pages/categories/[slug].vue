@@ -30,7 +30,8 @@
 import { DateTime } from 'luxon'
 import { readFragment, CategoryFragment } from '~/graphql'
 
-const categories = useCategories()
+const globalStore = useGlobalStore()
+const { categories } = storeToRefs(globalStore)
 const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
 

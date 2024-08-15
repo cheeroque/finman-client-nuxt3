@@ -1,6 +1,6 @@
 <template>
   <UiDialog
-    :loading="loading"
+    :loading="pending"
     :model-value="modelValue"
     :title="dialogTitle"
     @closed="emit('closed')"
@@ -51,8 +51,10 @@ const props = defineProps<TransactionDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
+const globalStore = useGlobalStore()
+const { pending } = storeToRefs(globalStore)
+
 const formId = useId()
-const loading = useIsBusy()
 const refetchTrigger = useRefetchTrigger()
 const user = useSession()
 
@@ -66,7 +68,7 @@ async function handleTransactionDelete() {
 
   const { id } = readFragment(TransactionFragment, props.transaction)
 
-  loading.value = true
+  pending.value = true
 
   try {
     const { result } = await $fetch('/api/transaction', { method: 'DELETE', query: { id } })
@@ -92,7 +94,7 @@ async function handleTransactionDelete() {
     })
   }
 
-  loading.value = false
+  pending.value = false
 }
 
 /* Create new transaction or update existing, if it's set with prop. Show toast
@@ -111,7 +113,7 @@ async function handleTransactionUpsert(formData: TransactionFormValues) {
     user_id: readFragment(UserFragment, user.value)?.id,
   }
 
-  loading.value = true
+  pending.value = true
 
   try {
     const { result } = await $fetch('/api/transaction', { method, query })
@@ -134,6 +136,6 @@ async function handleTransactionUpsert(formData: TransactionFormValues) {
     })
   }
 
-  loading.value = false
+  pending.value = false
 }
 </script>

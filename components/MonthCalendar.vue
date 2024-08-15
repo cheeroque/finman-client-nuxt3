@@ -65,7 +65,8 @@ const props = defineProps<MonthCalendarProps>()
 
 const LINK_FORMAT = 'yyyy-LL'
 
-const startDate = useStartDate()
+const globalStore = useGlobalStore()
+const { startDate } = storeToRefs(globalStore)
 
 const currentDate = props.date ?? new Date()
 const currentYear = ref(currentDate.getFullYear())

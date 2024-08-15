@@ -51,7 +51,8 @@ const props = defineProps<SnapshotFormProps>()
 
 const emit = defineEmits(['submit'])
 
-const oldBalance = useBalance()
+const globalStore = useGlobalStore()
+const { balance: oldBalance } = storeToRefs(globalStore)
 
 /* Expose form element as ref for parent */
 

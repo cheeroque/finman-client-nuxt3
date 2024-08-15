@@ -1,6 +1,6 @@
 <template>
   <UiDialog
-    :loading="loading"
+    :loading="pending"
     :model-value="modelValue"
     :title="dialogTitle"
     @closed="emit('closed')"
@@ -71,8 +71,10 @@ const props = defineProps<CategoryDialogProps>()
 
 const emit = defineEmits(['closed', 'update:modelValue'])
 
+const globalStore = useGlobalStore()
+const { pending } = storeToRefs(globalStore)
+
 const formId = useId()
-const loading = useIsBusy()
 const refetchTrigger = useRefetchTrigger()
 
 const deletePending = ref(false)
@@ -88,7 +90,7 @@ async function handleCategoryDelete() {
 
   const { id } = categoryFragment.value
 
-  loading.value = true
+  pending.value = true
 
   try {
     const { result } = await $fetch('/api/category', { method: 'DELETE', query: { id } })
@@ -118,7 +120,7 @@ async function handleCategoryDelete() {
   }
 
   deletePending.value = false
-  loading.value = false
+  pending.value = false
 }
 
 /* Create new category or update existing, if it's set with prop. Show toast
@@ -131,7 +133,7 @@ async function handleCategoryUpsert(category: FragmentOf<typeof CategoryFragment
   const { color, is_income, name, slug } = readFragment(CategoryFragment, category)
   const query = { color, id, is_income, name, slug }
 
-  loading.value = true
+  pending.value = true
 
   try {
     const { result } = await $fetch('/api/category', { method, query })
@@ -157,6 +159,6 @@ async function handleCategoryUpsert(category: FragmentOf<typeof CategoryFragment
     })
   }
 
-  loading.value = false
+  pending.value = false
 }
 </script>

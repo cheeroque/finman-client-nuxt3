@@ -33,7 +33,8 @@
 import { DateTime } from 'luxon'
 
 const route = useRoute()
-const startDate = useStartDate()
+const globalStore = useGlobalStore()
+const { startDate } = storeToRefs(globalStore)
 
 const month = computed(() => String(route.params.month))
 const monthDate = computed(() => DateTime.fromFormat(month.value, 'yyyy-LL'))
