@@ -5,7 +5,7 @@
     <div class="app-content">
       <Sidebar />
 
-      <div :class="{ loading: loading }" class="page">
+      <div :class="{ loading: pending }" class="page">
         <slot />
       </div>
     </div>
@@ -17,12 +17,30 @@
 </template>
 
 <script setup lang="ts">
-const balance = useBalance()
-const categories = useCategories()
-const loading = useIsBusy()
-const startDate = useStartDate()
+const globalStore = useGlobalStore()
+const { balance, categories, firstTransaction, pending } = storeToRefs(globalStore)
 
-const refetchTrigger = useRefetchTrigger()
+const { error } = await useAsyncData('global', async () => {
+  pending.value = true
+
+  const response = await useRequestFetch()('/api/global-data')
+
+  balance.value = response.balance
+  categories.value = response.categories
+  firstTransaction.value = response.firstTransaction ?? null
+
+  pending.value = false
+
+  return true
+})
+
+if (error.value) {
+  showError({
+    ...error.value,
+    fatal: true,
+  })
+}
+
 const toast = useToast()
 
 const drawerOpen = ref(false)

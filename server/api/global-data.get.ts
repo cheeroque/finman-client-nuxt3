@@ -1,33 +1,30 @@
-import { CategoriesQuery, TransactionsQuery, TransactionsTotalQuery } from '~/graphql'
-import type { VariablesOf } from '~/graphql'
+import { asc, eq, sum } from 'drizzle-orm'
+import { CategoriesTable, TransactionsTable } from '~/server/db/schema'
 
-export default defineEventHandler(async (event) => {
-  const { client, headers } = event.context
+export default defineEventHandler({
+  onRequest: [checkUser],
 
-  const variables: VariablesOf<typeof TransactionsQuery> = {
-    first: 1,
-    orderBy: [{ column: 'CREATED_AT', order: 'ASC' }],
-  }
+  handler: async () => {
+    const db = await getDrizzle()
 
-  const [balanceResponse, categoriesResponse, firstTransactionResponse] = await Promise.all([
-    client.query(TransactionsTotalQuery, {}, { fetchOptions: { headers } }).toPromise(),
-    client.query(CategoriesQuery, {}, { fetchOptions: { headers } }).toPromise(),
-    client.query(TransactionsQuery, variables, { fetchOptions: { headers } }).toPromise(),
-  ])
-
-  if (balanceResponse.error || categoriesResponse.error || firstTransactionResponse.error) {
-    throw createError({
-      message: 'Could not fetch global data',
-      statusCode: 500,
+    const categories = await db.query.CategoriesTable.findMany({
+      orderBy: (categories, { asc }) => [asc(categories.sortOrder), asc(categories.name)],
     })
-  }
 
-  const expensesTotal = Number(balanceResponse.data?.expensesTotal) || 0
-  const incomesTotal = Number(balanceResponse.data?.incomesTotal) || 0
+    const firstTransaction = await db.query.TransactionsTable.findFirst({
+      orderBy: (transactions, { asc }) => [asc(transactions.createdAt)],
+      with: { category: true },
+    })
 
-  const balance = incomesTotal - expensesTotal
-  const categories = categoriesResponse.data?.categories?.data ?? []
-  const firstTransaction = firstTransactionResponse.data?.transactions?.data?.[0]
+    const [expenses, incomes] = await db
+      .select({ isIncome: CategoriesTable.isIncome, sum: sum(TransactionsTable.sum) })
+      .from(TransactionsTable)
+      .leftJoin(CategoriesTable, eq(TransactionsTable.categoryId, CategoriesTable.id))
+      .groupBy(CategoriesTable.isIncome)
+      .orderBy(asc(CategoriesTable.isIncome))
 
-  return { balance, categories, firstTransaction }
+    const balance = Number(incomes.sum) - Number(expenses.sum)
+
+    return { balance, categories, firstTransaction }
+  },
 })
