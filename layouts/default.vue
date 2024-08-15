@@ -17,10 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { DateTime } from 'luxon'
-import { readFragment, TransactionFragment } from '~/graphql'
-import type { FragmentOf } from '~/graphql'
-
 const balance = useBalance()
 const categories = useCategories()
 const loading = useIsBusy()
@@ -30,45 +26,6 @@ const refetchTrigger = useRefetchTrigger()
 const toast = useToast()
 
 const drawerOpen = ref(false)
-
-const { error, refresh } = await useFetch('/api/global-data', {
-  onResponse({ response }) {
-    balance.value = response._data.balance
-    categories.value = response._data.categories
-    startDate.value = getDate(response._data.firstTransaction)
-  },
-})
-
-if (error.value) {
-  throw createError({ fatal: true, message: error.value.message })
-}
-
-watch(
-  /* Refetch global data when external trigger set to true, then reset trigger */
-
-  () => refetchTrigger.value,
-
-  async (event) => {
-    if (event) {
-      await refresh()
-      refetchTrigger.value = false
-    }
-  }
-)
-
-function getDate(transaction?: FragmentOf<typeof TransactionFragment>) {
-  const transactionFragment = readFragment(TransactionFragment, transaction)
-
-  let dateTime = DateTime.fromFormat(transactionFragment?.created_at ?? '', 'yyyy-LL-dd HH:mm:ss')
-
-  if (!dateTime.isValid) {
-    dateTime = DateTime.now()
-  }
-
-  const { month, year } = dateTime
-
-  return { month, year }
-}
 
 function handleToggleDrawer() {
   drawerOpen.value = !drawerOpen.value
