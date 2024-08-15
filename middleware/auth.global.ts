@@ -1,6 +1,11 @@
+/* TODO: rewrite this */
+
 import type { H3Event } from 'h3'
 
 export default defineNuxtRouteMiddleware(async (to) => {
+  if (to.path.startsWith('/api')) return
+  if (to.path.startsWith('/register')) return
+
   const user = useSession()
 
   const isLoginPage = to.path.startsWith('/login')
