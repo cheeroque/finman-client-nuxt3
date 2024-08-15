@@ -51,3 +51,17 @@ export type TransactionFormValues = {
 }
 
 export type ViewMode = 'expense' | 'income' | null
+
+/* Reworked types */
+
+export type LoginCredentials = {
+  password: string
+  username: string
+}
+
+/* Extend definePageMeta */
+declare module '#app' {
+  interface PageMeta {
+    isPublic?: boolean
+  }
+}

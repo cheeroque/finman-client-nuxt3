@@ -1,7 +1,9 @@
 <template>
   <div class="container py-32">
     <div class="row">
-      <div class="col-md-8 col-lg-6 col-xl-4 col-offset-md-2 col-offset-lg-3 col-offset-xl-4 col-form">
+      <div
+        class="col-md-8 col-lg-6 col-xl-4 col-offset-md-2 col-offset-lg-3 col-offset-xl-4 col-form"
+      >
         <form action="/api/register" method="post">
           <label for="username">Имя пользователя (e-mail)</label>
           <div class="mb-16">
@@ -22,6 +24,7 @@
 
 <script setup lang="ts">
 definePageMeta({
+  isPublic: true,
   layout: 'auth',
 })
 </script>

@@ -1,28 +1,37 @@
-import { readFragment, LoginMutation, UserFragment } from '~/graphql'
-import { parseJwt } from '~/utils'
+import { verify } from '@node-rs/argon2'
+import type { LoginCredentials } from '~/types'
 
 export default defineEventHandler(async (event) => {
-  const { client } = event.context
-  const body = await readBody(event)
+  const { password, username } = await readBody<LoginCredentials>(event)
 
-  const { data, error } = await client.mutation(LoginMutation, body).toPromise()
+  const db = await getDrizzle()
+  const lucia = await getLucia()
 
-  if (error) {
-    const statusCode = error?.message.includes('Authentication exception') ? 401 : undefined
-    throw createError({ statusCode })
+  const existingUser = await db.query.UsersTable.findFirst({
+    where: (users, { eq }) => eq(users.name, username),
+  })
+
+  if (!existingUser) {
+    throw createError({
+      message: 'Incorrect username or password (username actually)',
+      statusCode: 400,
+    })
   }
 
-  const token = data?.login.access_token
-  const user = readFragment(UserFragment, data?.login.user)
+  const validPassword = await verify(existingUser.password, password, {
+    memoryCost: 19456,
+    timeCost: 2,
+    outputLen: 32,
+    parallelism: 1,
+  })
 
-  const expires = new Date(parseJwt(token).exp * 1000).toUTCString()
-
-  /* Pass auth token to the client as http-only secure cookie
-   * inside `set-cookie` header */
-
-  if (token) {
-    setResponseHeader(event, 'set-cookie', [`auth_token=${token}; Expires=${expires}; Path=/; Secure; HttpOnly`])
+  if (!validPassword) {
+    throw createError({
+      message: 'Incorrect username or password',
+      statusCode: 400,
+    })
   }
 
-  return { user }
+  const session = await lucia.createSession(existingUser.id, {})
+  appendHeader(event, 'Set-Cookie', lucia.createSessionCookie(session.id).serialize())
 })

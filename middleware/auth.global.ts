@@ -1,54 +1,20 @@
-/* TODO: rewrite this */
-
-import type { H3Event } from 'h3'
-
 export default defineNuxtRouteMiddleware(async (to) => {
+  /* Skip middleware on API routes */
   if (to.path.startsWith('/api')) return
-  if (to.path.startsWith('/register')) return
 
-  const user = useSession()
+  const user = useUser()
 
-  const isLoginPage = to.path.startsWith('/login')
-  let isLoggedIn = Boolean(user.value)
+  const data = await useRequestFetch()('/api/user')
 
-  if (!isLoggedIn) {
-    /* If no user saved in global state, try to fetch it from API. On fail,
-     * return redirect to login page */
-
-    try {
-      /* Get cookie header from initial client request */
-
-      const headers = buildHeaders(useRequestEvent())
-
-      const { data } = await $fetch('/api/me', { headers })
-
-      if (data?.me) {
-        user.value = data.me
-        isLoggedIn = true
-      } else {
-        throw createError({ statusCode: 401 })
-      }
-    } catch (error: any) {
-      if (!isLoginPage) {
-        return navigateTo('/login', { external: true })
-      }
-    }
+  if (data) {
+    user.value = data
   }
 
-  /* Check isLoggedIn again, it will be true if user was successfully fetched.
-   * If true, redirect from login page */
+  if (!to.meta.isPublic && !user.value) {
+    return navigateTo('/login', { external: true })
+  }
 
-  if (isLoggedIn && isLoginPage) {
+  if (to.path.startsWith('/login') && user.value) {
     return navigateTo('/')
   }
 })
-
-function buildHeaders(event?: H3Event) {
-  const headers: HeadersInit = {}
-
-  if (event && process.server) {
-    headers.cookie = event.node.req.headers.cookie ?? ''
-  }
-
-  return headers
-}

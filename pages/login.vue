@@ -1,7 +1,9 @@
 <template>
   <div class="container py-32">
     <div class="row">
-      <div class="col-md-8 col-lg-6 col-xl-4 col-offset-md-2 col-offset-lg-3 col-offset-xl-4 col-form">
+      <div
+        class="col-md-8 col-lg-6 col-xl-4 col-offset-md-2 col-offset-lg-3 col-offset-xl-4 col-form"
+      >
         <form class="card h-auto" @submit.prevent="submitForm">
           <div class="card-header">
             <h3 class="card-title text-center">{{ useString('login') }}</h3>
@@ -53,23 +55,22 @@
 </template>
 
 <script setup lang="ts">
+import { FetchError } from 'ofetch'
 import { string as yupString } from 'yup'
-import { maskFragments, LoginMutation, UserFragment } from '~/graphql'
-import type { VariablesOf } from '~/graphql'
+import type { LoginCredentials } from '~/types'
 
-type LoginFormValues = VariablesOf<typeof LoginMutation> & {
+type LoginFormValues = LoginCredentials & {
   submitError: null
 }
 
 definePageMeta({
+  isPublic: true,
   layout: 'auth',
 })
 
-const user = useSession()
-
 const loading = ref(false)
 
-const { handleSubmit, setFieldError, values } = useForm<LoginFormValues>({
+const { handleSubmit, values, setFieldError } = useForm<LoginFormValues>({
   initialValues: {
     password: '',
     submitError: null,
@@ -90,20 +91,17 @@ const submitForm = handleSubmit(async () => {
   loading.value = true
 
   try {
-    const { user: loginUser } = await $fetch('/api/login', {
+    await $fetch('/api/login', {
       method: 'POST',
       body: values,
     })
 
-    if (loginUser) {
-      user.value = maskFragments([UserFragment], loginUser)
-      return navigateTo('/')
-    } else {
-      throw new Error()
+    return navigateTo('/')
+  } catch (error: unknown) {
+    if (error instanceof FetchError) {
+      const messageKey = useString(error.statusCode === 401 ? 'invalidCredentials' : 'errorMessage')
+      setFieldError('submitError', messageKey)
     }
-  } catch (error: any) {
-    const messageKey = error.statusCode === 401 ? 'invalidCredentials' : 'errorMessage'
-    setFieldError('submitError', useString(messageKey))
   }
 
   loading.value = false
