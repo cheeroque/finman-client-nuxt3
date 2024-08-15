@@ -50,7 +50,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     gqlEndpoint: '',
-
+    postgresUrl: '',
     public: {
       staticUrl: '',
     },
