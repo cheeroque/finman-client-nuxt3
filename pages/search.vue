@@ -23,7 +23,7 @@ const query = computed(() => {
   return { q, page, perPage }
 })
 
-const { data, pending } = await useFetch('/api/search', {
+const { data, status } = await useFetch('/api/transactions/search', {
   query,
 
   onResponse() {
@@ -35,6 +35,8 @@ const { data, pending } = await useFetch('/api/search', {
     }, 100)
   },
 })
+
+const pending = computed(() => status.value === 'pending')
 </script>
 
 <style lang="scss" scoped>
