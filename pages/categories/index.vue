@@ -3,7 +3,7 @@
     <div class="categories-grid">
       <CategoryCard
         v-for="category in categories"
-        :key="`category-${readFragment(CategoryFragment, category).id}`"
+        :key="`category-${category.id}`"
         :category="category"
         @edit="handleCategoryEdit(category)"
       />
@@ -16,10 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { readFragment, CategoryFragment } from '~/graphql'
-import type { FragmentOf } from '~/graphql'
-
-type Category = FragmentOf<typeof CategoryFragment>
+import type { Category } from '~/types'
 
 const globalStore = useGlobalStore()
 const { categories } = storeToRefs(globalStore)

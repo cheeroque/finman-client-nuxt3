@@ -1,14 +1,20 @@
 <template>
-  <div :style="{ '--icon-bg': String(categoryFragment.color), '--icon-color': iconColor }" class="card card-category">
+  <div
+    :style="{
+      '--icon-bg': category.color ?? undefined,
+      '--icon-color': iconColor,
+    }"
+    class="card card-category"
+  >
     <div class="card-body">
-      <NuxtLink :to="`/categories/${categoryFragment.slug}`" class="h5 card-title">
-        {{ categoryFragment.name }}
+      <NuxtLink :to="`/categories/${category.slug}`" class="h5 card-title">
+        {{ category.name }}
       </NuxtLink>
 
-      <p class="category-slug">{{ categoryFragment.slug }}</p>
+      <p class="category-slug">{{ category.slug }}</p>
 
-      <p :class="`category-type-${categoryFragment.is_income ? 'income' : 'expense'}`" class="category-type">
-        {{ useString(categoryFragment.is_income ? 'incomes' : 'expenses') }}
+      <p :class="`category-type-${category.isIncome ? 'income' : 'expense'}`" class="category-type">
+        {{ useString(category.isIncome ? 'incomes' : 'expenses') }}
       </p>
     </div>
 
@@ -28,19 +34,17 @@
 </template>
 
 <script setup lang="ts">
-import { readFragment, CategoryFragment } from '~/graphql'
-import type { FragmentOf } from '~/graphql'
+import type { Category } from '~/types'
 
 type CategoryCardProps = {
-  category: FragmentOf<typeof CategoryFragment>
+  category: Category
 }
 
 const props = defineProps<CategoryCardProps>()
 
 const emit = defineEmits(['edit'])
 
-const categoryFragment = computed(() => readFragment(CategoryFragment, props.category))
-const iconColor = computed(() => getContrastColor(categoryFragment.value.color))
+const iconColor = computed(() => getContrastColor(props.category.color))
 </script>
 
 <style lang="scss" scoped>

@@ -16,27 +16,27 @@
       <UiInputColor v-model="color.value.value" name="color" />
     </UiFormGroup>
 
-    <UiCheckbox v-model="is_income.value.value" name="is_income">
+    <UiFormGroup
+      :invalid-feedback="useFieldErrorMessage(sortOrder)"
+      :label="useString('sortOrder')"
+      :state="useFieldState(sortOrder)"
+    >
+      <UiInput v-model="sortOrder.value.value" name="sortOrder" type="number" />
+    </UiFormGroup>
+
+    <UiCheckbox v-model="isIncome.value.value" name="isIncome">
       {{ useString('isIncome') }}
     </UiCheckbox>
   </form>
 </template>
 
 <script setup lang="ts">
-import { string as yupString } from 'yup'
-import { readFragment, CategoryFragment } from '~/graphql'
-import type { FragmentOf } from '~/graphql'
+import { number as yupNumber, string as yupString } from 'yup'
+import type { Category } from '~/types'
 
 type CategoryFormProps = {
-  category?: FragmentOf<typeof CategoryFragment>
+  category?: Category
   edit?: boolean
-}
-
-type CategoryFormValues = {
-  color: string
-  is_income: boolean
-  name: string
-  slug: string
 }
 
 const props = defineProps<CategoryFormProps>()
@@ -48,27 +48,28 @@ const emit = defineEmits(['submit'])
 const form = ref()
 defineExpose({ form })
 
-const categoryFragment = computed(() => readFragment(CategoryFragment, props.category))
-
-const { handleSubmit, values } = useForm<CategoryFormValues>({
+const { handleSubmit, values } = useForm({
   initialValues: {
-    color: categoryFragment.value?.color ?? '#fff',
-    is_income: Boolean(categoryFragment.value?.is_income),
-    name: categoryFragment.value?.name ?? '',
-    slug: categoryFragment.value?.slug ?? '',
+    color: props.category?.color ?? '#fff',
+    isIncome: Boolean(props.category?.isIncome),
+    name: props.category?.name ?? '',
+    slug: props.category?.slug ?? '',
+    sortOrder: props.category?.sortOrder ?? 0,
   },
 
   validationSchema: {
     color: yupString().required(useString('fieldRequired')),
     name: yupString().required(useString('fieldRequired')),
     slug: yupString().required(useString('fieldRequired')),
+    sortOrder: yupNumber().required(useString('fieldRequired')).min(0, useString('fieldMinimumValue', '0')),
   },
 })
 
 const color = useField<string>('color')
-const is_income = useField<boolean>('is_income')
+const isIncome = useField<boolean>('isIncome')
 const name = useField<string>('name')
 const slug = useField<string>('slug')
+const sortOrder = useField<number>('sortOrder')
 
 const submitForm = handleSubmit(() => {
   emit('submit', values)

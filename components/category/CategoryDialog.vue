@@ -13,7 +13,7 @@
         <div v-if="deletePending" class="row flex-fill g-8">
           <div class="col-12">
             <p class="fs-14 lh-120 text-danger mb-8">
-              {{ useString('confirmRemoveCategory', categoryFragment?.name) }}
+              {{ useString('confirmRemoveCategory', category?.name) }}
             </p>
           </div>
 
@@ -59,11 +59,17 @@
 </template>
 
 <script setup lang="ts">
-import { readFragment, CategoryFragment } from '~/graphql'
-import type { FragmentOf } from '~/graphql'
+import type { Category, CategoryInsert } from '~/types'
+
+type CategoryReturning = {
+  result: {
+    id: number
+    name: string
+  }
+}
 
 type CategoryDialogProps = {
-  category?: FragmentOf<typeof CategoryFragment>
+  category?: Category
   modelValue?: boolean
 }
 
@@ -79,39 +85,34 @@ const refetchTrigger = useRefetchTrigger()
 
 const deletePending = ref(false)
 
-const categoryFragment = computed(() => readFragment(CategoryFragment, props.category))
-const isEdit = computed(() => Boolean(categoryFragment.value?.id))
+const isEdit = computed(() => Boolean(props.category?.id))
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeCategory' : 'createCategory'))
 
 /* Delete current category by ID. Show toast on success or error */
 
 async function handleCategoryDelete() {
-  if (!categoryFragment.value) return
-
-  const { id } = categoryFragment.value
+  if (!props.category) return
 
   pending.value = true
 
   try {
-    const { result } = await $fetch('/api/category', { method: 'DELETE', query: { id } })
+    const { result } = await $fetch<CategoryReturning>(`/api/categories/${props.category.id}`, {
+      method: 'DELETE',
+    })
 
-    if (result) {
-      const { id, name } = readFragment(CategoryFragment, result)
-      const messageName = name ? `«${name}»` : `#${id}`
+    const { id, name } = result
+    const messageName = name ? `«${name}»` : `#${id}`
 
-      useShowToast({
-        message: useString('categoryDeleted', messageName),
-        variant: 'danger',
-      })
+    useShowToast({
+      message: useString('categoryDeleted', messageName),
+      variant: 'danger',
+    })
 
-      emit('update:modelValue', false)
+    emit('update:modelValue', false)
 
-      /* Trigger refetch of all globally available data */
+    /* Trigger refetch of all globally available data */
 
-      refetchTrigger.value = true
-    } else {
-      throw new Error()
-    }
+    refetchTrigger.value = true
   } catch (error: any) {
     useShowToast({
       message: error?.message ?? useString('error'),
@@ -126,32 +127,27 @@ async function handleCategoryDelete() {
 /* Create new category or update existing, if it's set with prop. Show toast
  * on success or error */
 
-async function handleCategoryUpsert(category: FragmentOf<typeof CategoryFragment>) {
-  const method = isEdit.value ? 'PUT' : 'POST'
+async function handleCategoryUpsert(category: CategoryInsert) {
+  const { color, isIncome, name, slug } = category
 
-  const id = categoryFragment.value?.id
-  const { color, is_income, name, slug } = readFragment(CategoryFragment, category)
-  const query = { color, id, is_income, name, slug }
+  const body = { color, isIncome, name, slug }
+
+  const id = props.category?.id
 
   pending.value = true
 
   try {
-    const { result } = await $fetch('/api/category', { method, query })
+    const { result } = id ? await updateCategory(body, id) : await createCategory(body)
 
-    if (result) {
-      const { id, name } = readFragment(CategoryFragment, result)
-      const messageName = name ? `«${name}»` : `#${id}`
+    const messageName = result.name ? `«${result.name}»` : `#${result.id}`
 
-      useShowToast({ message: useString('categorySaved', messageName) })
+    useShowToast({ message: useString('categorySaved', messageName) })
 
-      emit('update:modelValue', false)
+    emit('update:modelValue', false)
 
-      /* Trigger refetch of all globally available data */
+    /* Trigger refetch of all globally available data */
 
-      refetchTrigger.value = true
-    } else {
-      throw new Error()
-    }
+    refetchTrigger.value = true
   } catch (error: any) {
     useShowToast({
       message: error?.message ?? useString('error'),
@@ -160,5 +156,13 @@ async function handleCategoryUpsert(category: FragmentOf<typeof CategoryFragment
   }
 
   pending.value = false
+}
+
+function createCategory(body: CategoryInsert) {
+  return $fetch<CategoryReturning>('/api/categories', { method: 'POST', body })
+}
+
+function updateCategory(body: CategoryInsert, id: number) {
+  return $fetch<CategoryReturning>(`/api/categories/${id}`, { method: 'PUT', body })
 }
 </script>

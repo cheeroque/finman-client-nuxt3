@@ -1,8 +1,3 @@
-import { CategoryFragment, TransactionFragment } from '~/graphql'
-import type { FragmentOf } from '~/graphql'
-
-export type Category = FragmentOf<typeof CategoryFragment>
-
 export type ControlSize = 'md' | 'lg' | null
 
 export type GroupTableItem = {
@@ -46,13 +41,17 @@ export type ToastState = {
 import { CategoriesTable, TransactionsTable } from '~/server/db/schema'
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm'
 
+export type Category = InferSelectModel<typeof CategoriesTable>
+
+export type CategoryInsert = InferInsertModel<typeof CategoriesTable>
+
 export type LoginCredentials = {
   password: string
   username: string
 }
 
 export type Transaction = InferSelectModel<typeof TransactionsTable> & {
-  category: InferSelectModel<typeof CategoriesTable> | null
+  category: Category | null
 }
 
 export type TransactionInsert = InferInsertModel<typeof TransactionsTable>
