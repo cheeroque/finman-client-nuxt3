@@ -24,6 +24,13 @@ export default defineEventHandler({
       .where(eq(TransactionsTable.id, Number(id)))
       .returning({ id: TransactionsTable.id })
 
+    if (!result) {
+      throw createError({
+        message: 'Transaction not found!',
+        statusCode: 404,
+      })
+    }
+
     return { result }
   },
 })

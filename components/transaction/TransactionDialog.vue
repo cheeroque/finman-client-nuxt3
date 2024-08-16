@@ -70,20 +70,16 @@ async function handleTransactionDelete() {
   try {
     const { result } = await $fetch(`/api/transactions/${id}`, { method: 'DELETE' })
 
-    if (result) {
-      useShowToast({
-        message: useString('transactionDeleted', `#${result.id}`),
-        variant: 'danger',
-      })
+    useShowToast({
+      message: useString('transactionDeleted', `#${result.id}`),
+      variant: 'danger',
+    })
 
-      emit('update:modelValue', false)
+    emit('update:modelValue', false)
 
-      /* Trigger refetch of all globally available data */
+    /* Trigger refetch of all globally available data */
 
-      refetchTrigger.value = true
-    } else {
-      throw new Error()
-    }
+    refetchTrigger.value = true
   } catch (error: any) {
     useShowToast({
       message: error.value?.message ?? useString('error'),
@@ -97,8 +93,8 @@ async function handleTransactionDelete() {
 /* Create new transaction or update existing, if it's set with prop. Show toast
  * on success or error */
 
-async function handleTransactionUpsert(formData: TransactionInsert) {
-  const { categoryId, createdAt, note, sum } = formData
+async function handleTransactionUpsert(transaction: TransactionInsert) {
+  const { categoryId, createdAt, note, sum } = transaction
   const userId = user.value?.id
 
   const body = { categoryId, createdAt, note, sum, userId }
@@ -110,17 +106,13 @@ async function handleTransactionUpsert(formData: TransactionInsert) {
   try {
     const { result } = id ? await updateTransaction(body, id) : await createTransaction(body)
 
-    if (result) {
-      useShowToast({ message: useString('transactionSaved', `#${result.id}`) })
+    useShowToast({ message: useString('transactionSaved', `#${result.id}`) })
 
-      emit('update:modelValue', false)
+    emit('update:modelValue', false)
 
-      /* Trigger refetch of all globally available data */
+    /* Trigger refetch of all globally available data */
 
-      refetchTrigger.value = true
-    } else {
-      throw new Error()
-    }
+    refetchTrigger.value = true
   } catch (error: any) {
     useShowToast({
       message: error.value?.message ?? useString('error'),
