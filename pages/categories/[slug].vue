@@ -1,5 +1,6 @@
 <template>
-  <PageContent
+  <button @click="refresh">Get me ({{ route.params.slug }})</button>
+  <!-- <PageContent
     :key="pageKey"
     :loading="pending"
     :title="categoryFragment?.name"
@@ -23,7 +24,7 @@
     <template #footer v-if="Number(data?.totalPages) > 1">
       <UiPagination :disabled="pending" :total-pages="data?.totalPages" hide-prev-next />
     </template>
-  </PageContent>
+  </PageContent> -->
 </template>
 
 <script setup lang="ts">
@@ -35,29 +36,13 @@ const { categories } = storeToRefs(globalStore)
 const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
 
-const category = computed(() =>
-  categories.value.find((_category) => {
-    const { slug } = readFragment(CategoryFragment, _category)
-    return slug === route.params.slug
-  })
-)
-
-if (!category.value) {
-  const message = useString('errorMessage404')
-  throw createError({ fatal: true, message, statusCode: 404 })
-}
-
-const categoryFragment = computed(() => readFragment(CategoryFragment, category.value))
-
-/* Fetch transactions for current category, grouped by period */
-
 const query = computed(() => ({
   first: route.query.perPage,
   page: route.query.page,
   slug: route.params.slug,
 }))
 
-const { data, pending, refresh } = await useFetch('/api/category', {
+const { data, error, pending, refresh } = await useFetch('/api/categories/transactions', {
   query,
 
   onResponse() {
@@ -80,30 +65,52 @@ const { data, pending, refresh } = await useFetch('/api/category', {
   },
 })
 
-watch(
-  /* Refetch transactions if external trigger was set to true, then reset trigger */
+// const category = computed(() =>
+//   categories.value.find((_category) => {
+//     const { slug } = readFragment(CategoryFragment, _category)
+//     return slug === route.params.slug
+//   })
+// )
 
-  () => refetchTrigger.value,
+// if (!category.value) {
+//   const message = useString('errorMessage404')
+//   throw createError({ fatal: true, message, statusCode: 404 })
+// }
 
-  async (event) => {
-    if (event) {
-      await refresh()
-      refetchTrigger.value = false
-    }
-  }
-)
-/* Key to remount page when pagination appears / disappears */
+// const categoryFragment = computed(() => readFragment(CategoryFragment, category.value))
 
-const pageKey = computed(() => String(Number(data.value?.totalPages) > 1))
+// /* Fetch transactions for current category, grouped by period */
 
-/* Key to remount GroupTable when page changes */
+// const query = computed(() => ({
+//   first: route.query.perPage,
+//   page: route.query.page,
+//   slug: route.params.slug,
+// }))
 
-const tableKey = computed(() => String(route.query.page))
+// watch(
+//   /* Refetch transactions if external trigger was set to true, then reset trigger */
 
-function formatDate(timestamp: number, short = false): string {
-  const monthFormat = short ? 'LLL' : 'LLLL'
-  return DateTime.fromMillis(timestamp).toFormat(`${monthFormat} yyyy`, { locale: useLocale() })
-}
+//   () => refetchTrigger.value,
+
+//   async (event) => {
+//     if (event) {
+//       await refresh()
+//       refetchTrigger.value = false
+//     }
+//   }
+// )
+// /* Key to remount page when pagination appears / disappears */
+
+// const pageKey = computed(() => String(Number(data.value?.totalPages) > 1))
+
+// /* Key to remount GroupTable when page changes */
+
+// const tableKey = computed(() => String(route.query.page))
+
+// function formatDate(timestamp: number, short = false): string {
+//   const monthFormat = short ? 'LLL' : 'LLLL'
+//   return DateTime.fromMillis(timestamp).toFormat(`${monthFormat} yyyy`, { locale: useLocale() })
+// }
 </script>
 
 <style lang="scss" scoped>
