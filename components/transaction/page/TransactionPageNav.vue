@@ -20,8 +20,8 @@ const route = useRoute()
 
 const navLinks: NavLink[] = [
   { icon: 'home-24', link: '/', text: useString('allTransactions') },
-  { icon: 'expenses-24', link: '/view/expense', text: useString('expensesOnly') },
-  { icon: 'incomes-24', link: '/view/income', text: useString('incomesOnly') },
+  { icon: 'expenses-24', link: '/expenses', text: useString('expensesOnly') },
+  { icon: 'incomes-24', link: '/incomes', text: useString('incomesOnly') },
 ]
 
 function getLinkClasses(link: NavLink): string[] {
