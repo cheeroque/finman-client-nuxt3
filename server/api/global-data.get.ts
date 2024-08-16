@@ -23,7 +23,7 @@ export default defineEventHandler({
       .groupBy(CategoriesTable.isIncome)
       .orderBy(asc(CategoriesTable.isIncome))
 
-    const balance = Number(incomes.sum) - Number(expenses.sum)
+    const balance = (Number(incomes?.sum) || 0) - (Number(expenses?.sum) || 0)
 
     return { balance, categories, firstTransaction }
   },
