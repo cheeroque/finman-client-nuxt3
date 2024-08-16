@@ -37,14 +37,11 @@
 </template>
 
 <script setup lang="ts">
-import { DateTime } from 'luxon'
-import { readFragment, TransactionFragment, UserFragment } from '~/graphql'
-import type { FragmentOf } from '~/graphql'
-import type { TransactionFormValues } from '~/types'
+import type { Transaction, TransactionInsert } from '~/types'
 
 type TransactionDialogProps = {
   modelValue?: boolean
-  transaction?: FragmentOf<typeof TransactionFragment>
+  transaction?: Transaction
 }
 
 const props = defineProps<TransactionDialogProps>()
@@ -56,9 +53,9 @@ const { pending } = storeToRefs(globalStore)
 
 const formId = useId()
 const refetchTrigger = useRefetchTrigger()
-const user = useSession()
+const user = useUser()
 
-const isEdit = computed(() => Boolean(readFragment(TransactionFragment, props.transaction)?.id))
+const isEdit = computed(() => Boolean(props.transaction?.id))
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeTransaction' : 'createTransaction'))
 
 /* Delete current transaction by ID. Show toast on success or error */
@@ -66,16 +63,16 @@ const dialogTitle = computed(() => useString(isEdit.value ? 'changeTransaction' 
 async function handleTransactionDelete() {
   if (!props.transaction) return
 
-  const { id } = readFragment(TransactionFragment, props.transaction)
+  const { id } = props.transaction
 
   pending.value = true
 
   try {
-    const { result } = await $fetch('/api/transaction', { method: 'DELETE', query: { id } })
+    const { result } = await $fetch(`/api/transactions/${id}`, { method: 'DELETE' })
 
     if (result) {
       useShowToast({
-        message: useString('transactionDeleted', `#${readFragment(TransactionFragment, result).id}`),
+        message: useString('transactionDeleted', `#${result.id}`),
         variant: 'danger',
       })
 
@@ -100,26 +97,21 @@ async function handleTransactionDelete() {
 /* Create new transaction or update existing, if it's set with prop. Show toast
  * on success or error */
 
-async function handleTransactionUpsert(formData: TransactionFormValues) {
-  const method = isEdit.value ? 'PUT' : 'POST'
-  const { category_id, created_at, note, sum } = formData
+async function handleTransactionUpsert(formData: TransactionInsert) {
+  const { categoryId, createdAt, note, sum } = formData
+  const userId = user.value?.id
 
-  const query = {
-    category_id,
-    created_at: DateTime.fromJSDate(created_at).toFormat('yyyy-LL-dd HH:mm:ss'),
-    id: readFragment(TransactionFragment, props.transaction)?.id,
-    note,
-    sum,
-    user_id: readFragment(UserFragment, user.value)?.id,
-  }
+  const body = { categoryId, createdAt, note, sum, userId }
+
+  const id = props.transaction?.id
 
   pending.value = true
 
   try {
-    const { result } = await $fetch('/api/transaction', { method, query })
+    const { result } = id ? await updateTransaction(body, id) : await createTransaction(body)
 
     if (result) {
-      useShowToast({ message: useString('transactionSaved', `#${readFragment(TransactionFragment, result).id}`) })
+      useShowToast({ message: useString('transactionSaved', `#${result.id}`) })
 
       emit('update:modelValue', false)
 
@@ -137,5 +129,13 @@ async function handleTransactionUpsert(formData: TransactionFormValues) {
   }
 
   pending.value = false
+}
+
+function createTransaction(body: TransactionInsert) {
+  return $fetch('/api/transactions', { method: 'POST', body })
+}
+
+function updateTransaction(body: TransactionInsert, id: number) {
+  return $fetch(`/api/transactions/${id}`, { method: 'PUT', body })
 }
 </script>

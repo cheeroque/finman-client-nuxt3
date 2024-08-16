@@ -23,9 +23,9 @@
 
       <TransactionCard
         v-for="transaction in transactions"
-        :key="`transaction-${readFragment(TransactionFragment, transaction).id}`"
+        :key="`transaction-${transaction.id}`"
         :transaction="transaction"
-        :view-mode="viewMode"
+        :view="view"
         @edit="handleTransactionEdit(transaction)"
       />
     </div>
@@ -35,17 +35,11 @@
 </template>
 
 <script setup lang="ts">
-import { readFragment, CategoryFragment, TransactionFragment } from '~/graphql'
-import type { FragmentOf } from '~/graphql'
-import type { ViewMode } from '~/types'
-
-type Transaction = FragmentOf<typeof TransactionFragment> & {
-  category?: FragmentOf<typeof CategoryFragment>
-}
+import type { Transaction, ViewMode } from '~/types'
 
 type TransactionTableProps = {
   transactions?: Transaction[]
-  viewMode?: ViewMode
+  view?: ViewMode
 }
 
 const props = defineProps<TransactionTableProps>()

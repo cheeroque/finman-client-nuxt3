@@ -41,23 +41,23 @@ export type ToastState = {
   variant?: string
 }
 
-export type Transaction = FragmentOf<typeof TransactionFragment>
-
-export type TransactionFormValues = {
-  category_id: number
-  created_at: Date
-  note?: string
-  sum: number
-}
-
-export type ViewMode = 'expense' | 'income' | null
-
 /* Reworked types */
+
+import { CategoriesTable, TransactionsTable } from '~/server/db/schema'
+import type { InferInsertModel, InferSelectModel } from 'drizzle-orm'
 
 export type LoginCredentials = {
   password: string
   username: string
 }
+
+export type Transaction = InferSelectModel<typeof TransactionsTable> & {
+  category: InferSelectModel<typeof CategoriesTable> | null
+}
+
+export type TransactionInsert = InferInsertModel<typeof TransactionsTable>
+
+export type ViewMode = 'expense' | 'income'
 
 /* Extend definePageMeta */
 declare module '#app' {

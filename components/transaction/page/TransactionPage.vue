@@ -4,7 +4,7 @@
       <TransactionPageHeader />
     </template>
 
-    <TransactionTable :transactions="data?.transactions" :view-mode="viewMode" />
+    <TransactionTable :transactions="data?.transactions" :view="view" />
 
     <TransactionFab :show="!paginationVisible" />
 
@@ -19,6 +19,12 @@
 <script setup lang="ts">
 import type { ViewMode } from '~/types'
 
+type TransactionPageProps = {
+  view?: ViewMode
+}
+
+const props = defineProps<TransactionPageProps>()
+
 const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
 
@@ -26,13 +32,13 @@ const observer = ref()
 const paginationAnchor = ref()
 const paginationVisible = ref(false)
 
-const viewMode = computed<ViewMode>(() => route.params.view as ViewMode)
-const query = computed(() => {
-  const { page, perPage } = route.query
-  return { page, perPage, view: viewMode.value }
-})
+const query = computed(() => ({
+  page: route.query.page,
+  perPage: route.query.perPage,
+  view: props.view,
+}))
 
-const { data, pending, refresh } = await useFetch('/api/transactions', {
+const { data, status, refresh } = await useFetch('/api/transactions', {
   query,
 
   onResponse() {
@@ -58,13 +64,15 @@ watch(
   }
 )
 
+const pending = computed(() => status.value === 'pending')
+
 /* Observe pagination element to hide/show FAB on scroll */
 
 onMounted(() => setObserver())
 onUnmounted(() => removeObserver())
 
 function setObserver() {
-  if (!process.client || !paginationAnchor.value) return
+  if (!import.meta.client || !paginationAnchor.value) return
 
   if ('IntersectionObserver' in window) {
     observer.value = new IntersectionObserver(([{ isIntersecting }]) => {
