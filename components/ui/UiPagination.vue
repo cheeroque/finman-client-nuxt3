@@ -71,6 +71,7 @@ type PaginationProps = {
   limit?: number | string
   modelValue?: number | string
   noLinks?: boolean
+  pages?: number[]
   size?: string
   totalPages?: number | string
 }
@@ -92,6 +93,8 @@ const isBeginning = computed(() => currentPage.value <= 1)
 const isEnd = computed(() => currentPage.value >= totalPages.value)
 
 const pages = computed(() => {
+  if (props.pages) return props.pages
+
   const pages = []
 
   let start = 1
