@@ -19,14 +19,14 @@
           <span class="caption">{{ value }}&nbsp;₽</span>
         </UiButton>
 
-        <span v-else class="btn-details">{{ value }}&nbsp;₽</span>
+        <span v-else-if="value" class="btn-details">{{ value }}&nbsp;₽</span>
+
+        <span v-else class="btn-details btn-details-empty">{{ useString('tableEmpty') }}</span>
       </template>
 
       <template #row-details="{ item }">
         <UiTable :fields="detailsFields" :items="item.transactions" fixed hide-thead>
-          <template #cell(created_at)="{ value }">
-            {{ formatDate(value) }}
-          </template>
+          <template #cell(created_at)="{ value }"> {{ formatDate(value) }} </template>
 
           <template #cell(sum)="{ value }"> {{ value }}&nbsp;₽ </template>
 
@@ -45,9 +45,7 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { TransactionFragment } from '~/graphql'
-import type { FragmentOf } from '~/graphql'
-import type { TableField, TableItem } from '~/types'
+import type { TableField, TableItem, Transaction } from '~/types'
 
 type GroupTableProps = {
   groupLabel: string
@@ -56,7 +54,7 @@ type GroupTableProps = {
 
 const props = defineProps<GroupTableProps>()
 
-const currentTransaction = ref<FragmentOf<typeof TransactionFragment>>()
+const currentTransaction = ref<Transaction>()
 const dialogVisible = ref(false)
 
 const fields = computed<TableField[]>(() => [
@@ -96,7 +94,7 @@ const detailsFields = [
 ]
 
 function formatDate(datestring: string): string {
-  return DateTime.fromFormat(datestring, 'yyyy-LL-dd HH:mm:ss').toFormat('dd.LL.yyyy')
+  return DateTime.fromISO(datestring).toFormat('dd.LL.yyyy')
 }
 
 function handleToggleDetails(event: Event, detailsVisible: boolean, callback: Function) {
@@ -113,7 +111,7 @@ function handleToggleDetails(event: Event, detailsVisible: boolean, callback: Fu
   callback()
 }
 
-function handleEdit(transaction: FragmentOf<typeof TransactionFragment>) {
+function handleEdit(transaction: Transaction) {
   currentTransaction.value = transaction
   dialogVisible.value = true
 }
@@ -198,12 +196,19 @@ function handleDialogClosed() {
 
 .btn-details {
   font-family: $font-family-alternate;
-  font-weight: $font-weight-medium;
 
   :deep(.nuxt-icon) {
     transform: rotate(0);
     transition: $transition;
     transition-property: transform;
+  }
+
+  &.btn-details-empty {
+    opacity: 0.5;
+  }
+
+  &:not(.btn-details-empty) {
+    font-weight: $font-weight-medium;
   }
 
   &:not(:disabled):not(.disabled) {

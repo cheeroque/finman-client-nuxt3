@@ -1,20 +1,18 @@
-import { count, desc, eq, getTableColumns, ilike, sql, sum } from 'drizzle-orm'
-import { CategoriesTable, TransactionsTable } from '~/server/db/schema'
+import { and, desc, eq, gte, lt, sql, sum } from 'drizzle-orm'
+import { DateTime } from 'luxon'
+import { TransactionsTable } from '~/server/db/schema'
 
 type CategoryQueryParams = {
-  page?: string
-  perPage?: string
   slug: string
+  year?: string
 }
-
-const PER_PAGE_DEFAULT = 18
 
 export default defineEventHandler({
   onRequest: [checkUser],
 
   handler: async (event) => {
     const db = await getDrizzle()
-    const { page, perPage, slug } = getQuery<CategoryQueryParams>(event)
+    const { slug, year } = getQuery<CategoryQueryParams>(event)
 
     if (!slug) {
       throw createError({
@@ -23,33 +21,42 @@ export default defineEventHandler({
       })
     }
 
-    const currentPage = Number(page) || 1
-    const limit = Number(perPage) || PER_PAGE_DEFAULT
-    const offset = limit * (currentPage - 1)
+    const currentYear = Number(year) || DateTime.now().year
 
-    const groups = await db
+    const start = DateTime.fromObject({ year: currentYear })
+    const startString = start.toSQL() as string
+
+    const end = start.plus({ year: 1 })
+    const endString = end.toSQL() as string
+
+    const category = await db.query.CategoriesTable.findFirst({
+      where: (categories, { eq }) => eq(categories.slug, slug),
+    })
+
+    if (!category) {
+      throw createError({
+        message: 'Category not found!',
+        statusCode: 404,
+      })
+    }
+
+    const transactions = await db
       .select({
-        month: sql`date_trunc('month', ${TransactionsTable.createdAt})`,
+        group: sql`to_char(date_trunc('month', ${TransactionsTable.createdAt}), 'YYYY-MM')`,
         subtotal: sum(TransactionsTable.sum),
         transactions: sql`json_agg(row_to_json(${TransactionsTable}))`,
       })
       .from(TransactionsTable)
-      .leftJoin(CategoriesTable, eq(TransactionsTable.categoryId, CategoriesTable.id))
-      .where(eq(CategoriesTable.slug, slug))
-      .limit(limit)
-      .offset(offset)
-      .groupBy(({ month }) => month)
-      .orderBy(({ month }) => desc(month))
+      .where(
+        and(
+          eq(TransactionsTable.categoryId, category.id),
+          gte(TransactionsTable.createdAt, startString),
+          lt(TransactionsTable.createdAt, endString)
+        )
+      )
+      .groupBy(({ group }) => group)
+      .orderBy(({ group }) => desc(group))
 
-    const total = await db
-      .select({
-        month: sql`date_trunc('month', ${TransactionsTable.createdAt})`,
-      })
-      .from(TransactionsTable)
-      .leftJoin(CategoriesTable, eq(TransactionsTable.categoryId, CategoriesTable.id))
-      .where(eq(CategoriesTable.slug, slug))
-      .groupBy(({ month }) => month)
-
-    return { groups, total }
+    return { category, transactions }
   },
 })

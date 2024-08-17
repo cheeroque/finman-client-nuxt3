@@ -1,17 +1,10 @@
 <template>
-  <button @click="refresh">Get me ({{ route.params.slug }})</button>
-  <!-- <PageContent
-    :key="pageKey"
-    :loading="pending"
-    :title="categoryFragment?.name"
-    class="overflow-hidden"
-    spinner-variant="primary"
-  >
+  <PageContent :loading="pending" :title="data?.category.name" class="overflow-hidden" spinner-variant="primary">
     <GroupTable
       v-if="data"
-      :key="tableKey"
+      :key="String(route.query.year)"
       :group-label="useString('date')"
-      :items="data.tableItems"
+      :items="data.items"
       :loading="pending"
     >
       <template #cell(group)="{ value }">
@@ -21,96 +14,99 @@
       </template>
     </GroupTable>
 
-    <template #footer v-if="Number(data?.totalPages) > 1">
-      <UiPagination :disabled="pending" :total-pages="data?.totalPages" hide-prev-next />
+    <template #footer v-if="years.length > 1">
+      <UiPagination
+        :disabled="pending"
+        :model-value="currentYear"
+        :pages="years"
+        :total-pages="years.length"
+        hide-prev-next
+        no-links
+        @update:model-value="handleUpdatePage"
+      />
     </template>
-  </PageContent> -->
+  </PageContent>
 </template>
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { readFragment, CategoryFragment } from '~/graphql'
+import type { TableItem } from '~/types'
 
-const globalStore = useGlobalStore()
-const { categories } = storeToRefs(globalStore)
+const GROUP_KEY_FORMAT = 'yyyy-LL'
+
 const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
+const router = useRouter()
 
-const query = computed(() => ({
-  first: route.query.perPage,
-  page: route.query.page,
-  slug: route.params.slug,
-}))
+/* Paginate data by years, from current year back to the year
+ * of the first transaction */
+const globalStore = useGlobalStore()
+const { startDate } = storeToRefs(globalStore)
 
-const { data, error, pending, refresh } = await useFetch('/api/categories/transactions', {
-  query,
+const now = computed(() => DateTime.now())
+const currentYear = computed(() => Number(route.query.year) || now.value.year)
 
-  onResponse() {
-    setTimeout(() => {
-      const windowTop = getWindowTop()
-      const target = !windowTop ? '.page' : null
-
-      scrollToEl(target)
-    }, 100)
-  },
-
-  onResponseError() {
-    const message = useString('errorMessage404')
-
-    if (process.client) {
-      showError({ message, statusCode: 404 })
-    } else {
-      throw createError({ fatal: true, message, statusCode: 404 })
-    }
-  },
+const years = computed(() => {
+  const _years: number[] = []
+  for (let year = now.value.year; year >= startDate.value.year; year--) {
+    _years.push(year)
+  }
+  return _years
 })
 
-// const category = computed(() =>
-//   categories.value.find((_category) => {
-//     const { slug } = readFragment(CategoryFragment, _category)
-//     return slug === route.params.slug
-//   })
-// )
+const { data, error, status, refresh } = await useAsyncData(
+  route.fullPath,
 
-// if (!category.value) {
-//   const message = useString('errorMessage404')
-//   throw createError({ fatal: true, message, statusCode: 404 })
-// }
+  async () => {
+    const { category, transactions } = await useRequestFetch()('/api/categories/transactions', {
+      query: {
+        slug: route.params.slug,
+        year: route.query.year,
+      },
+    })
 
-// const categoryFragment = computed(() => readFragment(CategoryFragment, category.value))
+    const items: TableItem[] = []
 
-// /* Fetch transactions for current category, grouped by period */
+    /* Get table items. Iterate over all past month of currently selected year.
+     * If month has transactions, add it to the table items, otherwise add
+     * empty placeholder */
+    if (transactions.length) {
+      const latestMonth = currentYear.value < now.value.year ? 12 : DateTime.now().month
 
-// const query = computed(() => ({
-//   first: route.query.perPage,
-//   page: route.query.page,
-//   slug: route.params.slug,
-// }))
+      for (let month = latestMonth; month >= 1; month--) {
+        if (currentYear.value <= startDate.value.year && month < startDate.value.month) {
+          break
+        }
 
-// watch(
-//   /* Refetch transactions if external trigger was set to true, then reset trigger */
+        const key = DateTime.fromObject({ year: currentYear.value, month }).toFormat(GROUP_KEY_FORMAT)
+        const foundMonth = transactions.find(({ group }) => group === key)
 
-//   () => refetchTrigger.value,
+        items.push(foundMonth ?? { group: key, subtotal: 0, transactions: [] })
+      }
+    }
 
-//   async (event) => {
-//     if (event) {
-//       await refresh()
-//       refetchTrigger.value = false
-//     }
-//   }
-// )
-// /* Key to remount page when pagination appears / disappears */
+    return { category, items }
+  },
 
-// const pageKey = computed(() => String(Number(data.value?.totalPages) > 1))
+  { watch: [() => route.query.year] }
+)
 
-// /* Key to remount GroupTable when page changes */
+if (error.value) {
+  showError(error.value)
+}
 
-// const tableKey = computed(() => String(route.query.page))
+const pending = computed(() => status.value === 'pending')
 
-// function formatDate(timestamp: number, short = false): string {
-//   const monthFormat = short ? 'LLL' : 'LLLL'
-//   return DateTime.fromMillis(timestamp).toFormat(`${monthFormat} yyyy`, { locale: useLocale() })
-// }
+function formatDate(group: string, short = false): string {
+  const monthFormat = short ? 'LLL' : 'LLLL'
+  return DateTime.fromFormat(group, GROUP_KEY_FORMAT).toFormat(`${monthFormat} yyyy`, {
+    locale: useLocale(),
+  })
+}
+
+function handleUpdatePage(year: number) {
+  return router.push({ query: { year } })
+}
 </script>
 
 <style lang="scss" scoped>
