@@ -128,9 +128,9 @@ async function handleCategoryDelete() {
  * on success or error */
 
 async function handleCategoryUpsert(category: CategoryInsert) {
-  const { color, isIncome, name, slug } = category
+  const { color, isIncome, name, slug, sortOrder } = category
 
-  const body = { color, isIncome, name, slug }
+  const body = { color, isIncome, name, slug, sortOrder }
 
   const id = props.category?.id
 

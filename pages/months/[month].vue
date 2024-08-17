@@ -1,6 +1,6 @@
 <template>
   <PageContent :loading="pending" :title="monthName" class="overflow-hidden" spinner-variant="primary">
-    <GroupTable v-if="tableItems" :group-label="useString('category')" :items="tableItems" />
+    <GroupTable v-if="data" :group-label="useString('category')" :items="data.items" />
 
     <template #footer>
       <UiButton
@@ -31,10 +31,41 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
+import type { TableItem } from '~/types'
 
 const route = useRoute()
 const globalStore = useGlobalStore()
 const { startDate } = storeToRefs(globalStore)
+
+const { data, error, status } = await useAsyncData(route.fullPath, async () => {
+  const { totalExpenses, totalIncomes, transactions } = await useRequestFetch()(
+    `/api/transactions/period/${route.params.month}`
+  )
+
+  const balance = totalIncomes - totalExpenses
+
+  const items: TableItem[] = transactions.map((item) => ({
+    ...item,
+    trClass: item.isIncome ? 'row-income' : undefined,
+  }))
+
+  items.push(
+    {
+      group: useString('monthExpenses'),
+      subtotal: totalExpenses,
+      trClass: 'row-expense',
+    },
+    {
+      group: useString('monthBalance'),
+      subtotal: balance,
+      trClass: `row-balance ${balance > 0 ? 'row-balance-positive' : 'row-balance-negative'}`,
+    }
+  )
+
+  return { items }
+})
+
+const pending = computed(() => status.value === 'pending')
 
 const month = computed(() => String(route.params.month))
 const monthDate = computed(() => DateTime.fromFormat(month.value, 'yyyy-LL'))
@@ -58,38 +89,6 @@ const isBeginning = computed(
 const isEnd = computed(
   () => DateTime.local().year <= monthDate.value.year && DateTime.local().month <= monthDate.value.month
 )
-
-/* Fetch current month transactions */
-
-const query = computed(() => {
-  const from = monthDate.value
-  const to = from.plus({ month: 1 }).minus({ second: 1 })
-
-  return {
-    from: from.toFormat('yyyy-LL-dd HH:mm:ss'),
-    to: to.toFormat('yyyy-LL-dd HH:mm:ss'),
-  }
-})
-
-const { data, pending } = await useFetch('/api/month', { query })
-
-const tableItems = computed(() => {
-  const items = data.value?.tableItems ?? []
-
-  return [
-    ...items,
-    {
-      group: useString('monthExpenses'),
-      subtotal: data.value?.totalExpenses ?? 0,
-      trClass: 'row-expense',
-    },
-    {
-      group: useString('monthBalance'),
-      subtotal: data.value?.balance ?? 0,
-      trClass: `row-balance ${Number(data.value?.balance) > 0 ? 'row-balance-positive' : 'row-balance-negative'}`,
-    },
-  ]
-})
 
 function formatMonthLink(dateTime: DateTime): string {
   return dateTime.toFormat('yyyy-LL')
