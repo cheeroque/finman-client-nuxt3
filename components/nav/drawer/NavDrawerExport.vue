@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-const config = useRuntimeConfig()
+import { DateTime } from 'luxon'
 
 const loading = ref(false)
 
@@ -13,20 +13,17 @@ async function handleClick() {
   loading.value = true
 
   try {
-    const { result } = await $fetch('/api/export')
+    const response = await $fetch<Blob>('/api/export', { responseType: 'blob' })
 
-    if (result.file) {
-      const file = result.file
-      const link = document.createElement('a')
+    const url = URL.createObjectURL(response)
+    const link = document.createElement('a')
 
-      link.href = `${config.public.staticUrl}${file.path}`
-      link.target = '_blank'
+    link.download = `transactions-${DateTime.now().toFormat('yyyy-LL-dd_HH-mm')}.xlsx`
+    link.href = url
+    link.target = '_blank'
 
-      document.body.appendChild(link)
-      link.click()
-    } else {
-      throw new Error()
-    }
+    document.body.appendChild(link)
+    link.click()
   } catch (error) {
     useShowToast({
       message: useString('exportFailed'),
