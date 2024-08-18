@@ -1,35 +1,47 @@
 <template>
   <SidebarWidget :title="useString('thisMonth')" class="sidebar-widget-monthly">
-    <p v-if="isEmpty" class="text-center text-neutral mb-0">
+    <p v-if="!data?.visibleCategories.length" class="text-center text-neutral mb-0">
       {{ useString('tableEmpty') }}
     </p>
 
-    <ul class="list-unstyled">
+    <ul v-if="data" class="list-unstyled">
       <li
-        v-for="(group, index) in visibleCategories"
-        :key="`group-${readFragment(CategoryFragment, group.category)?.id}`"
+        v-for="(group, index) in data.visibleCategories"
+        :key="`group-${group.group}`"
         :class="{ 'mt-8': index > 0 }"
         role="presentation"
       >
-        <SidebarMonthlyCategory :category="group.category" :max-total="maxTotal" :total="group.subtotal" />
+        <SidebarMonthlyCategory
+          :color="group.color"
+          :max-total="data.maxTotal"
+          :name="group.group"
+          :slug="group.slug"
+          :total="Number(group.subtotal)"
+        />
       </li>
     </ul>
 
-    <UiCollapse v-if="hasCollapse" v-model="collapseOpen">
+    <UiCollapse v-if="data?.hasCollapse" v-model="collapseOpen">
       <ul class="list-unstyled pt-8">
         <li
-          v-for="(group, index) in hiddenCategories"
-          :key="`group-hidden-${index}`"
+          v-for="(group, index) in data.hiddenCategories"
+          :key="`group-hidden-${group.group}`"
           :class="{ 'mt-8': index > 0 }"
           role="presentation"
         >
-          <SidebarMonthlyCategory :category="group.category" :max-total="maxTotal" :total="group.subtotal" />
+          <SidebarMonthlyCategory
+            :color="group.color"
+            :max-total="data.maxTotal"
+            :name="group.group"
+            :slug="group.slug"
+            :total="Number(group.subtotal)"
+          />
         </li>
       </ul>
     </UiCollapse>
 
     <UiButton
-      v-if="hasCollapse"
+      v-if="data?.hasCollapse"
       :class="{ expanded: collapseOpen }"
       :title="useString(collapseOpen ? 'collapse' : 'expand')"
       class="collapse-toggle"
@@ -44,36 +56,29 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { readFragment, CategoryFragment } from '~/graphql'
 
 const VISIBLE_LIMIT = 5
 
 const refetchTrigger = useRefetchTrigger()
 
+const { data, error, refresh } = await useAsyncData('sidebar-monthly', async () => {
+  const period = DateTime.now().toFormat('yyyy-LL')
+  const { transactions } = await useRequestFetch()(`/api/transactions/period/${period}`)
+
+  const expenses = transactions.filter(({ isIncome }) => !isIncome)
+  const visibleCategories = expenses.slice(0, VISIBLE_LIMIT)
+  const hiddenCategories = expenses.slice(VISIBLE_LIMIT)
+  const maxTotal = Number(expenses[0].subtotal) || 0
+
+  return {
+    hasCollapse: Boolean(hiddenCategories.length),
+    hiddenCategories,
+    maxTotal,
+    visibleCategories,
+  }
+})
+
 const collapseOpen = ref(false)
-
-const now = DateTime.now()
-const from = now.set({ hour: 0, minute: 0, second: 0, day: 1 })
-const to = from.plus({ month: 1 }).minus({ second: 1 })
-
-const query = {
-  from: from.toFormat('yyyy-LL-dd HH:mm:ss'),
-  to: to.toFormat('yyyy-LL-dd HH:mm:ss'),
-}
-
-const { data, refresh } = await useFetch('/api/month', { query, pick: ['tableItems'] })
-
-const groups = computed(() =>
-  data.value?.tableItems
-    .filter((group) => !readFragment(CategoryFragment, group.category)?.is_income)
-    .sort((a, b) => Number(b.subtotal) - Number(a.subtotal))
-)
-
-const visibleCategories = computed(() => groups.value?.slice(0, VISIBLE_LIMIT))
-const hiddenCategories = computed(() => groups.value?.slice(VISIBLE_LIMIT))
-const hasCollapse = computed(() => Boolean(hiddenCategories.value?.length))
-const isEmpty = computed(() => !groups.value?.length)
-const maxTotal = computed(() => groups.value?.[0].subtotal)
 
 watch(
   /* Refetch records if external trigger was set to true, then reset trigger */

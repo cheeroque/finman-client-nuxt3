@@ -65,6 +65,10 @@ const { data, error, status } = await useAsyncData(route.fullPath, async () => {
   return { items }
 })
 
+if (error.value) {
+  showError(error.value)
+}
+
 const pending = computed(() => status.value === 'pending')
 
 const month = computed(() => String(route.params.month))

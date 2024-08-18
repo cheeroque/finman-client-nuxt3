@@ -33,15 +33,17 @@ export default defineEventHandler({
 
     const transactions = await db
       .select({
+        color: CategoriesTable.color,
         group: CategoriesTable.name,
         isIncome: CategoriesTable.isIncome,
+        slug: CategoriesTable.slug,
         subtotal: sum(TransactionsTable.sum),
         transactions: sql`json_agg(row_to_json(${TransactionsTable}))`,
       })
       .from(TransactionsTable)
       .leftJoin(CategoriesTable, eq(TransactionsTable.categoryId, CategoriesTable.id))
       .where(and(gte(TransactionsTable.createdAt, startString), lt(TransactionsTable.createdAt, endString)))
-      .groupBy(({ group, isIncome }) => [group, isIncome])
+      .groupBy(({ color, group, isIncome, slug }) => [group, color, isIncome, slug])
       .orderBy(({ isIncome, subtotal }) => [asc(isIncome), desc(subtotal)])
 
     let totalExpenses = 0
