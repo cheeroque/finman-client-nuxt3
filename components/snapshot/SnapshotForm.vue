@@ -1,23 +1,23 @@
 <template>
   <form ref="form" class="snapshot-form" @submit.prevent="submitForm">
     <UiFormGroup :label="useString('previousBalance')">
-      <UiInputCalc :model-value="snapshotFragment?.balance" name="previous_balance" disabled />
+      <UiInputCalc :model-value="snapshot?.sum" name="previous_balance" disabled />
     </UiFormGroup>
 
     <UiFormGroup
-      :invalid-feedback="useFieldErrorMessage(balance)"
+      :invalid-feedback="useFieldErrorMessage(sum)"
       :label="useString('currentBalance')"
-      :state="useFieldState(balance)"
+      :state="useFieldState(sum)"
     >
-      <UiInputCalc v-model="balance.value.value" name="balance" />
+      <UiInputCalc v-model="sum.value.value" name="sum" />
     </UiFormGroup>
 
     <UiFormGroup
-      :invalid-feedback="useFieldErrorMessage(created_at)"
+      :invalid-feedback="useFieldErrorMessage(createdAt)"
       :label="useString('dateTime')"
-      :state="useFieldState(created_at)"
+      :state="useFieldState(createdAt)"
     >
-      <UiInputDatetime v-model="created_at.value.value" name="created_at" />
+      <UiInputDatetime v-model="createdAt.value.value" name="createdAt" />
     </UiFormGroup>
 
     <UiFormGroup
@@ -34,17 +34,10 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 import { date as yupDate, number as yupNumber, string as yupString } from 'yup'
-import { readFragment, SnapshotFragment } from '~/graphql'
-import type { FragmentOf } from '~/graphql'
+import type { Snapshot } from '~/types'
 
 type SnapshotFormProps = {
-  snapshot?: FragmentOf<typeof SnapshotFragment>
-}
-
-type SnapshotFormValues = {
-  balance: number
-  created_at: Date
-  note?: string
+  snapshot?: Snapshot
 }
 
 const props = defineProps<SnapshotFormProps>()
@@ -52,37 +45,35 @@ const props = defineProps<SnapshotFormProps>()
 const emit = defineEmits(['submit'])
 
 const globalStore = useGlobalStore()
-const { balance: oldBalance } = storeToRefs(globalStore)
+const { balance } = storeToRefs(globalStore)
 
 /* Expose form element as ref for parent */
 
 const form = ref()
 defineExpose({ form })
 
-const snapshotFragment = computed(() => readFragment(SnapshotFragment, props.snapshot))
-
-const { handleSubmit, values } = useForm<SnapshotFormValues>({
+const { handleSubmit, values } = useForm({
   initialValues: {
-    balance: oldBalance.value,
-    created_at: new Date(),
-    note: snapshotFragment.value?.note ?? '',
+    createdAt: new Date(),
+    note: props.snapshot?.note ?? '',
+    sum: balance.value,
   },
 
   validationSchema: {
-    balance: yupNumber().required(useString('fieldRequired')).min(0, useString('fieldMinimumValue', '0')),
-    created_at: yupDate().required(useString('fieldRequired')).isValid(useString('invalidDate')),
+    createdAt: yupDate().required(useString('fieldRequired')).isValid(useString('invalidDate')),
     note: yupString().required(useString('fieldRequired')),
+    sum: yupNumber().required(useString('fieldRequired')).min(0, useString('fieldMinimumValue', '0')),
   },
 })
 
-const balance = useField<number>('balance')
-const created_at = useField<Date>('created_at')
+const createdAt = useField<Date>('createdAt')
 const note = useField<string>('note')
+const sum = useField<number>('sum')
 
 const submitForm = handleSubmit(() => {
-  const { balance, note } = values
-  const created_at = DateTime.fromJSDate(values.created_at).toFormat('yyyy-LL-dd HH:mm:ss')
+  const { note, sum } = values
+  const createdAt = DateTime.fromJSDate(values.createdAt).toSQL()
 
-  emit('submit', { balance, created_at, note })
+  emit('submit', { createdAt, note, sum })
 })
 </script>

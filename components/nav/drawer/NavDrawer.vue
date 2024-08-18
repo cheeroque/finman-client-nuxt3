@@ -74,9 +74,10 @@ const drawerClasses = computed(() => {
   return classes
 })
 
-const { data, pending, refresh } = await useFetch('/api/snapshots')
+const { data, status, refresh } = await useAsyncData('sidebar-snapshot', () => useRequestFetch()('/api/snapshot'))
 
-const snapshot = computed(() => data.value?.snapshots[0])
+const pending = computed(() => status.value === 'pending')
+const snapshot = computed(() => data.value?.snapshot)
 
 watch(
   /* Refetch snapshot if external trigger was set to true, then reset trigger */

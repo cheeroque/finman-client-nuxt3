@@ -38,7 +38,7 @@ export type ToastState = {
 
 /* Reworked types */
 
-import { CategoriesTable, TransactionsTable } from '~/server/db/schema'
+import { CategoriesTable, RevisesTable, TransactionsTable } from '~/server/db/schema'
 import type { InferInsertModel, InferSelectModel } from 'drizzle-orm'
 
 export type Category = InferSelectModel<typeof CategoriesTable>
@@ -49,6 +49,10 @@ export type LoginCredentials = {
   password: string
   username: string
 }
+
+export type Snapshot = InferSelectModel<typeof RevisesTable>
+
+export type SnapshotInsert = InferInsertModel<typeof RevisesTable>
 
 export type Transaction = InferSelectModel<typeof TransactionsTable> & {
   category: Category | null
