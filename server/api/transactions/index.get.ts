@@ -14,7 +14,7 @@ export default defineEventHandler({
   onRequest: [checkUser],
 
   handler: async (event) => {
-    const db = await getDrizzle()
+    const { db } = event.context
     const { page, perPage, view } = getQuery<TransactionsQueryParams>(event)
 
     const currentPage = Number(page) || 1

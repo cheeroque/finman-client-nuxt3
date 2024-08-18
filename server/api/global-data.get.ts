@@ -4,8 +4,8 @@ import { CategoriesTable, TransactionsTable } from '~/server/db/schema'
 export default defineEventHandler({
   onRequest: [checkUser],
 
-  handler: async () => {
-    const db = await getDrizzle()
+  handler: async (event) => {
+    const { db } = event.context
 
     const categories = await db.query.CategoriesTable.findMany({
       orderBy: (categories, { asc }) => [asc(categories.sortOrder), asc(categories.name)],

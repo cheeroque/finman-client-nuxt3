@@ -11,7 +11,7 @@ export default defineEventHandler({
   onRequest: [checkUser],
 
   handler: async (event) => {
-    const db = await getDrizzle()
+    const { db } = event.context
     const { slug, year } = getQuery<CategoryQueryParams>(event)
 
     if (!slug) {

@@ -4,7 +4,7 @@ import { verifyRequestOrigin } from 'lucia'
 import type { Session, User } from 'lucia'
 
 export default defineEventHandler(async (event) => {
-  const lucia = await getLucia()
+  const { lucia } = event.context
 
   /* CSRF protection */
   if (event.node.req.method !== 'GET') {

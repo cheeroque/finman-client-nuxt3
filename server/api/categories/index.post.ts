@@ -5,7 +5,7 @@ export default defineEventHandler({
   onRequest: [checkUser],
 
   handler: async (event) => {
-    const db = await getDrizzle()
+    const { db } = event.context
     const body = await readBody<CategoryInsert>(event)
 
     const [result] = await db.insert(CategoriesTable).values(body).returning({

@@ -2,10 +2,8 @@ import { verify } from '@node-rs/argon2'
 import type { LoginCredentials } from '~/types'
 
 export default defineEventHandler(async (event) => {
+  const { db, lucia } = event.context
   const { password, username } = await readBody<LoginCredentials>(event)
-
-  const db = await getDrizzle()
-  const lucia = await getLucia()
 
   const existingUser = await db.query.UsersTable.findFirst({
     where: (users, { eq }) => eq(users.name, username),

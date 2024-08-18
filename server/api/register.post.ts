@@ -2,10 +2,8 @@ import { hash } from '@node-rs/argon2'
 import { UsersTable } from '~/server/db/schema'
 
 export default eventHandler(async (event) => {
+  const { db, lucia } = event.context
   const formData = await readFormData(event)
-
-  const db = await getDrizzle()
-  const lucia = await getLucia()
 
   const username = formData.get('username')
 

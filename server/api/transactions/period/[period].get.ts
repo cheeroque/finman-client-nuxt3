@@ -6,9 +6,8 @@ export default defineEventHandler({
   onRequest: [checkUser],
 
   handler: async (event) => {
-    const db = await getDrizzle()
-
-    const period = event.context.params?.period
+    const { db, params } = event.context
+    const period = params?.period
 
     if (!period) {
       throw createError({

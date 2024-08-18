@@ -5,9 +5,8 @@ export default defineEventHandler({
   onRequest: [checkUser],
 
   handler: async (event) => {
-    const db = await getDrizzle()
-
-    const id = event.context.params?.id
+    const { db, params } = event.context
+    const id = params?.id
 
     if (isNaN(Number(id))) {
       throw createError({

@@ -1,13 +1,13 @@
 export default defineEventHandler(async (event) => {
-  if (!event.context.session) {
+  const { lucia, session } = event.context
+
+  if (!session) {
     throw createError({
       statusCode: 403,
     })
   }
 
-  const lucia = await getLucia()
-
-  await lucia.invalidateSession(event.context.session.id)
+  await lucia.invalidateSession(session.id)
 
   appendHeader(event, 'Set-Cookie', lucia.createBlankSessionCookie().serialize())
 })
