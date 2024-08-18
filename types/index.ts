@@ -1,5 +1,3 @@
-export type ControlSize = 'md' | 'lg' | null
-
 export type GroupTableItem = {
   group: number | string
   subtotal?: number
@@ -44,6 +42,8 @@ import type { InferInsertModel, InferSelectModel } from 'drizzle-orm'
 export type Category = InferSelectModel<typeof CategoriesTable>
 
 export type CategoryInsert = InferInsertModel<typeof CategoriesTable>
+
+export type ControlSize = 'md' | 'lg' | null
 
 export type LoginCredentials = {
   password: string
