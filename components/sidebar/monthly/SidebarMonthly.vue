@@ -59,9 +59,7 @@ import { DateTime } from 'luxon'
 
 const VISIBLE_LIMIT = 5
 
-const refetchTrigger = useRefetchTrigger()
-
-const { data, error, refresh } = await useAsyncData('sidebar-monthly', async () => {
+const { data, refresh } = await useAsyncData('sidebar-monthly', async () => {
   const period = DateTime.now().toFormat('yyyy-LL')
   const { transactions } = await useRequestFetch()(`/api/transactions/period/${period}`)
 
@@ -78,20 +76,22 @@ const { data, error, refresh } = await useAsyncData('sidebar-monthly', async () 
   }
 })
 
-const collapseOpen = ref(false)
+/* Refetch records if external trigger was set to true, then reset trigger */
+const globalStore = useGlobalStore()
+const { refreshTrigger } = storeToRefs(globalStore)
 
 watch(
-  /* Refetch records if external trigger was set to true, then reset trigger */
-
-  () => refetchTrigger.value,
+  () => refreshTrigger.value,
 
   async (event) => {
     if (event) {
       await refresh()
-      refetchTrigger.value = false
+      refreshTrigger.value = false
     }
   }
 )
+
+const collapseOpen = ref(false)
 
 function toggleCollapse() {
   collapseOpen.value = !collapseOpen.value

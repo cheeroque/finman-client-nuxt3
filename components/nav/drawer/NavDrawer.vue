@@ -1,5 +1,5 @@
 <template>
-  <div :class="drawerClasses" aria-modal="true" role="dialog">
+  <div :class="{ 'app-drawer': true, open: open }" aria-modal="true" role="dialog">
     <nav class="nav nav-drawer">
       <ul class="drawer-group list-unstyled">
         <li role="presentation">
@@ -47,6 +47,8 @@
 </template>
 
 <script setup lang="ts">
+import { useScrollLock } from '@vueuse/core'
+
 type NavDrawerProps = {
   open?: boolean
 }
@@ -61,58 +63,43 @@ const props = defineProps<NavDrawerProps>()
 
 const emit = defineEmits(['close', 'toggle'])
 
-const bodyEl = ref<HTMLElement>()
-
-const bodyFixed = useScrollLock(bodyEl)
-const refetchTrigger = useRefetchTrigger()
-
 const dialogVisible = ref(false)
-
-const drawerClasses = computed(() => {
-  let classes = ['app-drawer']
-  if (props.open) classes.push('open')
-  return classes
-})
 
 const { data, status, refresh } = await useAsyncData('sidebar-snapshot', () => useRequestFetch()('/api/snapshot'))
 
 const pending = computed(() => status.value === 'pending')
 const snapshot = computed(() => data.value?.snapshot)
 
-watch(
-  /* Refetch snapshot if external trigger was set to true, then reset trigger */
+/* Refetch snapshot if external trigger was set to true, then reset trigger */
+const globalStore = useGlobalStore()
+const { refreshTrigger } = storeToRefs(globalStore)
 
-  () => refetchTrigger.value,
+watch(
+  () => refreshTrigger.value,
 
   async (event) => {
     if (event) {
       await refresh()
-      refetchTrigger.value = false
+      refreshTrigger.value = false
     }
   }
 )
 
-watch(
-  /* Disable body scrolling when drawer is open */
-
-  () => props.open,
-
-  (event) => {
-    toggleBodyFixed(event)
-  }
-)
-
-/* Update body element ref when DOM ready to use with useScrollLock */
+/* Disable body scrolling when drawer is open */
+const bodyEl = ref<HTMLElement>()
+const bodyFixed = useScrollLock(bodyEl)
 
 onMounted(() => {
   bodyEl.value = document.body
 })
 
-function toggleBodyFixed(isFixed: boolean) {
-  if (!process.client) return
+watch(
+  () => props.open,
 
-  bodyFixed.value = isFixed
-}
+  (event) => {
+    bodyFixed.value = event
+  }
+)
 </script>
 
 <style lang="scss" scoped>

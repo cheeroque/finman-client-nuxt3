@@ -49,17 +49,15 @@ const props = defineProps<TransactionDialogProps>()
 const emit = defineEmits(['closed', 'update:modelValue'])
 
 const globalStore = useGlobalStore()
-const { pending } = storeToRefs(globalStore)
+const { pending, refreshTrigger } = storeToRefs(globalStore)
 
 const formId = useId()
-const refetchTrigger = useRefetchTrigger()
 const user = useUser()
 
 const isEdit = computed(() => Boolean(props.transaction?.id))
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeTransaction' : 'createTransaction'))
 
 /* Delete current transaction by ID. Show toast on success or error */
-
 async function handleTransactionDelete() {
   if (!props.transaction) return
 
@@ -78,8 +76,7 @@ async function handleTransactionDelete() {
     emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
-
-    refetchTrigger.value = true
+    refreshTrigger.value = true
   } catch (error: any) {
     useShowToast({
       message: error.value?.message ?? useString('error'),
@@ -92,7 +89,6 @@ async function handleTransactionDelete() {
 
 /* Create new transaction or update existing, if it's set with prop. Show toast
  * on success or error */
-
 async function handleTransactionUpsert(transaction: TransactionInsert) {
   const { categoryId, createdAt, note, sum } = transaction
   const userId = user.value?.id
@@ -111,8 +107,7 @@ async function handleTransactionUpsert(transaction: TransactionInsert) {
     emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
-
-    refetchTrigger.value = true
+    refreshTrigger.value = true
   } catch (error: any) {
     useShowToast({
       message: error.value?.message ?? useString('error'),

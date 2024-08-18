@@ -78,10 +78,9 @@ const props = defineProps<CategoryDialogProps>()
 const emit = defineEmits(['closed', 'update:modelValue'])
 
 const globalStore = useGlobalStore()
-const { pending } = storeToRefs(globalStore)
+const { pending, refreshTrigger } = storeToRefs(globalStore)
 
 const formId = useId()
-const refetchTrigger = useRefetchTrigger()
 
 const deletePending = ref(false)
 
@@ -89,7 +88,6 @@ const isEdit = computed(() => Boolean(props.category?.id))
 const dialogTitle = computed(() => useString(isEdit.value ? 'changeCategory' : 'createCategory'))
 
 /* Delete current category by ID. Show toast on success or error */
-
 async function handleCategoryDelete() {
   if (!props.category) return
 
@@ -111,8 +109,7 @@ async function handleCategoryDelete() {
     emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
-
-    refetchTrigger.value = true
+    refreshTrigger.value = true
   } catch (error: any) {
     useShowToast({
       message: error?.message ?? useString('error'),
@@ -126,7 +123,6 @@ async function handleCategoryDelete() {
 
 /* Create new category or update existing, if it's set with prop. Show toast
  * on success or error */
-
 async function handleCategoryUpsert(category: CategoryInsert) {
   const { color, isIncome, name, slug, sortOrder } = category
 
@@ -146,8 +142,7 @@ async function handleCategoryUpsert(category: CategoryInsert) {
     emit('update:modelValue', false)
 
     /* Trigger refetch of all globally available data */
-
-    refetchTrigger.value = true
+    refreshTrigger.value = true
   } catch (error: any) {
     useShowToast({
       message: error?.message ?? useString('error'),

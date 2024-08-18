@@ -10,6 +10,7 @@ export const useGlobalStore = defineStore('global', () => {
   const categories = ref<Category[]>([])
   const firstTransaction = ref<Transaction | null>(null)
   const pending = ref(false)
+  const refreshTrigger = ref(false)
 
   const startDate = computed(() => {
     let dateTime = DateTime.fromSQL(firstTransaction.value?.createdAt ?? '')
@@ -28,6 +29,7 @@ export const useGlobalStore = defineStore('global', () => {
     categories,
     firstTransaction,
     pending,
+    refreshTrigger,
     startDate,
   }
 })

@@ -34,14 +34,13 @@ import type { TableItem } from '~/types'
 
 const GROUP_KEY_FORMAT = 'yyyy-LL'
 
-const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
 const router = useRouter()
 
 /* Paginate data by years, from current year back to the year
  * of the first transaction */
 const globalStore = useGlobalStore()
-const { startDate } = storeToRefs(globalStore)
+const { startDate, refreshTrigger } = storeToRefs(globalStore)
 
 const now = computed(() => DateTime.now())
 const currentYear = computed(() => Number(route.query.year) || now.value.year)
@@ -96,6 +95,19 @@ if (error.value) {
 }
 
 const pending = computed(() => status.value === 'pending')
+
+/* Refetch data if external trigger was set to true, then reset trigger */
+
+watch(
+  () => refreshTrigger.value,
+
+  async (event) => {
+    if (event) {
+      await refresh()
+      refreshTrigger.value = false
+    }
+  }
+)
 
 function formatDate(group: string, short = false): string {
   const monthFormat = short ? 'LLL' : 'LLLL'

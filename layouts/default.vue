@@ -18,9 +18,9 @@
 
 <script setup lang="ts">
 const globalStore = useGlobalStore()
-const { balance, categories, firstTransaction, pending } = storeToRefs(globalStore)
+const { balance, categories, firstTransaction, pending, refreshTrigger } = storeToRefs(globalStore)
 
-const { error } = await useAsyncData('global', async () => {
+const { error, refresh } = await useAsyncData('global', async () => {
   pending.value = true
 
   const response = await useRequestFetch()('/api/global-data')
@@ -41,7 +41,17 @@ if (error.value) {
   })
 }
 
-const toast = useToast()
+/* Refetch data if external trigger was set to true, then reset trigger */
+watch(
+  () => refreshTrigger.value,
+
+  async (event) => {
+    if (event) {
+      await refresh()
+      refreshTrigger.value = false
+    }
+  }
+)
 
 const drawerOpen = ref(false)
 
@@ -52,6 +62,8 @@ function handleToggleDrawer() {
 function handleCloseDrawer() {
   drawerOpen.value = false
 }
+
+const toast = useToast()
 
 function handleToastHide() {
   useHideToast()

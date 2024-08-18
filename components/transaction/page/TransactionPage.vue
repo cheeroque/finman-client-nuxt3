@@ -25,7 +25,6 @@ type TransactionPageProps = {
 
 const props = defineProps<TransactionPageProps>()
 
-const refetchTrigger = useRefetchTrigger()
 const route = useRoute()
 
 const observer = ref()
@@ -51,15 +50,17 @@ const { data, status, refresh } = await useFetch('/api/transactions', {
   },
 })
 
-watch(
-  /* Refetch transactions if external trigger was set to true, then reset trigger */
+/* Refetch transactions if external trigger was set to true, then reset trigger */
+const globalStore = useGlobalStore()
+const { refreshTrigger } = storeToRefs(globalStore)
 
-  () => refetchTrigger.value,
+watch(
+  () => refreshTrigger.value,
 
   async (event) => {
     if (event) {
       await refresh()
-      refetchTrigger.value = false
+      refreshTrigger.value = false
     }
   }
 )
@@ -67,9 +68,8 @@ watch(
 const pending = computed(() => status.value === 'pending')
 
 /* Observe pagination element to hide/show FAB on scroll */
-
 onMounted(() => setObserver())
-onUnmounted(() => removeObserver())
+onBeforeUnmount(() => removeObserver())
 
 function setObserver() {
   if (!import.meta.client || !paginationAnchor.value) return
