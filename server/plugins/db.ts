@@ -8,27 +8,37 @@ import * as schema from '../db/schema'
 export default defineNitroPlugin(async (nitroApp) => {
   const config = useRuntimeConfig()
 
-  const db = await getDrizzle(config.postgresUrl)
-  const lucia = await getLucia(db)
+  let db: NodePgDatabase<typeof schema>
+  let lucia: Lucia
 
-  nitroApp.hooks.hook('request', (event) => {
+  /* Initialize Drizzle & Lucia */
+  async function createConnection() {
+    const client = new pg.Client({ connectionString: config.postgresUrl })
+
+    /* Recreate Drizzle & Lucia on DB connection error */
+    client.on('error', (error) => {
+      console.log('DB client error', error)
+      return createConnection()
+    })
+
+    await client.connect()
+
+    db = drizzle(client, { schema })
+    lucia = await getLucia(db)
+  }
+
+  await createConnection()
+
+  /* Add Drizzle & Lucia to the request event context */
+  nitroApp.hooks.hook('request', async (event) => {
+    if (!db) await createConnection()
+
     event.context.db = db
     event.context.lucia = lucia
   })
 })
 
-async function getDrizzle(connectionString: string) {
-  const client = new pg.Client({ connectionString })
-
-  await client.connect()
-
-  client.on('error', (error) => {
-    console.log('DB client error', error)
-  })
-
-  return drizzle(client, { schema })
-}
-
+/* Initialize Lucia */
 async function getLucia(db: NodePgDatabase<typeof schema>) {
   const adapter = new DrizzlePostgreSQLAdapter(db, schema.SessionsTable, schema.UsersTable)
 
