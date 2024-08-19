@@ -26,7 +26,7 @@ export function getContrastColor(hex?: string | null, dark = '#000', light = '#f
 }
 
 export function getWindowTop() {
-  if (!process.client) return 0
+  if (!import.meta.client) return 0
 
   return Math.max(document?.documentElement?.scrollTop, document?.body?.scrollTop) ?? 0
 }
@@ -42,7 +42,7 @@ export function parseJwt(token?: string | null) {
 }
 
 export function scrollToEl(target: HTMLElement | string | null, top = 0, behavior: 'auto' | 'smooth' = 'smooth') {
-  if (!process.client) return
+  if (!import.meta.client) return
 
   let targetEl: Window | HTMLElement = window
 

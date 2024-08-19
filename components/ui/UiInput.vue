@@ -138,7 +138,7 @@ function handleInput(event: InputEvent) {
 }
 
 function setObserver() {
-  if (!process.client || !input.value) return
+  if (!import.meta.client || !input.value) return
 
   if ('IntersectionObserver' in window) {
     observer.value = new IntersectionObserver(([{ isIntersecting }]) => {

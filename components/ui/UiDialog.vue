@@ -91,7 +91,7 @@ function handleClose() {
 
 function toggleBodyFixed(isFixed: boolean) {
   /* Disable body scrolling when dialog is open */
-  if (!process.client) return
+  if (!import.meta.client) return
 
   bodyFixed.value = isFixed
 }
