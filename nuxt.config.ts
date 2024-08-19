@@ -49,11 +49,7 @@ export default defineNuxtConfig({
   modules: ['@pinia/nuxt', '@vee-validate/nuxt', '@vueuse/nuxt', 'nuxt-icons'],
 
   runtimeConfig: {
-    gqlEndpoint: '',
     postgresUrl: '',
-    public: {
-      staticUrl: '',
-    },
   },
 
   veeValidate: {
