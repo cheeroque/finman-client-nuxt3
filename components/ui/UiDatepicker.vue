@@ -105,7 +105,7 @@ const monthdays = computed(() => {
 })
 
 function getDayClasses(day: DateTime) {
-  const classes = ['datepicker-day']
+  const classes = ['btn datepicker-day']
 
   if (day.day === selectedDay.value && day.month === selectedMonth.value) {
     classes.push('active')

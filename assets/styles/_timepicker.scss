@@ -29,8 +29,6 @@ $timepicker-button-padding-y: 0.75rem;
 
 .timepicker-hour,
 .timepicker-minute {
-  @extend .btn;
-
   display: block;
   width: 100%;
   padding: $timepicker-button-padding-y $timepicker-button-padding-x;

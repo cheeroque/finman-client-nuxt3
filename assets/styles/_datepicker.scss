@@ -34,8 +34,7 @@ $datepicker-button-padding-y: 0.75rem;
 }
 
 .datepicker-weekdays {
-  @extend .fs-12;
-
+  font-size: $font-size-base * 0.75;
   font-weight: $font-weight-medium;
   text-transform: uppercase;
   color: var(--outline);
@@ -51,8 +50,6 @@ $datepicker-button-padding-y: 0.75rem;
 }
 
 .datepicker-day {
-  @extend .btn;
-
   min-width: 0;
   padding: $datepicker-button-padding-y $datepicker-button-padding-x;
   font-family: inherit;

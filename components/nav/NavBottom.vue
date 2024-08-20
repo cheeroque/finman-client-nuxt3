@@ -56,12 +56,11 @@ function getLinkClasses(link: NavLink) {
 }
 
 .navbar-link {
-  @extend .fs-14;
-
   display: flex;
   flex-direction: column;
   flex: 1 1 0;
   padding: 0;
+  font-size: $font-size-base * 0.875;
   line-height: 1.5rem;
   border: none;
 
