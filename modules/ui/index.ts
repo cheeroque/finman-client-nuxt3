@@ -1,7 +1,8 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
-import fs from 'fs'
+import { writeFile } from 'node:fs/promises'
 import { defaults } from './defaults'
 import { getGrid } from './grid'
+import { getColors, getIcons, getManifest } from './theme'
 import { getUtilities } from './utilities'
 import type { UiModuleOptions } from './types'
 
@@ -16,14 +17,34 @@ export default defineNuxtModule<UiModuleOptions>({
 
   defaults,
 
-  setup(options, nuxt) {
+  async setup(options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
 
-    const filePath = resolve('./runtime/index.css')
-    const fileContents = () => [getGrid(options), getUtilities(options)].join('\n\n')
+    const cssPath = resolve('./runtime/index.css')
+    const cssContents = [getGrid(options), getUtilities(options), getColors(options)].join('\n\n')
 
-    fs.writeFileSync(filePath, fileContents())
+    const { icon, iconMaskable } = await getIcons(options)
 
-    nuxt.options.css.push(filePath)
+    const manifest = getManifest(options)
+
+    await Promise.all([
+      writeFile(cssPath, cssContents),
+      writeFile(resolve('../../public/icon.svg'), icon),
+      writeFile(resolve('../../public/icon-maskable.svg'), iconMaskable),
+      writeFile(resolve('../../public/manifest.json'), JSON.stringify(manifest)),
+    ])
+
+    nuxt.options.css.push(cssPath)
+
+    if (!Array.isArray(nuxt.options.app.head.link)) {
+      nuxt.options.app.head.link = []
+    }
+
+    nuxt.options.app.head.link.push({
+      rel: 'manifest',
+      hid: 'manifest',
+      href: '/manifest.json',
+      crossorigin: 'use-credentials',
+    })
   },
 })
