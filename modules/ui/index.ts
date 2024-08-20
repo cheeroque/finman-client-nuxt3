@@ -1,4 +1,5 @@
-import { addTemplate, defineNuxtModule } from '@nuxt/kit'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
+import fs from 'fs'
 
 type GridBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
 type PropertyValue = number | string | null
@@ -205,14 +206,14 @@ export default defineNuxtModule<UiModuleOptions>({
   },
 
   setup(options, nuxt) {
-    const getContents = () => [getGrid(options), getUtilities(options)].join('\n\n')
+    const { resolve } = createResolver(import.meta.url)
 
-    addTemplate({
-      filename: 'ui.css',
-      getContents,
-    })
+    const filePath = resolve('./runtime/index.css')
+    const fileContents = () => [getGrid(options), getUtilities(options)].join('\n\n')
 
-    nuxt.options.css.push('#build/ui.css')
+    fs.writeFileSync(filePath, fileContents())
+
+    nuxt.options.css.push(filePath)
   },
 })
 

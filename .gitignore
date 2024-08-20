@@ -13,3 +13,4 @@ public/icon.svg
 public/icon-maskable-384.png
 gen/*
 !gen/README.md
+modules/ui/runtime/index.css
