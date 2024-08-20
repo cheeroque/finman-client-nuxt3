@@ -1,60 +1,64 @@
-/* Generates Bootstrap-like grid CSS classes based on settings from `grid` field
- * in nuxt.config. Saves CSS to virtual file and adds it to Nuxt CSS imports */
-
 import { addTemplate, defineNuxtModule } from '@nuxt/kit'
 
-type GridBreakpointKey = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
-type Unit = number | string | null
+type GridBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
+type SizeUnit = number | string | null
 
-type GridModuleOptions = {
-  breakpoints: Partial<Record<GridBreakpointKey, Unit>> & Record<string, Unit>
-  containerWidths: Partial<Record<GridBreakpointKey, Unit>> & Record<string, Unit>
-  gap: Unit
+type UiModuleOptions = {
+  grid: {
+    breakpoints: Partial<Record<GridBreakpoint, SizeUnit>> & Record<string, SizeUnit>
+    containerWidths: Partial<Record<GridBreakpoint, SizeUnit>> & Record<string, SizeUnit>
+    gap: SizeUnit
+  }
 }
 
-export default defineNuxtModule<GridModuleOptions>({
+export default defineNuxtModule<UiModuleOptions>({
   meta: {
-    name: 'finman-styles',
-    configKey: 'grid',
+    name: 'finman-ui',
+    configKey: 'ui',
     compatibility: {
       nuxt: '^3.0.0',
     },
   },
 
   defaults: {
-    breakpoints: {
-      xs: 0,
-      sm: 576,
-      md: 768,
-      lg: 992,
-      xl: 1200,
-      xxl: 1400,
-    },
+    grid: {
+      breakpoints: {
+        xs: 0,
+        sm: 576,
+        md: 768,
+        lg: 992,
+        xl: 1200,
+        xxl: 1400,
+      },
 
-    containerWidths: {
-      xs: null,
-      sm: 540,
-      md: 720,
-      lg: 960,
-      xl: 1140,
-      xxl: 1320,
-    },
+      containerWidths: {
+        xs: null,
+        sm: 540,
+        md: 720,
+        lg: 960,
+        xl: 1140,
+        xxl: 1320,
+      },
 
-    gap: '1.5rem',
+      gap: '1.5rem',
+    },
   },
 
   setup(options, nuxt) {
+    const getContents = () => [getGrid(options)].join('\n\n')
+
     addTemplate({
-      filename: 'grid.css',
-      getContents: () => getCSSContents(options),
+      filename: 'ui.css',
+      getContents,
     })
 
-    nuxt.options.css.push('#build/grid.css')
+    nuxt.options.css.push('#build/ui.css')
   },
 })
 
-function getCSSContents(options: GridModuleOptions) {
-  const gap = getCSSUnit(options.gap)
+/* Generates Bootstrap-like grid based on `grid` field from module settings */
+function getGrid(options: UiModuleOptions) {
+  const gap = getCSSUnit(options.grid.gap)
 
   /* Generate container classes and media queries */
   const containers = () => {
@@ -68,8 +72,8 @@ function getCSSContents(options: GridModuleOptions) {
       }`,
     ]
 
-    Object.entries(options.containerWidths).forEach(([key, value]) => {
-      const breakpoint = options.breakpoints[key]
+    Object.entries(options.grid.containerWidths).forEach(([key, value]) => {
+      const breakpoint = options.grid.breakpoints[key]
 
       lines.push(`@media (min-width: ${getCSSUnit(breakpoint)}) {
         .container {
@@ -102,7 +106,7 @@ function getCSSContents(options: GridModuleOptions) {
         flex-basis: ${flexBasis(count)};
       }`)
 
-      Object.entries(options.breakpoints).forEach(([key, value]) => {
+      Object.entries(options.grid.breakpoints).forEach(([key, value]) => {
         if (!value) return
 
         lines.push(`@media (min-width: ${getCSSUnit(value)}) {
@@ -149,7 +153,7 @@ function getCSSContents(options: GridModuleOptions) {
       }
     }
 
-    Object.entries(options.breakpoints).forEach(([key, value]) => {
+    Object.entries(options.grid.breakpoints).forEach(([key, value]) => {
       if (!value) return
 
       lines.push(`.col-${key}-auto {
@@ -177,7 +181,7 @@ function getCSSContents(options: GridModuleOptions) {
 }
 
 /* Convert number values to CSS size in pixels, return string values as is */
-function getCSSUnit(value: Unit) {
+function getCSSUnit(value: SizeUnit) {
   if (!value) return value
 
   if (!isNaN(Number(value))) {
