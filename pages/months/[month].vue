@@ -20,7 +20,7 @@
         class="pagination-link"
         icon="chevron-double-right-24"
         icon-size="24"
-        icon-right
+        icon-end
       >
         <span class="d-md-none" v-text="formatMonthName(nextMonth, true)" />
         <span class="d-none d-md-inline" v-text="formatMonthName(nextMonth)" />

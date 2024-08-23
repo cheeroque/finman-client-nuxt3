@@ -13,8 +13,8 @@
           icon="caret"
           icon-size="10"
           block
-          icon-right
-          @click-native="handleToggleDetails($event, detailsVisible, toggleDetails)"
+          icon-end
+          @click="handleToggleDetails($event, detailsVisible, toggleDetails)"
         >
           <span class="caption">{{ value }}&nbsp;₽</span>
         </UiButton>
@@ -31,7 +31,7 @@
           <template #cell(sum)="{ value }"> {{ value }}&nbsp;₽ </template>
 
           <template #cell(note)="{ item, value }">
-            <UiButton class="btn-edit" icon="edit-24" icon-size="24" block icon-right @click="handleEdit(item)">
+            <UiButton class="btn-edit" icon="edit-24" icon-size="24" block icon-end @click="handleEdit(item)">
               <span class="caption">{{ value }}</span>
             </UiButton>
           </template>

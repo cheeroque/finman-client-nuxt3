@@ -5,7 +5,7 @@
         :block="block"
         :disabled="disabled"
         :icon="icon"
-        :icon-right="iconRight"
+        :icon-end="iconEnd"
         :size="size"
         :variant="variant"
         @click="toggle"
@@ -37,7 +37,7 @@ type DropdownProps = {
   block?: boolean
   disabled?: boolean
   icon?: string
-  iconRight?: boolean
+  iconEnd?: boolean
   modelValue?: boolean
   size?: ControlSize
   text?: string
