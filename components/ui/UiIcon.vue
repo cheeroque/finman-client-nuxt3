@@ -1,8 +1,7 @@
 <template>
   <NuxtIcon
+    v-bind="{ fill, name }"
     :class="{ 'nuxt-icon-fixed': Boolean(size) }"
-    :fill="fill"
-    :name="name"
     :style="{ '--nuxt-icon-size': iconSize }"
   />
 </template>
@@ -16,16 +15,7 @@ type IconProps = {
 
 const props = defineProps<IconProps>()
 
-const iconSize = computed(() => {
-  if (!props.size) return
-
-  if (!isNaN(Number(props.size))) {
-    /* If size prop is number, add `px` */
-    return `${props.size}px`
-  }
-
-  return props.size
-})
+const iconSize = computed(() => getCSSUnit(props.size))
 </script>
 
 <style lang="scss" scoped>

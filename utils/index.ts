@@ -25,6 +25,13 @@ export function getContrastColor(hex?: string | null, dark = '#000', light = '#f
   return lightness >= threshold ? dark : light
 }
 
+export function getCSSUnit(value?: number | string) {
+  if (value === undefined) return
+  if ([0, '0'].includes(value)) return 0
+  if (!isNaN(Number(value))) return `${value}px`
+  return value
+}
+
 export function getWindowTop() {
   if (!import.meta.client) return 0
 
